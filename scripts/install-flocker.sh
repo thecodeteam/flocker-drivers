@@ -13,7 +13,6 @@ SRC_DIR="/opt/flocker"
 # Clone public flocker source for now.
 git clone $PUB_SRC $SRC_DIR
 
-cd $SRC_DIR
 pip install virtualenv
 
 # we actually dont want this, because it make it impossible
@@ -22,5 +21,5 @@ pip install virtualenv
 
 pip install --upgrade  eliot
 pip install --upgrade  machinist
-python setup.py install
+cd $SRC_DIR && python setup.py install
 
