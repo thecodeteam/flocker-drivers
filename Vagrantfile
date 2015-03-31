@@ -99,6 +99,9 @@ Vagrant.configure("2") do |config|
       node_config.vm.provision "shell" do |s|
         s.path = "scripts/centos-7-flocker.sh"
       end
+      node_config.vm.provision "shell" do |s|
+        s.path = "scripts/install-flocker.sh"
+      end
     end
   end
 end
