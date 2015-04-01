@@ -5,7 +5,7 @@
 EMC_SRC="https://wallnr@git.lss.emc.com/scm/floc/flocker.git"
 PUB_SRC="https://github.com/ClusterHQ/flocker"
 
-SRC_DIR="/opt/flocker/flocker/"
+SRC_DIR="/opt/flocker/flocker"
 
 # TODO install from local EMC Source
 # //TODO
@@ -21,5 +21,5 @@ pip install virtualenv
 
 pip install --upgrade  eliot
 pip install --upgrade  machinist
-python $SRC_DIRflocker/setup.py install
+cd $SRC_DIR && python $SRC_DIR/setup.py install
 
