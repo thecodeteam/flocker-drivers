@@ -39,7 +39,7 @@ With CentOS 7, ZFS, and Flocker Public Git Source
 
 # Examples
 
-Your 3 Nodes containing ScaleIO + FLocker will be on a private address space
+Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
 in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
 Here is a fig file (fig.yml)
