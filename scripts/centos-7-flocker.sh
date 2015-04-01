@@ -9,6 +9,10 @@
 
 yum install -y docker
 sed -i 's/OPTIONS=\(.*\)/OPTIONS=\1 -H tcp:\/\/0.0.0.0:4243 -H unix:\/\/\/var\/run\/docker.sock/g' /etc/sysconfig/docker
+# SystemCTL complains about single quotes and won't start
+sed -i "s/OPTIONS='--selinux-enabled'/OPTIONS=--selinux-enabled/g" /etc/sysconfig/docker
+# Device mapper Base isnt exported with old version, need to update.
+yum update -y device-mapper-libs
 service docker restart
 
 # enable root login, key authentication will still need to be setup
