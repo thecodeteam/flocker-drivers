@@ -72,3 +72,39 @@ Run the example
 ```
 flocker-deploy deployment-node1.yml fig.yml
 ```
+
+# Cluster
+
+Each node in the cluster will house the ScaleIO tooling, SDC/SDS for
+volume access, Docker and Flocker in the above example, you can see this
+sshing into any node and follow the below
+
+```
+vagrant ssh <tb|mdm1|mdm2>
+
+```
+
+```
+[vagrant@tb ~]$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+```
+
+```
+[vagrant@tb ~]$ sudo zpool status
+  pool: flocker
+ state: ONLINE
+  scan: none requested
+config:
+
+	NAME                      STATE     READ WRITE CKSUM
+	flocker                   ONLINE       0     0     0
+	  /opt/flocker/pool-vdev  ONLINE       0     0     0
+
+errors: No known data errors
+[vagrant@tb ~]$ 
+```
+
+```
+[vagrant@tb ~]$ sudo /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 0 volume(s)
+```
