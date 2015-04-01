@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Installs Flocker from Source
-
-EMC_SRC="https://wallnr@git.lss.emc.com/scm/floc/flocker.git"
+USER=""
+EMC_SRC="https://$USER@git.lss.emc.com/scm/floc/flocker.git"
 PUB_SRC="https://github.com/ClusterHQ/flocker"
 
 SRC_DIR="/opt/flocker/flocker"
