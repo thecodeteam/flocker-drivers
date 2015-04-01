@@ -21,5 +21,5 @@ pip install virtualenv
 
 pip install --upgrade  eliot
 pip install --upgrade  machinist
-python $SRC_DIR/setup.py install
+python $SRC_DIR/flocker/setup.py install
 
