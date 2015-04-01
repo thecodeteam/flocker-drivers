@@ -1,11 +1,16 @@
 # Created by Jonas Rosland, @virtualswede & Matt Cowger, @mcowger
 # Many thanks to this post by James Carr: http://blog.james-carr.org/2013/03/17/dynamic-vagrant-nodes/
 
+# Aditions added to support flocker testing environment by Ryan Wallner @ryanwallner
+
 # vagrant box
-vagrantbox="centos_6.5"
+#vagrantbox="centos_7"
+vagrantbox="chef/centos-7.0"
 
 # vagrant box url
-vagrantboxurl="https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
+#vagrantboxurl="https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
+#vagrantboxurl="https://f0fff3908f081cb6461b407be80daf97f07ac418.googledrive.com/host/0BwtuV7VyVTSkUG1PM3pCeDJ4dVE/centos7.box"
+vagrantboxurl="chef/centos-7.0"
 
 # scaleio admin password
 password="Scaleio123"
@@ -27,10 +32,10 @@ secondmdmip = "#{network}.13"
 clusterinstall = "True" #If True a fully working ScaleIO cluster is installed. False mean only IM is installed on node MDM1.
 
 # version of installation package
-version = "1.31-1277.3"
+version = "1.31-243.0"
 
 #OS Version of package
-os="el6"
+os="el7"
 
 # installation folder
 siinstall = "/opt/scaleio/siinstall"
@@ -90,6 +95,12 @@ Vagrant.configure("2") do |config|
           s.path = "scripts/mdm2.sh"
           s.args   = "-o #{os} -v #{version} -n #{packagename} -d #{device} -f #{firstmdmip} -s #{secondmdmip} -i #{siinstall} -t #{tbip} -p #{password} -c #{clusterinstall}"
         end
+      end
+      node_config.vm.provision "shell" do |s|
+        s.path = "scripts/centos-7-flocker.sh"
+      end
+      node_config.vm.provision "shell" do |s|
+        s.path = "scripts/install-flocker.sh"
       end
     end
   end

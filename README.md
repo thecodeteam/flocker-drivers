@@ -1,55 +1,110 @@
-vagrant-scaleio
+scaleio-flocker
 ---------------
 
 # Description
 
-Vagrantfile to create a three-VM EMC ScaleIO lab setup.
+Vagrantfile to create a three-VM EMC ScaleIO lab setup, with Flocker build from source, on CentOS 7
 
 # Usage
 
-To use this, you'll need to complete a few steps:
+Get the source
+```
+git pull https://github.com/wallnerryan/scaleio-flocker
 
-1. Click on the "Download ZIP" link on the right side of this page and unpack the zipfile somewhere on your computer, or use `git clone https://github.com/virtualswede/vagrant-scaleio.git` if you have Git installed.
-2. Download the latest 1.31 ScaleIO bits from EMC as per instructions below (you'll need an EMC support account) 
-3. Place this zip file in the same directory as the `Vagrantfile` in this repo.
-4. Unzip the files in the zip, and place them next to the `Vagrantfile`.  On most modern \*nix/Mac you could do easily with `unzip ScaleIO_1.31_RHEL6_Download.zip && mv ScaleIO_1.31_RHEL6_Download/*.rpm ./`
-5. Edit the proxies (if needed)
-6. Edit clusterinstall parameter to adjust for different installation methods (default is True which mean a fully working ScaleIO cluster gets installed)
-6. Run `vagrant up` (if you have more than one Vagrant Provider on your machine run `vagrant up --provider virtualbox` instead)
+cd scaleio-flocker
+```
 
-### Clusterinstall function
+Copy the RPMS into the source directory
+```
+cp EMC-ScaleIO-callhome-1.31-243.0.el7.x86_64.rpm E MC-ScaleIO-sdc-1.31-243.0.el7.x86_64.rpm
+EMC-ScaleIO-gateway-1.31-243.0.noarch.rpm  EMC-ScaleIO-sds-1.31-243.0.el7.x86_64.rpm
+EMC-ScaleIO-gui-1.31-243.0.noarch.rpm  EMC-ScaleIO-tb-1.31-243.0.el7.x86_64.rpm
+EMC-ScaleIO-lia-1.31-243.0.el7.x86_64.rpm EMC-ScaleIO-mdm-1.31-243.0.el7.x86_64.rpm
+```
 
-In Vagrantfile there is a variable named `clusterinstall` that control how Vagrant provision ScaleIO during `vagrant up` process. If set to True (defualt) a fully functional ScaleIO cluster is installed with IM, MDM, TB, SDC, SDS on three nodes  If set to False three base VMs is installed with IM running on machined named MDM1. To install your cluster with clusterinstall=False you do `vagrant up` as usual but once complete use your webbrowser and point it to https://192.168.50.12. Login with admin and Scaleio123. From here you can deploy a new ScaleIO cluster using IM. Great for demo and learning purposes.
+Copy the certs (if needed) into source/certs
+```
+cp EMCSSL.crt EMCCA.crt certs/
+```
 
-### How to download ScaleIO binaries (as of version 1.31.1)
+# Start vagrant
+```
+vagrant up
+```
 
-https://download.emc.com/downloads/DL57934_ScaleIO-1.31.1-Gateway-for-Linux-Software-Download.zip
+# Tested
 
-https://download.emc.com/downloads/DL57941_ScaleIO-1.31.1-Components-for--RHEL-6.x-Download.zip
-
-Above URLs will change when new ScaleIO releases are available. For now the only tested version is the one available at above links. Newer versions within 1.31.x series will likely work if you edit yor Vagrantfile.
-In your Vagranfile you can edit the following to adopt it to other versions of ScaleIO. Find the text per below and edit it:
-
-
-### version of installation package
-
-`version = "1.31-1277.3"`
-
-###OS Version of package
-
-`os="el6"`
+With CentOS 7, ZFS, and Flocker Public Git Source
 
 
-###Example CSV file for deployment of ScaleIO cluster using IM:
-`
-IPs,Password,Operating System,Is MDM/TB,Is SDS,SDS Device List,Is SDC
-192.168.102.12,vagrant,linux,Primary,Yes,/home/vagrant/scaleio1,Yes
-192.168.102.13,vagrant,linux,Secondary,Yes,/home/vagrant/scaleio1,Yes
-192.168.102.11,vagrant,linux,TB,Yes,/home/vagrant/scaleio1,Yes
-`
+# Examples
 
-Note, the cluster will come up with the default 30 day testing license, which should be fine for most uses.
+Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
+in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
-# Troubleshooting
+Here is a fig file (fig.yml)
 
-If anything goes wrong during the deployment, run `vagrant destroy -f` to remove all the VMs and then `vagrant up` again to restart the deployment.
+```
+web:
+  image: clusterhq/flask
+  links:
+   - "redis:redis"
+  ports:
+   - "80:8080"
+redis:
+  image: dockerfile/redis
+  ports:
+   - "6379:6379"
+  volumes: ["/data"]
+```
+
+Here is a deployment file (deployment-node1.yml)
+
+```
+"version": 1
+"nodes":
+  "192.168.50.11": ["web", "redis"]
+  "192.168.50.12": []
+  "192.168.50.13": []
+```
+
+Run the example
+```
+flocker-deploy deployment-node1.yml fig.yml
+```
+
+# Cluster
+
+Each node in the cluster will house the ScaleIO tooling, SDC/SDS for
+volume access, Docker and Flocker in the above example, you can see this
+sshing into any node and follow the below
+
+```
+vagrant ssh <tb|mdm1|mdm2>
+
+```
+
+```
+[vagrant@tb ~]$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+```
+
+```
+[vagrant@tb ~]$ sudo zpool status
+  pool: flocker
+ state: ONLINE
+  scan: none requested
+config:
+
+	NAME                      STATE     READ WRITE CKSUM
+	flocker                   ONLINE       0     0     0
+	  /opt/flocker/pool-vdev  ONLINE       0     0     0
+
+errors: No known data errors
+[vagrant@tb ~]$ 
+```
+
+```
+[vagrant@tb ~]$ sudo /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 0 volume(s)
+```
