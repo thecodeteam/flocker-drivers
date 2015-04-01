@@ -50,7 +50,7 @@ web:
   links:
    - "redis:redis"
   ports:
-   - "80:8080"
+   - "80:80"
 redis:
   image: dockerfile/redis
   ports:
@@ -69,6 +69,21 @@ Here is a deployment file (deployment-node1.yml)
 ```
 
 Run the example
+```
+flocker-deploy deployment-node1.yml fig.yml
+```
+
+Here is a deployment file (deployment-node3.yml)
+
+```
+"version": 1
+"nodes":
+  "192.168.50.11": ["web"]
+  "192.168.50.12": []
+  "192.168.50.13": ["redis"]
+```
+
+Run the example to move the app
 ```
 flocker-deploy deployment-node1.yml fig.yml
 ```
@@ -107,4 +122,17 @@ errors: No known data errors
 ```
 [vagrant@tb ~]$ sudo /bin/emc/scaleio/drv_cfg --query_vols
 Retrieved 0 volume(s)
+```
+
+# Caveats
+
+Still working on getting vagrant's insecure private key working correctly, so if flocker-deploy
+asks for a password type ```vagrant``` as the password.
+
+You should be able to test the insecure key by running the following without it asking you for a PW
+
+```
+[ -e "${SSH_AUTH_SOCK}" ] || eval $(ssh-agent) && ssh-add ~/.vagrant.d/insecure_private_key
+
+ssh root@192.168.50.11 flocker-reportstate --version
 ```
