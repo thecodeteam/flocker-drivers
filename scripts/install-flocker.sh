@@ -29,6 +29,8 @@ systemctl start firewalld
 firewall-cmd --add-icmp-block=echo-request 
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
 firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
+# Docker port
+firewall-cmd --permanent --zone=public --add-port=4243/tcp
 # ScaleIO ports needs to be open
 firewall-cmd --permanent --zone=public --add-port=6611/tcp
 firewall-cmd --permanent --zone=public --add-port=9011/tcp
@@ -36,6 +38,10 @@ firewall-cmd --permanent --zone=public --add-port=7072/tcp
 firewall-cmd --permanent --zone=public --add-port=443/tcp
 firewall-cmd --permanent --zone=public --add-port=22/tcp
 firewall-cmd --reload
+
+# Docker needs to reload iptables after this.
+service docker restart
+
 
 # Add insecure private key for access
 mkdir /root/.ssh
