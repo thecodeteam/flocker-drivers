@@ -26,8 +26,16 @@ cd $SRC_DIR && python $SRC_DIR/setup.py install
 # Flocker ports need to be open
 systemctl enable firewalld
 systemctl start firewalld
+firewall-cmd --add-icmp-block=echo-request 
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
 firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
+# ScaleIO ports needs to be open
+firewall-cmd --permanent --zone=public --add-port=6611/tcp
+firewall-cmd --permanent --zone=public --add-port=9011/tcp
+firewall-cmd --permanent --zone=public --add-port=7072/tcp
+firewall-cmd --permanent --zone=public --add-port=443/tcp
+firewall-cmd --permanent --zone=public --add-port=22/tcp
+firewall-cmd --reload
 
 # Add insecure private key for access
 mkdir /root/.ssh
