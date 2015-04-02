@@ -129,7 +129,8 @@ Show ScaleIO Cluster Information
 
 ```
 [vagrant@tb ~]$ sudo /bin/emc/scaleio/drv_cfg --query_vols
-Retrieved 0 volume(s)
+Retrieved 1 volume(s)
+VOL-ID 2f93fa7700000000 MDM-ID 4267f11a3b9d8194
 
 [vagrant@tb ~]$  exit
 you@yourmachine:~ vagrant ssh mdm1
