@@ -128,13 +128,16 @@ Retrieved 0 volume(s)
 
 # Caveats
 
-Still working on getting vagrant's insecure private key working correctly, so if flocker-deploy
-asks for a password type ```vagrant``` as the password.
-
-You should be able to test the insecure key by running the following without it asking you for a PW
+Working with vagrant's insecure private key working correctly, flocker-deploy should
+not ask for a password as long as you run the below command from you CLI node
 
 ```
 [ -e "${SSH_AUTH_SOCK}" ] || eval $(ssh-agent) && ssh-add ~/.vagrant.d/insecure_private_key
+```
 
-ssh root@192.168.50.11 flocker-reportstate --version
+Test that this is working correctly against the tb node.
+(It should response unknown because we built flocker-node from source?)
+```
+you@yourmachine:~ ssh root@192.168.50.11 flocker-reportstate --version
+unknown
 ```

@@ -63,6 +63,8 @@ Vagrant.configure("2") do |config|
     #config.proxy.http     = "http://proxy.example.com:3128/"
     #config.proxy.https    = "http://proxy.example.com:3128/"
     #config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+    config.ssh.insert_key = false
+    config.ssh.private_key_path = File.expand_path('~/.vagrant.d/insecure_private_key')
   end
   scaleio_nodes.each do |node|
     config.vm.define node[:hostname] do |node_config|
