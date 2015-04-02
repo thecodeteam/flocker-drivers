@@ -68,6 +68,6 @@ yum install -y git
 
 # create zfs pool
 mkdir -p /opt/flocker
-truncate --size 1G /opt/flocker/pool-vdev
+truncate --size 10G /opt/flocker/pool-vdev
 zpool create flocker /opt/flocker/pool-vdev
 
