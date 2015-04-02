@@ -1,6 +1,8 @@
 scaleio-flocker
 ---------------
 
+![alt tag](https://raw.github.com/wallneryan/scaleio-flocker/examples/flocker-scaleio-TestEnv.png)
+
 # Description
 
 Vagrantfile to create a three-VM EMC ScaleIO lab setup, with Flocker build from source, on CentOS 7
