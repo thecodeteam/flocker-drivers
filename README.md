@@ -1,7 +1,7 @@
 scaleio-flocker
 ---------------
 
-![alt tag](https://raw.github.com/wallneryan/scaleio-flocker/examples/flocker-scaleio-TestEnv.png)
+![Alt text](/examples/flocker-scaleio-TestEnv.png?raw=true "Environment Diagram")
 
 # Description
 
