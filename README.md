@@ -9,9 +9,11 @@ Vagrantfile to create a three-VM EMC ScaleIO lab setup, with Flocker build from 
 
 # Usage
 
+*Tested with Vagrant 1.7.2
+
 Get the source
 ```
-git pull https://github.com/wallnerryan/scaleio-flocker
+git clone https://github.com/wallnerryan/scaleio-flocker
 
 cd scaleio-flocker
 ```
