@@ -41,10 +41,10 @@ update-ca-trust extract
 yum install -y --nogpgcheck https://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
 wget --no-check-certificate ftp://ftp.muug.mb.ca/mirror/fedora/epel/7/x86_64/d/dkms-2.2.0.3-30.git.7c3e7c5.el7.noarch.rpm
 yum localinstall -y --nogpgcheck dkms-2.2.0.3-30.git.7c3e7c5.el7.noarch.rpm
-wget --no-check-certificate ftp://ftp.muug.mb.ca/mirror/centos/7.0.1406/os/x86_64/Packages/kernel-devel-3.10.0-123.el7.x86_64.rpm
-yum install -y --nogpgcheck kernel-devel-3.10.0-123.el7.x86_64.rpm
-wget --no-check-certificate ftp://ftp.muug.mb.ca/mirror/centos/7.0.1406/os/x86_64/Packages/kernel-headers-3.10.0-123.el7.x86_64.rpm
-yum install -y --nogpgcheck kernel-headers-3.10.0-123.el7.x86_64.rpm
+#wget --no-check-certificate ftp://ftp.muug.mb.ca/mirror/centos/7.0.1406/os/x86_64/Packages/kernel-devel-3.10.0-123.el7.x86_64.rpm
+yum install -y --nogpgcheck /vagrant/rpms/kernel-devel-3.10.0-123.el7.x86_64.rpm
+#wget --no-check-certificate ftp://ftp.muug.mb.ca/mirror/centos/7.0.1406/os/x86_64/Packages/kernel-headers-3.10.0-123.el7.x86_64.rpm
+yum install -y --nogpgcheck /vagrant/rpms/kernel-headers-3.10.0-123.el7.x86_64.rpm
 yum localinstall -y --nogpgcheck http://archive.zfsonlinux.org/epel/zfs-release.el7.noarch.rpm
 yum install -y zfs
 
