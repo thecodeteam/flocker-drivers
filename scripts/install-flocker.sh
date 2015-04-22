@@ -21,7 +21,11 @@ pip install virtualenv
 
 pip install --upgrade  eliot
 pip install --upgrade  machinist
+pip install --upgrade pyyaml
+yum -yy install openssl openssl-devel libffi-devel
 cd $SRC_DIR && python $SRC_DIR/setup.py install
+pip install -qq -e .[dev]
+
 
 # Flocker ports need to be open
 systemctl enable firewalld
