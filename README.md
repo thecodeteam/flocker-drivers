@@ -223,7 +223,7 @@ Volumes summary:
 We can test the Gateway REST API for scaleio in this environment as well. Follow
 the below instructions to do so.
 
-Get the rest api test source and enter the directory
+Get the rest api test source and enter the directory (not public yet, EMC network only)
 
 ```
 git clone https://git.lss.emc.com/scm/floc/scaleio-rest.git
