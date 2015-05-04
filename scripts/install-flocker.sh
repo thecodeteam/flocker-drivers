@@ -2,7 +2,7 @@
 
 # Installs Flocker from Source
 USER=""
-EMC_SRC="https://$USER@git.lss.emc.com/scm/floc/flocker.git"
+EMC_SRC="-b feat_scaleio_emc https://github.com/ClusterHQ/flocker-emc"
 PUB_SRC="https://github.com/ClusterHQ/flocker"
 
 SRC_DIR="/opt/flocker/flocker"
@@ -25,6 +25,12 @@ pip install --upgrade pyyaml
 yum -yy install openssl openssl-devel libffi-devel
 cd $SRC_DIR && python $SRC_DIR/setup.py install
 pip install -qq -e .[dev]
+
+# ScaleIO Driver needs scaleio-py
+cd /opt/flocker
+git clone https://github.com/swevm/scaleio-py.git
+cd scaleio-py
+python setup.py install
 
 
 # Flocker ports need to be open
