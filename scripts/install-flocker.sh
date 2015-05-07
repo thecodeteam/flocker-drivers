@@ -24,7 +24,6 @@ pip install --upgrade  machinist
 pip install --upgrade pyyaml
 pip install bitmath
 pip install service_identity
-pip install pyyaml
 yum -yy install openssl openssl-devel libffi-devel
 cd $SRC_DIR && python $SRC_DIR/setup.py install
 pip install -qq -e .[dev]
