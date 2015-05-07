@@ -62,7 +62,7 @@ echo TBIP    = "${TBIP}"
 echo PASSWORD    = "${PASSWORD}"
 echo CLUSTERINSTALL   =  "${CLUSTERINSTALL}"
 #echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
-truncate -s 100GB ${DEVICE}
+truncate -s 200GB ${DEVICE}
 yum install numactl libaio -y
 cd /vagrant
 
