@@ -26,7 +26,7 @@ pip install bitmath
 pip install service_identity
 yum -yy install openssl openssl-devel libffi-devel
 pip uninstall requests
-pip install 'requests<2.5.0'
+pip install 'requests==2.5.0'
 cd $SRC_DIR && python $SRC_DIR/setup.py install
 pip install -qq -e .[dev]
 
