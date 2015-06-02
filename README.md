@@ -38,7 +38,7 @@ vagrant up
 
 # Tested
 
-With CentOS 7, ZFS, and Flocker Public Git Source
+With CentOS 7, ZFS, ScaleIO Integration with Flocker Public Git Source
 
 
 # Examples
@@ -46,50 +46,109 @@ With CentOS 7, ZFS, and Flocker Public Git Source
 Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
 in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
-Here is a fig file (fig.yml)
-
+(Details on how to start flocker service **coming soon**) but your flocker-node's should
+have the following
 ```
-web:
-  image: clusterhq/flask
-  links:
-   - "redis:redis"
-  ports:
-   - "80:80"
-redis:
-  image: dockerfile/redis
-  ports:
-   - "6379:6379"
-  volumes: ["/data"]
+cat /etc/flocker/agent.yml
+control-service: {hostname: '192.168.50.11', port: 4524}
+dataset: {backend: scaleio}
+version: 1
 ```
 
-Here is a deployment file (deployment-node1.yml)
+Here is a fig file (mongo-application.yml) (you can find this in this repo as well under ./examples)
+
+```
+"version": 1
+"applications":
+  "mongodbserver":
+    "image": "clusterhq/mongodb"
+    "volume":
+      "mountpoint": "/data/db"
+      "maximum_size": "8589934592"
+    "ports":
+    - "internal": 27017
+      "external": 27017
+  "mongodbconn":
+    "image": "wallnerryan/mongoconn"
+    "ports":
+    - "internal": 8080
+      "external": 8080
+```
+
+Here is a deployment file (mongo-deployment-1node.yml)
 
 ```
 "version": 1
 "nodes":
-  "192.168.50.11": ["web", "redis"]
-  "192.168.50.12": []
-  "192.168.50.13": []
+ "192.168.50.11": ["mongodbserver", "mongodbconn"]
+ "192.168.50.12": []
+ "192.168.50.13": []
 ```
 
 Run the example
 ```
-flocker-deploy deployment-node1.yml fig.yml
+flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
 ```
 
-Here is a deployment file (deployment-node3.yml)
+You should be able to see the volumes on the node (tb == 192.168.50.11)
+```
+[root@tb flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 1 volume(s)
+VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
+```
+
+You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+
+Also view the containers on the node (tb == 192.168.50.11)
+```
+[vagrant@tb ~]$ sudo docker ps
+CONTAINER ID        IMAGE                          COMMAND                CREATED             STATUS                  PORTS                      NAMES
+13a397f72f31        clusterhq/mongodb:latest       "/bin/sh -c '/home/m   6 seconds ago       Up Less than a second   0.0.0.0:27017->27017/tcp   flocker--mongodbserver   
+80782dc50916        wallnerryan/mongoconn:latest   "node /src/index.js"   13 seconds ago      Up 6 seconds            0.0.0.0:8080->8080/tcp     flocker--mongodbconn 
+```
+
+Here is a deployment file (mongo-deployment-2node.yml)
 
 ```
 "version": 1
 "nodes":
-  "192.168.50.11": ["web"]
-  "192.168.50.12": []
-  "192.168.50.13": ["redis"]
+ "192.168.50.11": ["mongodbconn"]
+ "192.168.50.12": ["mongodbserver"]
+ "192.168.50.13": []
 ```
 
 Run the example to move the app
 ```
-flocker-deploy deployment-node3.yml fig.yml
+flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
+```
+
+You should be able go to a web browser 192.168.50.11:8080 and see the app is NOT connected to MongoDB while MongoDB is moving, this is temporary, you may look at the log to see the connection status for ```flocker--mongodbconn```
+
+You should see 1 container on each host after the ```mongodbserver``` is migrated.
+
+(tb == 192.168.50.11)
+```
+[vagrant@tb ~]$ sudo docker ps
+CONTAINER ID        IMAGE                          COMMAND                CREATED             STATUS                  PORTS                    NAMES
+17ee62f97650        wallnerryan/mongoconn:latest   "node /src/index.js"   6 seconds ago       Up Less than a second   0.0.0.0:8080->8080/tcp   flocker--mongodbconn  
+```
+
+(mdm1 == 192.168.50.12)
+```
+[vagrant@mdm1 ~]$ sudo docker ps
+CONTAINER ID        IMAGE                          COMMAND                CREATED             STATUS                  PORTS                      NAMES
+13a397f72f31        clusterhq/mongodb:latest       "/bin/sh -c '/home/m   6 seconds ago       Up Less than a second   0.0.0.0:27017->27017/tcp   flocker--mongodbserver   
+```
+
+After the mongodbserver is succesfully migrated, You should be able go to a web browser 192.168.50.11:8080 and see the app is again connected to MongoDB.
+
+You should also see the volume has moved to the new host.
+
+You should be able to see the volumes on the node (mdm1 == 192.168.50.12)
+```
+[root@mdm1 flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 1 volume(s)
+VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
 # Cluster
