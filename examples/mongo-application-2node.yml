@@ -1,0 +1,15 @@
+"version": 1
+"applications":
+  "mongodbserver":
+    "image": "clusterhq/mongodb"
+    "volume":
+      "mountpoint": "/data/db"
+      "maximum_size": "8589934592"
+    "ports":
+    - "internal": 27017
+      "external": 27017
+  "mongodbconn":
+    "image": "wallnerryan/mongoconn"
+    "ports":
+    - "internal": 8080
+      "external": 8080
