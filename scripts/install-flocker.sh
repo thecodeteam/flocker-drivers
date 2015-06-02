@@ -36,6 +36,10 @@ git clone https://github.com/swevm/scaleio-py.git
 cd scaleio-py
 python setup.py install
 
+# flocker specific directory
+mkdir /etc/flocker
+chmod 0700 /etc/flocker
+
 
 # Flocker ports need to be open
 systemctl enable firewalld
