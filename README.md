@@ -90,7 +90,7 @@ Run the example
 flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
 ```
 
-You should be able to see the volumes on the node (tb == 192.168.50.11)
+**You should be able to see the volumes on the node (tb == 192.168.50.11)**
 ```
 [root@tb flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
 Retrieved 1 volume(s)
@@ -98,6 +98,7 @@ VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
 You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+
 ![Alt text](/examples/connected.png?raw=true)
 
 Also view the containers on the node (tb == 192.168.50.11)
@@ -153,7 +154,7 @@ After the mongodbserver is succesfully migrated, You should be able go to a web 
 
 You should also see the volume has moved to the new host.
 
-You should be able to see the volumes on the node (mdm1 == 192.168.50.12)
+**You should be able to see the volumes on the node (mdm1 == 192.168.50.12)**
 ```
 [root@mdm1 flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
 Retrieved 1 volume(s)
