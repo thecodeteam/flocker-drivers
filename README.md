@@ -5,6 +5,9 @@ This project Vagrant environment for trying EMC XtremIO Flocker intergration.
 ## Description
 ClusterHQ/Flocker provides an efficient and easy way to connect persistent store with Docker containers. This project provides a sample vagrant environment for trying out solution.
 
+## EMC XtremIO Flocker Intergration Block Diagram
+![EMC XtremIO Flocker Intergration Block Diagram Missing] (https://github.com/emccorp/vagrant-xtremio-flocker/master/EMCXtremIOFlocker.jpg)
+
 
 
 ## Installation
