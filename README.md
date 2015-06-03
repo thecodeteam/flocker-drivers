@@ -98,6 +98,7 @@ VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
 You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+![Alt text](/examples/connected.png?raw=true)
 
 Also view the containers on the node (tb == 192.168.50.11)
 ```
@@ -106,6 +107,8 @@ CONTAINER ID        IMAGE                          COMMAND                CREATE
 13a397f72f31        clusterhq/mongodb:latest       "/bin/sh -c '/home/m   6 seconds ago       Up Less than a second   0.0.0.0:27017->27017/tcp   flocker--mongodbserver   
 80782dc50916        wallnerryan/mongoconn:latest   "node /src/index.js"   13 seconds ago      Up 6 seconds            0.0.0.0:8080->8080/tcp     flocker--mongodbconn 
 ```
+
+![Alt text](/examples/bothcontainers.png?raw=true)
 
 Here is a deployment file (mongo-deployment-2node.yml)
 
@@ -124,6 +127,8 @@ flocker-deploy mongo-deployment-2node.yml mongo-application.yml
 
 You should be able go to a web browser 192.168.50.11:8080 and see the app is NOT connected to MongoDB while MongoDB is moving, this is temporary, you may look at the log to see the connection status for ```flocker--mongodbconn```
 
+![Alt text](/examples/cannot_connect.png?raw=true)
+
 You should see 1 container on each host after the ```mongodbserver``` is migrated.
 
 (tb == 192.168.50.11)
@@ -133,12 +138,16 @@ CONTAINER ID        IMAGE                          COMMAND                CREATE
 17ee62f97650        wallnerryan/mongoconn:latest   "node /src/index.js"   6 seconds ago       Up Less than a second   0.0.0.0:8080->8080/tcp   flocker--mongodbconn  
 ```
 
+![Alt text](/examples/mongoconnonly.png?raw=true)
+
 (mdm1 == 192.168.50.12)
 ```
 [vagrant@mdm1 ~]$ sudo docker ps
 CONTAINER ID        IMAGE                          COMMAND                CREATED             STATUS                  PORTS                      NAMES
 13a397f72f31        clusterhq/mongodb:latest       "/bin/sh -c '/home/m   6 seconds ago       Up Less than a second   0.0.0.0:27017->27017/tcp   flocker--mongodbserver   
 ```
+
+![Alt text](/examples/mongodbonly.png?raw=true)
 
 After the mongodbserver is succesfully migrated, You should be able go to a web browser 192.168.50.11:8080 and see the app is again connected to MongoDB.
 
