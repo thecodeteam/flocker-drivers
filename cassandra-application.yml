@@ -1,0 +1,7 @@
+"version": 1
+"applications":
+  "cassandra":
+    "image": "tobert/cassandra:latest"
+    "volume":
+      "mountpoint": "/data"
+      "maximum_size": "2684354560" 
