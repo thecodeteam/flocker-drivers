@@ -11,25 +11,89 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 
 
 ## Installation
-How do install your software to make it work? Do i just download the scripts? Do i download them from a central repository. This section should give readers a spoon-fed way of understanding how do i get to step 1. Make sure you recognize multiple deployment scenarios as well if it it integrates with things like Vagrant or Docker.
+* Tested with Vagrant 1.7.2
+
+- Clone source code from git repository
+git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
+
+- Change directory
+cd vagrant-xtremio-flocker
+
+- Bring up vagrant machines
+vagrant up
+This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
+
+- Check the status of nodes
+vagrant status (it should print following)
+
+Current machine states:
+node1                     running (virtualbox)
+node2                     running (virtualbox)
+
+- Test login to the host
+vagrant ssh node1
+vagrant ssh node2
+The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.33.11
+
+- Discover iSCSI XtremIO portal on the host
+vagrant ssh node1
+/vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+/vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+lsssci (this should print XtremIO as one of the storage arrays)
+exit
+vagrant ssh node2
+/vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+/vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+lsssci (this should print XtremIO as one of the storage arrays)
+
+- Install ClusterHQ/Flocker
+TBD
+
+- Install EMC Plugin for XtremIO
+TBD
 
 ## Usage Instructions
-This is where you lay out all the commands available or how you make your software do its magic. This can be CLI, REST, powershell commands, etc. Remember to use the backtick characters to highlight code `such as this` or create sections of code using three backticks in a row
-```
-to do 
-multiline
-code
-```
+Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.
+- Deploying Cassandra Database on node1:
+vagrant ssh node1
+flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
+sudo docker ps (you should now see cassandra docker deployed)
+sudo docker inspect flocker-cassandra (this shall show the volume connected, mounted as file-system on the host)
+
+- Check status of the Cassandra node
+sudo docker exec -it flocker-cassandra nodetool status (you should get output as below)
+vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra-new-1 nodetool status
+Datacenter: datacenter1
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address       Load       Tokens  Owns    Host ID                               Rack
+UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1
+
+- Create sample keyspace in Cassandra database:
+ * sudo docker exec -it flocker-cassandra cqlsh
+ * The above shall give you a cqlsh prompt
+ * Copy paste following to create database and table
+ CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};
+ CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text, last_name text, emails set<text>, top_scores list<int>, todo map<timestamp, text>);
+ 
+- Check the schema created
+  * desc keyspace EMCXtremIO
+
+- Migrate Cassandra database to node2:
+  ClusterHQ flocker provides a way to migrate data from one node to another. The steps below migrate Cassandra from node1 to node2
+  * Modify cassandra-deploy.yml file present in the root folder to specify target host at 192.168.33.11.
+  * vagrant ssh node1
+  * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
+ 
+
+
+
 
 ## Future
-this is where you can add things you plan on adding to the future. this helps anyone wanting to contribute to know what they can help with. This is not a necessary thing to do if your project doesn't have a roadmap.
-- Add these functions depending on necessity
-  - thing 1
-  - thing 2
-  - thing 3
-- Clean up the code
-  - break out into multiple files
-  - etc
+- Add Chap protocol support for iSCSI
+- Add 
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
