@@ -26,46 +26,51 @@ Tested with Vagrant 1.7.2
  This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
 
 - Check the status of nodes
+
 vagrant status (it should print following)
 
 Current machine states:
+
 node1                     running (virtualbox)
+
 node2                     running (virtualbox)
 
+
 - Test login to the host
-vagrant ssh node1
-vagrant ssh node2
+ * vagrant ssh node1
+ * vagrant ssh node2
+
 The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.33.11
 
 - Discover iSCSI XtremIO portal on the host
-vagrant ssh node1
-/vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
-/vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
-lsssci (this should print XtremIO as one of the storage arrays)
-exit
-vagrant ssh node2
-/vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
-/vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
-lsssci (this should print XtremIO as one of the storage arrays)
+ * vagrant ssh node1
+ * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+ * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+ * lsssci (this should print XtremIO as one of the storage arrays)
+ * exit
+ * vagrant ssh node2
+ * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+ * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+ * lsssci (this should print XtremIO as one of the storage arrays)
 
 - Install ClusterHQ/Flocker
-TBD
 
 - Install EMC Plugin for XtremIO
-TBD
 
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.
 - Deploying Cassandra Database on node1:
-vagrant ssh node1
-flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+ * vagrant ssh node1
+ * flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+
 The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
-sudo docker ps (you should now see cassandra docker deployed)
-sudo docker inspect flocker-cassandra (this shall show the volume connected, mounted as file-system on the host)
+ * sudo docker ps (you should now see cassandra docker deployed)
+ * sudo docker inspect flocker-cassandra (this shall show the volume connected, mounted as file-system on the host)
 
 - Check status of the Cassandra node
-sudo docker exec -it flocker-cassandra nodetool status (you should get output as below)
-vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra-new-1 nodetool status
+ * sudo docker exec -it flocker-cassandra nodetool status (you should get output as below)
+ * vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra-new-1 nodetool status
+
 Datacenter: datacenter1
 =======================
 Status=Up/Down
@@ -77,7 +82,9 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
  * sudo docker exec -it flocker-cassandra cqlsh
  * The above shall give you a cqlsh prompt
  * Copy paste following to create database and table
+
  CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};
+
  CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text, last_name text, emails set<text>, top_scores list<int>, todo map<timestamp, text>);
  
 - Check the schema created
@@ -88,10 +95,10 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
   * Modify cassandra-deploy.yml file present in the root folder to specify target host at 192.168.33.11.
   * vagrant ssh node1
   * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
- 
+  * Check the existence of database EMCXtremIO
+     sudo docker exec -it flocker-cassandra cqlsh
 
-
-
+     desc keyspace EMCXtremIO
 
 ## Future
 - Add Chap protocol support for iSCSI
