@@ -65,11 +65,11 @@ Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment a
 
 The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
  * sudo docker ps (you should now see cassandra docker deployed)
- * sudo docker inspect flocker-cassandra (this shall show the volume connected, mounted as file-system on the host)
+ * sudo docker inspect flocker--cassandra (this shall show the volume connected, mounted as file-system on the host)
 
 - Check status of the Cassandra node
- * sudo docker exec -it flocker-cassandra nodetool status (you should get output as below)
- * vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra-new-1 nodetool status
+ * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
+ * vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra nodetool status
 
 Datacenter: datacenter1
 =======================
@@ -79,13 +79,13 @@ Status=Up/Down
 UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1
 
 - Create sample keyspace in Cassandra database:
- * sudo docker exec -it flocker-cassandra cqlsh
+ * sudo docker exec -it flocker--cassandra cqlsh
  * The above shall give you a cqlsh prompt
  * Copy paste following to create database and table
 
  CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};
 
- CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text, last_name text, emails set<text>, top_scores list<int>, todo map<timestamp, text>);
+ CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text);
  
 - Check the schema created
   * desc keyspace EMCXtremIO
@@ -96,10 +96,27 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
   * vagrant ssh node1
   * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
   * Check the existence of database EMCXtremIO
-     sudo docker exec -it flocker-cassandra cqlsh
+     sudo docker exec -it flocker--cassandra cqlsh
 
      desc keyspace EMCXtremIO
 
+- Protecting Cassandra Node with Docker
+  EMC XtremIO comes Snapshotting capabilities which can be extended to Docker Cassandra installation for supporting application consistent snapshots. 
+  * sudo docker exec -it flocker-cassandra nodetool snapshot
+  * sudo docker inspect | grep -i data (you should a data folder mapped to location mount point e.g. /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/
+  * ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/ to get cassandra snapshot
+  * XtremIO snapshot: This can be performed using their management GUI or curl CLI interface. If performed from management GUI look for volume name block-121c60df-0c03-083d-2693-c251f15fdfb2, right click and snapshot. While taking snapshot move it to a new folder VOL_FOLDER_SNAPSHOT
+  * Delete local cassandra snapshot 
+   The local cassandra snapshot can be deleted since we have an array preserved snapshot
+   sudo docker exec -it flocker-cassandra nodetool clearsnapshot
+   ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
+   should show 0 files.
+
+  To automate snapshot management platform kindly try using tool:
+ 
+   https://github.com/evanbattle/XtremIOSnap
+
+  
 ## Future
 - Add Chap protocol support for iSCSI
 - Add 
