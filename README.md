@@ -18,11 +18,12 @@ Tested with Vagrant 1.7.2
  * git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
 
 - Change directory
-cd vagrant-xtremio-flocker
+ * cd vagrant-xtremio-flocker
 
 - Bring up vagrant machines
-vagrant up
-This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
+ * vagrant up
+
+ This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
 
 - Check the status of nodes
 vagrant status (it should print following)
