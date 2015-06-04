@@ -71,14 +71,16 @@ The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.1
  * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
  * vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra nodetool status
 
-Datacenter: datacenter1
-=======================
 Status=Up/Down
 |/ State=Normal/Leaving/Joining/Moving
+
 --  Address       Load       Tokens  Owns    Host ID                               Rack
+
 UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1
 
+
 - Create sample keyspace in Cassandra database:
+
  * sudo docker exec -it flocker--cassandra cqlsh
  * The above shall give you a cqlsh prompt
  * Copy paste following to create database and table
@@ -88,9 +90,11 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
  CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text);
  
 - Check the schema created
+
   * desc keyspace EMCXtremIO
 
 - Migrate Cassandra database to node2:
+
   ClusterHQ flocker provides a way to migrate data from one node to another. The steps below migrate Cassandra from node1 to node2
   * Modify cassandra-deploy.yml file present in the root folder to specify target host at 192.168.33.11.
   * vagrant ssh node1
@@ -101,6 +105,7 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
      desc keyspace EMCXtremIO
 
 - Protecting Cassandra Node with Docker
+
   EMC XtremIO comes Snapshotting capabilities which can be extended to Docker Cassandra installation for supporting application consistent snapshots. 
   * sudo docker exec -it flocker-cassandra nodetool snapshot
   * sudo docker inspect | grep -i data (you should a data folder mapped to location mount point e.g. /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/
