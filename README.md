@@ -100,10 +100,8 @@ The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.1
   * vagrant ssh node1
   * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
   * Check the existence of database EMCXtremIO
-
-     sudo docker exec -it flocker--cassandra cqlsh
-
-     desc keyspace EMCXtremIO
+     ** sudo docker exec -it flocker--cassandra cqlsh
+     ** desc keyspace EMCXtremIO
 
 - Protecting Cassandra Node with Docker
 
