@@ -12,10 +12,10 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 
 
 ## Installation
-* Tested with Vagrant 1.7.2
+Tested with Vagrant 1.7.2
 
 - Clone source code from git repository
-git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
+ * git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
 
 - Change directory
 cd vagrant-xtremio-flocker
