@@ -1,14 +1,11 @@
-projectName
+EMC XtremIO Flocker Vagrant Enviroment
 ======================
-projectName abstract. 1-2 sentences on what this actually does. Remember that all README.md files are required to be done in markdown format.
+This project Vagrant environment for trying EMC XtremIO Flocker intergration.
 
 ## Description
-a description of the projectName more in depth. this can be 2-5 sentences and could also contain bullet points for use cases. Such as:
-- use case 1
-- use case 2
-  - sub use case A
-  - sub use case B
-- use case 3
+ClusterHQ/Flocker provides an efficient and easy way to connect persistent store with Docker containers. This project provides a sample vagrant environment for trying out solution.
+
+
 
 ## Installation
 How do install your software to make it work? Do i just download the scripts? Do i download them from a central repository. This section should give readers a spoon-fed way of understanding how do i get to step 1. Make sure you recognize multiple deployment scenarios as well if it it integrates with things like Vagrant or Docker.
