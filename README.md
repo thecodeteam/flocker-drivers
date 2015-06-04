@@ -59,17 +59,16 @@ The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.
 
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.
-- Deploying Cassandra Database on node1:
- * vagrant ssh node1
- * flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+1. Deploying Cassandra Database on node1:
+..* vagrant ssh node1
+..* flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+    The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
+..* sudo docker ps (you should now see cassandra docker deployed)
+..* sudo docker inspect flocker--cassandra (this shall show the volume connected, mounted as file-system on the host)
 
-The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
- * sudo docker ps (you should now see cassandra docker deployed)
- * sudo docker inspect flocker--cassandra (this shall show the volume connected, mounted as file-system on the host)
-
-- Check status of the Cassandra node
- * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
- * sudo docker exec -it flocker--cassandra nodetool status
+2 Check status of the Cassandra node
+..* sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
+..* sudo docker exec -it flocker--cassandra nodetool status
 
 	Status=Up/Down |/ State=Normal/Leaving/Joining/Moving
 	
@@ -113,16 +112,12 @@ The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.1
   * XtremIO snapshot: This can be performed using their management GUI or curl CLI interface. If performed from management GUI look for volume name block-121c60df-0c03-083d-2693-c251f15fdfb2, right click and snapshot. While taking snapshot move it to a new folder VOL_FOLDER_SNAPSHOT
   * Delete local cassandra snapshot 
    The local cassandra snapshot can be deleted since we have an array preserved snapshot
-
-   sudo docker exec -it flocker-cassandra nodetool clearsnapshot
-
-   ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
-
+   ** sudo docker exec -it flocker-cassandra nodetool clearsnapshot
+   ** ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
    should show 0 files.
 
-  To automate snapshot management platform kindly try using tool:
- 
-   https://github.com/evanbattle/XtremIOSnap
+- To automate snapshot management platform kindly try using tool:
+* https://github.com/evanbattle/XtremIOSnap
 
   
 ## Future
