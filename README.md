@@ -69,14 +69,13 @@ The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.1
 
 - Check status of the Cassandra node
  * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
- * vagrant@node2-flocker:~$ sudo docker exec -it flocker--cassandra nodetool status
+ * sudo docker exec -it flocker--cassandra nodetool status
 
-Status=Up/Down
-|/ State=Normal/Leaving/Joining/Moving
+	Status=Up/Down |/ State=Normal/Leaving/Joining/Moving
+	
+	--  Address       Load       Tokens  Owns    Host ID                               Rack
 
---  Address       Load       Tokens  Owns    Host ID                               Rack
-
-UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1
+	UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1
 
 
 - Create sample keyspace in Cassandra database:
@@ -95,11 +94,13 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
 
 - Migrate Cassandra database to node2:
 
-  ClusterHQ flocker provides a way to migrate data from one node to another. The steps below migrate Cassandra from node1 to node2
+  ClusterHQ flocker provides a way to migrate data from one node to another
+
   * Modify cassandra-deploy.yml file present in the root folder to specify target host at 192.168.33.11.
   * vagrant ssh node1
   * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
   * Check the existence of database EMCXtremIO
+
      sudo docker exec -it flocker--cassandra cqlsh
 
      desc keyspace EMCXtremIO
@@ -107,14 +108,18 @@ UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b7
 - Protecting Cassandra Node with Docker
 
   EMC XtremIO comes Snapshotting capabilities which can be extended to Docker Cassandra installation for supporting application consistent snapshots. 
+
   * sudo docker exec -it flocker-cassandra nodetool snapshot
   * sudo docker inspect | grep -i data (you should a data folder mapped to location mount point e.g. /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/
   * ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/ to get cassandra snapshot
   * XtremIO snapshot: This can be performed using their management GUI or curl CLI interface. If performed from management GUI look for volume name block-121c60df-0c03-083d-2693-c251f15fdfb2, right click and snapshot. While taking snapshot move it to a new folder VOL_FOLDER_SNAPSHOT
   * Delete local cassandra snapshot 
    The local cassandra snapshot can be deleted since we have an array preserved snapshot
+
    sudo docker exec -it flocker-cassandra nodetool clearsnapshot
+
    ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
+
    should show 0 files.
 
   To automate snapshot management platform kindly try using tool:
