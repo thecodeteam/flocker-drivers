@@ -2,16 +2,15 @@
 
 # Installs Flocker from Source
 USER=""
-EMC_SRC="-b feat_scaleio_emc https://github.com/ClusterHQ/flocker-emc"
-PUB_SRC="https://github.com/ClusterHQ/flocker"
+SIO_PLUGIN="https://github.com/emccorp/scaleio-flocker-driver"
+FLOCKER_SRC="https://github.com/ClusterHQ/flocker"
 
-SRC_DIR="/opt/flocker/flocker"
+FLOCKER_SRC_DIR="/opt/flocker/flocker"
+PLUGIN_SRC_DIR="/opt/flocker/scaleio-flocker-driver"
 
-# TODO install from local EMC Source
-# //TODO
-
-# Clone public flocker source for now.
-git clone $PUB_SRC $SRC_DIR
+git clone $FLOCKER_SRC $FLOCKER_SRC_DIR
+# Comment out until public
+#git clone $PLUGIN_SRC $PLUGIN_SRC_DIR
 
 pip install virtualenv
 
@@ -25,21 +24,45 @@ pip install --upgrade pyyaml
 pip install bitmath
 pip install service_identity
 yum -yy install openssl openssl-devel libffi-devel
-pip uninstall requests
-pip install 'requests==2.4.3'
 cd $SRC_DIR && python $SRC_DIR/setup.py install
 pip install -qq -e .[dev]
 
 # ScaleIO Driver needs scaleio-py
+# eventually will be pip installable
 cd /opt/flocker
 git clone https://github.com/swevm/scaleio-py.git
 cd scaleio-py
 python setup.py install
 
+# Install ScaleIO Driver
+# (Comment out until public)
+#cd /opt/flocker/scaleio-flocker-driver
+#python setup.py install
+
+# scaleio-py instals 2.5.1, flocker can't use over 2.5.0
+pip uninstall requests
+pip install 'requests==2.4.3'
+
 # flocker specific directory
 mkdir /etc/flocker
 chmod 0700 /etc/flocker
 
+# You still need to create node certs and API
+# user certs manually.
+# 4  flocker-ca create-node-certificate
+# 5  cp 132ebcea-b19b-4452-8e4d-b59754a56c63.crt /etc/flocker/node.crt
+# 6  cp 132ebcea-b19b-4452-8e4d-b59754a56c63.key /etc/flocker/node.key
+# 7  flocker-ca create-api-certificate user
+if [ "$HOSTNAME" = tb.scaleio.local ]; then
+    printf '%s\n' "on the tb host"
+    cd /opt/flocker/flocker/
+    flocker-ca initialize mycluster
+    flocker-ca create-control-certificate tb.scaleio.local
+    cp control-tb.scaleio.local.crt /etc/flocker/control-service.crt
+    cp control-tb.scaleio.local.key /etc/flocker/control-service.key
+    cp cluster.crt /etc/flocker/cluster.crt
+    chmod 0600 /etc/flocker/control-service.key
+    
 
 # Flocker ports need to be open
 systemctl enable firewalld
@@ -59,7 +82,6 @@ firewall-cmd --reload
 
 # Docker needs to reload iptables after this.
 service docker restart
-
 
 # Add insecure private key for access
 mkdir /root/.ssh
