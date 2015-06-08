@@ -46,6 +46,7 @@ dataset:
   debug: "<Debug LEVEL>" (Where LEVEL = DEBUG | CRITICAL, WARNING, FATAL, etc)
 ```
 
+Make sure you [Install Flocker-Node](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html#flocker-node) on every node you want the driver to run on, then make sure flocker services are running before using the CLI examples below.
 
 ## Usage Instructions
 
