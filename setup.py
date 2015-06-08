@@ -34,5 +34,4 @@ setup(
 
     keywords='backend, plugin, flocker, docker, python',
     packages=find_packages(exclude=['test*']),
-    data_files=[('/etc/flocker/', ['example_xio_agent.yml'])]
 )
