@@ -1,0 +1,8 @@
+control-service: {hostname: '192.168.33.10', port: 4524}
+dataset: {backend: xio}
+version: 1
+dataset:
+   backend: xio
+   xms_ip: 10.10.166.215
+   xms_user: flocker
+   xms_password: flocker
