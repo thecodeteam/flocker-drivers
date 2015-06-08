@@ -9,7 +9,7 @@ with codecs.open('DESCRIPTION.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='emc_xtremio_flocker_driver',
+    name='emc_xtremio_flocker_plugin',
     version='1.0',
     description='EMC XtremIO Backend Plugin for ClusterHQ/Flocker ',
     long_description=long_description,
