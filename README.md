@@ -1,35 +1,142 @@
-projectName
+EMC ScaleIO Plugin/Driver for ClusterHQ/flocker
 ======================
-projectName abstract. 1-2 sentences on what this actually does. Remember that all README.md files are required to be done in markdown format. Download a sample [README.md](http://emccode.github.io/sampledocs/README.md "README.md") to place in your project.
+
+This is a plugin driver for the [Flocker](https://clusterhq.com/) project which delivers Fast, local, persistent storage for Docker containers, Multi-host container management, Database migrations, and Flexible shared storage (SAN, NAS or block) for Docker when you want it
 
 ## Description
-a description of the projectName more in depth. this can be 2-5 sentences and could also contain bullet points for use cases. Such as:
-- use case 1
-- use case 2
-  - sub use case A
-  - sub use case B
-- use case 3
+Flocker can help orchestrate and provision storage to your clustered docker container microservices applications. Use cases include -->
+- Seamlessly Running Stateful Microservices
+  - Run Databases in Containers
+        - MongoDB, Cassandra, Postgres, MySQL, and more! 
+- Generally orchestrate and schedule your container applications across a cluster that optionally provides flexible shared storage when you need it.
+- Use it with [Docker Native Extensions](https://github.com/ClusterHQ/flocker-docker-plugin)
 
 ## Installation
-How do install your software to make it work? Do i just download the scripts? Do i download them from a central repository. This section should give readers a spoon-fed way of understanding how do i get to step 1. Make sure you recognize multiple deployment scenarios as well if it it integrates with things like Vagrant or Docker.
+
+Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html)
+
+```
+git clone https://github.com/emccorp/scaleio-flocker-driver
+cd scaleio-flocker-driver/
+sudo python setup.py install
+```
+
+Then copy the example agent.yml that was created
+
+```
+cp /etc/flocker/example_sio_agent.yml /etc/flocker/agent.yml
+vi /etc/flocker/agent.yml
+```
+
+Change the necessary options in the yml file for you environment. A full list of available options is below
+
+```
+version: 1
+control-service:
+  hostname: "<Insert IP/Hostname of Flocker-Control Service>"
+dataset:
+  backend: "scaleio_flocker_driver"
+  username: "<Insert ScaleIO Username>"
+  password: "<Insert ScaleIO gateway User Password>"
+  mdm: "<Insert Scaleio Gateway MDM's IP Address>"
+  protection_domain: "<Protection Domain>" (Defaults to "default") 
+  storage_pool: "<Storage Pool>" (Defaults to "default")
+  certificate: "</path/to/cert>" (Unsupported Right now)
+  ssl: <True | False> (Defaults to True)
+  debug: "<Debug LEVEL>" (Where LEVEL = DEBUG | CRITICAL, WARNING, FATAL, etc)
+```
+
 
 ## Usage Instructions
-This is where you lay out all the commands available or how you make your software do its magic. This can be CLI, REST, powershell commands, etc. Remember to use the backtick characters to highlight code `such as this` or create sections of code using three backticks in a row
+
+For detailed environment on how to run this, go see the [ScaleIO + Flocker Vagrant Environment](https://github.com/wallnerryan/scaleio-flocker)
+
+Here is a fig file (mongo-application.yml) (you can find this in this repo as well under ./examples)
+
 ```
-to do 
-multiline
-code
+"version": 1
+"applications":
+  "mongodbserver":
+    "image": "clusterhq/mongodb"
+    "volume":
+      "mountpoint": "/data/db"
+      "maximum_size": "8589934592"
+    "ports":
+    - "internal": 27017
+      "external": 27017
+  "mongodbconn":
+    "image": "wallnerryan/mongoconn"
+    "ports":
+    - "internal": 8080
+      "external": 8080
+```
+
+Here is a deployment file (mongo-deployment-1node.yml)
+
+```
+"version": 1
+"nodes":
+ "192.168.50.11": ["mongodbserver", "mongodbconn"]
+ "192.168.50.12": []
+ "192.168.50.13": []
+```
+
+Run the example
+```
+flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
+```
+
+**You should be able to see the volumes on the node (tb == 192.168.50.11)**
+```
+[root@tb flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 1 volume(s)
+VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
+```
+
+You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+
+Also view the containers on the node (Image shows 192.168.50.11)
+
+Here is a deployment file (mongo-deployment-2node.yml)
+
+```
+"version": 1
+"nodes":
+ "192.168.50.11": ["mongodbconn"]
+ "192.168.50.12": ["mongodbserver"]
+ "192.168.50.13": []
+```
+
+Run the example to move the app
+```
+flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
+```
+
+You should be able go to a web browser 192.168.50.11:8080 and see the app is NOT connected to MongoDB while MongoDB is moving, this is temporary, you may look at the log to see the connection status for ```flocker--mongodbconn```
+
+You should see 1 container on each host after the ```mongodbserver``` is migrated.
+
+After the mongodbserver is succesfully migrated, You should be able go to a web browser 192.168.50.11:8080 and see the app is again connected to MongoDB.
+
+You should also see the volume has moved to the new host.
+
+**You should be able to see the volumes on the node (mdm1 == 192.168.50.12)**
+```
+[root@mdm1 flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+Retrieved 1 volume(s)
+VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
 ## Future
-this is where you can add things you plan on adding to the future. this helps anyone wanting to contribute to know what they can help with. This is not a necessary thing to do if your project doesn't have a roadmap.
+
 - Add these functions depending on necessity
-  - thing 1
-  - thing 2
-  - thing 3
+  - ScaleIO 1.30 Support
+  - ScaleIO 1.32 Support
+  - Certification Verification
+  - Enhanced Feature sets for volume in Flocker
 - Clean up the code
-  - break out into multiple files
-  - etc
+  - Address ```#TODO``` items
+  - Optimize check_login bug/work around
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
@@ -38,15 +145,20 @@ Licensing
 ---------
 **EMC CODE does not provide legal guidance on which open source license should be used in projects. We do expect that all projects and contributions will have a valid open source license, or align to the appropriate license for the project/contribution**
 
-PLACE A COPY OF THE [MIT LICENSE](http://emccode.github.io/sampledocs/LICENSE "LICENSE") FILE IN YOUR PROJECT**
+Copyright [2015] [EMC Corporation]
 
-ÒThe MIT License (MIT) 
-Copyright (c) [Year], [Company Name (e.g., EMC Corporation)] 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.Ó
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 Support
 -------
-Please file bugs and issues at the Github issues page. For more general discussions you can contact the EMC Code team at <a href="https://groups.google.com/forum/#!forum/emccode-users">Google Groups</a> or tagged with **EMC** on <a href="https://stackoverflow.com">Stackoverflow.com</a>. The code and documentation are released with no warranties or SLAs and are intended to be supported through a community driven process.
+Please file bugs and issues at the Github issues page. For more general discussions you can contact the Flocker team at <a href="https://groups.google.com/forum/#!forum/flocker-users">Google Groups</a> or tagged with **EMC** on <a href="https://stackoverflow.com">Stackoverflow.com</a>. The code and documentation are released with no warranties or SLAs and are intended to be supported through a community driven process.
