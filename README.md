@@ -13,6 +13,8 @@ Flocker can help orchestrate and provision storage to your clustered docker cont
 
 ## Installation
 
+**Tested on CentOS 7**
+
 Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html)
 
 ```
@@ -135,6 +137,7 @@ VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
   - ScaleIO 1.32 Support
   - Certification Verification
   - Enhanced Feature sets for volume in Flocker
+  - Verify Other OS's
 - Clean up the code
   - Address ```#TODO``` items
   - Optimize check_login bug/work around
