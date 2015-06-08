@@ -46,13 +46,19 @@ With CentOS 7, ZFS, ScaleIO Integration with Flocker Public Git Source
 Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
 in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
-(Details on how to start flocker service **coming soon**) but your flocker-node's should
-have the following
+The plugin (https://github.com/emccorp/scaleio-flocker-driver) should come installed in this
+environment, as well as cluster certificates.
 ```
-cat /etc/flocker/agent.yml
-control-service: {hostname: '192.168.50.11', port: 4524}
-dataset: {backend: scaleio}
 version: 1
+control-service:
+  hostname: "control-service"
+dataset:
+  backend: "scaleio_flocker_driver"
+  username: "admin"
+  password: "Scaleio123"
+  mdm: "192.168.50.12"
+  protection_domain: "pdomain"
+  ssl: True
 ```
 
 Here is a fig file (mongo-application.yml) (you can find this in this repo as well under ./examples)
