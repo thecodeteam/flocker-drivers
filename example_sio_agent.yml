@@ -1,0 +1,10 @@
+version: 1
+control-service:
+  hostname: "control-service"
+dataset:
+  backend: "scaleio_flocker_driver"
+  username: "admin"
+  password: "Scaleio123"
+  mdm: "192.168.100.1"
+  protection_domain: "pdomain"
+  ssl: True
