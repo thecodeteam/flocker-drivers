@@ -87,7 +87,7 @@ class IScaleIOVolumeManager(Interface):
     The parts of ``scaleiopy.scaleio.ScaleIO`` that we use.
     """
     def create_volume(
-            self, volName, volSizeInMb, pdObj, thinProvision=True, **kwargs):
+            self, volName, volSizeInMb, pdObj, spObj, thinProvision=True, **kwargs):
         """
         Creates a Volume
 
@@ -605,7 +605,8 @@ class EMCScaleIOBlockDeviceAPI(object):
         volume = self._client.create_volume(
             volume_name,
             scaleio_size,
-            self._client.get_pd_by_name(self._pdomain))
+            self._client.get_pd_by_name(self._pdomain),
+            self._client.get_storage_pool_by_name(self._spool))
 
         # This seems like a wasteful request, just to log...
         siovolume = self._client.get_volume_by_name(

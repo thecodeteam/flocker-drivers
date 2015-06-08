@@ -23,6 +23,16 @@ cd scaleio-flocker-driver/
 sudo python setup.py install
 ```
 
+If errors on pip installable scaleio-py, follow the below
+
+Install latest [release](https://github.com/swevm/scaleio-py/releases) or
+```
+git clone https://github.com/swevm/scaleio-py
+cd scaleio-py
+sudo python setup.py install
+```
+then repeate the above installation for ```scaleio-flocker-driver```
+
 Then copy the example agent.yml that was created
 
 ```
