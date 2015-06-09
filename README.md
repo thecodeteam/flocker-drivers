@@ -104,13 +104,13 @@ Here is a fig file (mongo-application.yml) (you can find this in this repo as we
 
 Here is a deployment file (mongo-deployment-1node.yml)
 
----
+```bash
 "version": 1
 "nodes":
  "192.168.50.11": ["mongodbserver", "mongodbconn"]
  "192.168.50.12": []
  "192.168.50.13": []
----
+```
 
 Run the example
 ```bash
@@ -130,13 +130,13 @@ Also view the containers on the node (Image shows 192.168.50.11)
 
 Here is a deployment file (mongo-deployment-2node.yml)
 
----
+```bash
 "version": 1
 "nodes":
  "192.168.50.11": ["mongodbconn"]
  "192.168.50.12": ["mongodbserver"]
  "192.168.50.13": []
----
+```
 
 Run the example to move the app
 ```bash
