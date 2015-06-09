@@ -35,5 +35,6 @@ setup(
     keywords='backend, plugin, flocker, docker, python',
     packages=find_packages(exclude=['test*']),
     install_requires = ['scaleio-py'],
-    data_files=[('/etc/flocker/', ['example_sio_agent.yml'])]
+    data_files=[('/etc/flocker/', ['example_sio_agent.yml']),
+                ('/etc/flocker/', ['scaleio_test.config'])]
 )

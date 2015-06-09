@@ -23,9 +23,9 @@ cd scaleio-flocker-driver/
 sudo python setup.py install
 ```
 
-If errors on pip installable scaleio-py, follow the below
+**If you get errors on pip install for scaleio-py, follow the below** (these should be resolved soon)
 
-Install latest [release](https://github.com/swevm/scaleio-py/releases) or
+Install latest [ScaleIO-py Release](https://github.com/swevm/scaleio-py/releases) or follow the below install from source
 ```
 git clone https://github.com/swevm/scaleio-py
 cd scaleio-py
@@ -56,6 +56,19 @@ dataset:
   certificate: "</path/to/cert>" (Unsupported Right now)
   ssl: <True | False> (Defaults to True)
   debug: "<Debug LEVEL>" (Where LEVEL = DEBUG | CRITICAL, WARNING, FATAL, etc)
+```
+
+## Running Tests
+
+Setup the config file (edit values for your environment)
+```
+export SCALEIO_CONFIG_FILE="/etc/flocker/scaleio_test.config"
+vi /etc/flocker/scaleio_test.config
+```
+
+(Run the tests)
+```
+trial scaleio_flocker_driver.test_emc_sio
 ```
 
 Make sure you [Install Flocker-Node](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html#flocker-node) on every node you want the driver to run on, then make sure flocker services are running before using the CLI examples below.
