@@ -46,7 +46,10 @@ The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.
 TBD
 
 - Install EMC Plugin for XtremIO<br>
-TBD
+* git clone https://github.com/emccorp/xtremio-flocker-driver
+* vagrant ssh node1
+* cd /vagrant/xtremio-flocker-driver
+* sudo python setup.py install
 
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.<br>
