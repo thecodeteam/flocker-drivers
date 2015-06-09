@@ -14,7 +14,7 @@ from zope.interface import implementer
 from twisted.trial.unittest import SynchronousTestCase, SkipTest
 from twisted.python.components import proxyForInterface
 
-from .scaleio_flocker_driver.emc_sio import (
+from .emc_sio import (
     IScaleIOVolumeManager, scaleio_client
 )
 from scaleiopy import ScaleIO

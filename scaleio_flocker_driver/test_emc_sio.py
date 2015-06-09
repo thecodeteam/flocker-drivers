@@ -19,7 +19,7 @@ from twisted.trial.unittest import SynchronousTestCase
 from flocker.testtools import skip_except
 
 from .testtools_emc_sio import tidy_scaleio_client_for_test
-from .scaleio_flocker_driver.emc_sio import (
+from .emc_sio import (
     scaleio_client, emc_scaleio_api
 )
 
@@ -91,7 +91,8 @@ class EMCScaleIOBlockDeviceAPIInterfaceTests(
                     test_case)
             ),
             minimum_allocatable_size=int(GiB(8).to_Byte().value),
-            device_allocation_unit=int(GiB(8).to_Byte().value)
+            device_allocation_unit=int(GiB(8).to_Byte().value),
+            unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
         )
 ):
     """
