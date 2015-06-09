@@ -27,8 +27,8 @@ Tested with Vagrant 1.7.2
         node                      running (virtualbox)<br>
         node2                     running (virtualbox)<br>
 - Test login to the host<br>
- vagrant ssh node1
- * vagrant ssh node2<br>
+*  vagrant ssh node1
+* vagrant ssh node2<br>
 The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.33.11<br>
 
 - Discover iSCSI XtremIO portal on the host
@@ -47,9 +47,15 @@ TBD
 
 - Install EMC Plugin for XtremIO<br>
 * git clone https://github.com/emccorp/xtremio-flocker-driver
-* vagrant ssh node1
-* cd /vagrant/xtremio-flocker-driver
-* sudo python setup.py install
+* Install on node 1
+   * vagrant ssh node1
+   * cd /vagrant/xtremio-flocker-driver
+   * sudo python setup.py install
+* Install on node 2
+   * vagrant ssh node2
+   * cd /vagrant/xtremio-flocker-driver
+   * sudo python setup.py install
+
 
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.<br>
