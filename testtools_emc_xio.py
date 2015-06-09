@@ -9,13 +9,17 @@ EMC Test helpers for ``flocker.node.agents``.
 import os
 import yaml
 import socket
+from uuid import uuid4
+import pdb
 
 from twisted.trial.unittest import SynchronousTestCase, SkipTest
 
-from emc_xtremio_flocker_plugin.emc_xtremio_block_device import (
+from emc_xtremio_flocker_plugin.emc_xtremio_blockdevice import (
 	    EMCXtremIOBlockDeviceAPI,
 	    ArrayConfiguration
     )
+
+import time
 
 def xio_client_from_environment():
     """
@@ -54,6 +58,13 @@ def detach_destroy_volumes(api):
             api.detach_volume(volume.blockdevice_id)
         api.destroy_volume(volume.blockdevice_id)
 
+def destroy_volume_folder(api):
+    """
+    Destroy all volumes folders
+    """
+    api.destroy_volume_folder()
+    
+
 def tidy_xio_client_for_test(test_case):
     """
     Return a ``EMCXtremIO Client`and register a ``test_case``
@@ -61,9 +72,11 @@ def tidy_xio_client_for_test(test_case):
     """
     config = xio_client_from_environment()
     xio = EMCXtremIOBlockDeviceAPI(
-	cluster_id=unicode(uuid()),
+	cluster_id=unicode(uuid4()),
         configuration=config,
         compute_instance_id=unicode(socket.gethostname()),
 	allocation_unit=None)
+    test_case.addCleanup(destroy_volume_folder, xio)
     test_case.addCleanup(detach_destroy_volumes, xio)
+
     return xio

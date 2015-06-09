@@ -1,13 +1,12 @@
 # Copyright (c) 2015 -  EMC Corporation - Hybrid Logic Ltd
 # See LICENSE file for details.
 
-from blockdevice import VolumeException
-from blockdevice import AlreadyAttachedVolume
-from blockdevice import UnknownVolume
-from blockdevice import UnattachedVolume
-from blockdevice import IBlockDeviceAPI
-from blockdevice import _blockdevicevolume_from_dataset_id
-from blockdevice import _blockdevicevolume_from_blockdevice_id
+from flocker.node.agents.blockdevice import (
+	VolumeException, AlreadyAttachedVolume,
+	UnknownVolume, UnattachedVolume,
+	IBlockDeviceAPI, _blockdevicevolume_from_dataset_id,
+	_blockdevicevolume_from_blockdevice_id
+)
 
 from eliot import Message, Logger
 from twisted.python.filepath import FilePath
@@ -580,9 +579,20 @@ class EMCXtremIOBlockDeviceAPI(object):
             Message.new(Info="Destroying Volume" + str(blockdevice_id)).write(_logger)
             self.mgmt.request('volumes', 'DELETE', name=blockdevice_id)
         except DeviceExceptionObjNotFound as exc:
-            #Message.new(Error=exc).write(_logger)
             raise UnknownVolume(blockdevice_id)
 
+    def destroy_volume_folder(self):
+	"""
+	Destroy the volume folder
+	:param: none
+	"""
+	try:
+            Message.new(Info="Destroying Volume folder" + str(self._cluster_id)).write(_logger)
+            self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS, XtremIOMgmt.DELETE, name=XtremIOMgmt.BASE_PATH +
+                                                                                   str(self._cluster_id))
+        except DeviceExceptionObjNotFound as exc:
+            raise UnknownVolume(self._cluster_id)
+		
     def attach_volume(self, blockdevice_id, attach_to):
         """
         Attach volume associates a volume with to a initiator group. The resultant of this is a

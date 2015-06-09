@@ -83,7 +83,7 @@ class EMCXtremIOBlockDeviceAPIInterfaceTests(
             blockdevice_api_factory=functools.partial(emcxtremioblockdeviceapi_for_test),
             minimum_allocatable_size=XIO_ALLOCATION_UNIT,
             device_allocation_unit=None,
-	    unknown_blockdevice_id_factory=lambda test: unicode(uuid())
+	    unknown_blockdevice_id_factory=lambda test: u"vol-00000000"
         )
 ):
 	"""
