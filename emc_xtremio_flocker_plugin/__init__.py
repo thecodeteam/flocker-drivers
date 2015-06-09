@@ -1,9 +1,8 @@
 from flocker.node import BackendDescription, DeployerType
-from emc_xtremio_flocker_plugin.emc_xtremio_blockdevice import EMCXtremIOBlockDeviceAPI
+from emc_xtremio_flocker_plugin.emc_xtremio_blockdevice import xio_from_configuration
 
 def api_factory(cluster_id, **kwargs):
-    return EMCXtremIOBlockDeviceAPI(cluster_id=cluster_id, xms_user=kwargs[u"xms_user"], xms_pass=kwargs[u"password"],
-					xms_ip=kwargs['xms_ip'])
+    return xio_from_configuration(cluster_id=cluster_id, xms_user=kwargs[u'xms_user'], xms_password=kwargs[u'xms_password'], xms_ip=kwargs['xms_ip'])
 
 FLOCKER_BACKEND = BackendDescription(
     name=u"emc_xtremio_flocker_plugin", # name isn't actually used for 3rd party plugins
