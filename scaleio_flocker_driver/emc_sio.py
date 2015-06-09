@@ -108,6 +108,15 @@ class IScaleIOVolumeManager(Interface):
         :param ``ScaleIO_Protection_Domain``: ``Protection Domain`` object.
         """
 
+    def get_storage_pool_by_name(self, name):
+        """
+        Get ScaleIO StoragePool object by its name
+        :param name: Name of StoragePool
+        :return: ScaleIO StoragePool object
+        :raise KeyError: No StoragePool with specified name found
+        :rtype: StoragePool object
+        """
+
     def get_volume_by_name(self, name):
         """
         Retrieves a volume by its Name
