@@ -17,7 +17,7 @@ Flocker can help orchestrate and provision storage to your clustered docker cont
 
 Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html)
 
-```
+```bash
 git clone https://github.com/emccorp/scaleio-flocker-driver
 cd scaleio-flocker-driver/
 sudo python setup.py install
@@ -26,7 +26,7 @@ sudo python setup.py install
 **If you get errors on pip install for scaleio-py, follow the below** (these should be resolved soon)
 
 Install latest [ScaleIO-py Release](https://github.com/swevm/scaleio-py/releases) or follow the below install from source
-```
+```bash
 git clone https://github.com/swevm/scaleio-py
 cd scaleio-py
 sudo python setup.py install
@@ -35,14 +35,14 @@ then repeate the above installation for ```scaleio-flocker-driver```
 
 Then copy the example agent.yml that was created
 
-```
+```bash
 cp /etc/flocker/example_sio_agent.yml /etc/flocker/agent.yml
 vi /etc/flocker/agent.yml
 ```
 
 Change the necessary options in the yml file for you environment. A full list of available options is below
 
-```
+```bash
 version: 1
 control-service:
   hostname: "<Insert IP/Hostname of Flocker-Control Service>"
@@ -61,14 +61,19 @@ dataset:
 ## Running Tests
 
 Setup the config file (edit values for your environment)
-```
+```bash
 export SCALEIO_CONFIG_FILE="/etc/flocker/scaleio_test.config"
 vi /etc/flocker/scaleio_test.config
 ```
 
-(Run the tests)
-```
+Run the tests
+```bash
 trial scaleio_flocker_driver.test_emc_sio
+```
+
+You should see the below if all was succesfull
+```bash
+PASSED (successes=28)
 ```
 
 Make sure you [Install Flocker-Node](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html#flocker-node) on every node you want the driver to run on, then make sure flocker services are running before using the CLI examples below.
@@ -79,7 +84,7 @@ For detailed environment on how to run this, go see the [ScaleIO + Flocker Vagra
 
 Here is a fig file (mongo-application.yml) (you can find this in this repo as well under ./examples)
 
-```
+```bash
 "version": 1
 "applications":
   "mongodbserver":
@@ -99,22 +104,22 @@ Here is a fig file (mongo-application.yml) (you can find this in this repo as we
 
 Here is a deployment file (mongo-deployment-1node.yml)
 
-```
+---
 "version": 1
 "nodes":
  "192.168.50.11": ["mongodbserver", "mongodbconn"]
  "192.168.50.12": []
  "192.168.50.13": []
-```
+---
 
 Run the example
-```
+```bash
 flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
 ```
 
 **You should be able to see the volumes on the node (tb == 192.168.50.11)**
-```
-[root@tb flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+```bash
+[root@flocker-node]# /bin/emc/scaleio/drv_cfg --query_vols
 Retrieved 1 volume(s)
 VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
@@ -125,16 +130,16 @@ Also view the containers on the node (Image shows 192.168.50.11)
 
 Here is a deployment file (mongo-deployment-2node.yml)
 
-```
+---
 "version": 1
 "nodes":
  "192.168.50.11": ["mongodbconn"]
  "192.168.50.12": ["mongodbserver"]
  "192.168.50.13": []
-```
+---
 
 Run the example to move the app
-```
+```bash
 flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
 ```
 
@@ -147,8 +152,8 @@ After the mongodbserver is succesfully migrated, You should be able go to a web 
 You should also see the volume has moved to the new host.
 
 **You should be able to see the volumes on the node (mdm1 == 192.168.50.12)**
-```
-[root@mdm1 flocker-emc]# /bin/emc/scaleio/drv_cfg --query_vols
+```bash
+[root@flocker-node]# /bin/emc/scaleio/drv_cfg --query_vols
 Retrieved 1 volume(s)
 VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
