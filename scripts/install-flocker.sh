@@ -53,16 +53,24 @@ chmod 0700 /etc/flocker
 # 5  cp 132ebcea-b19b-4452-8e4d-b59754a56c63.crt /etc/flocker/node.crt
 # 6  cp 132ebcea-b19b-4452-8e4d-b59754a56c63.key /etc/flocker/node.key
 # 7  flocker-ca create-api-certificate user
+cd /etc/flocker/
 if [ "$HOSTNAME" = tb.scaleio.local ]; then
     printf '%s\n' "on the tb host"
-    cd /opt/flocker/flocker/
     flocker-ca initialize mycluster
     flocker-ca create-control-certificate tb.scaleio.local
     cp control-tb.scaleio.local.crt /etc/flocker/control-service.crt
     cp control-tb.scaleio.local.key /etc/flocker/control-service.key
     cp cluster.crt /etc/flocker/cluster.crt
     chmod 0600 /etc/flocker/control-service.key
-    
+fi
+
+# Create Node Certs
+flocker-ca create-node-certificate
+ls -1 . | egrep '[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?.crt' | xargs cp -t /etc/flcoker/node.crt
+ls -1 . | egrep '[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?-[A-Za-z0-9]*?.key' | xargs cp -t /etc/flcoker/node.key
+
+# Create user certs
+flocker-ca create-api-certificate user
 
 # Flocker ports need to be open
 systemctl enable firewalld
