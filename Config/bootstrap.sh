@@ -30,12 +30,12 @@ sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.
 sudo apt-get update
 sudo apt-get install -y -q lxc-docker
 sudo apt-get install -y gcc python2.7 python-virtualenv python2.7-dev python-pip
-sudo pip install machinist==0.2.0
-sudo pip install eliot==0.7.1
-sudo pip install python-keystoneclient==1.4.0
-sudo apt-get install -y libffi-dev
-sudo apt-get install -y libssl-dev
-sudo pip install pyasn1
+#sudo pip install machinist==0.2.0
+#sudo pip install eliot==0.7.1
+#sudo pip install python-keystoneclient==1.4.0
+#sudo apt-get install -y libffi-dev
+#sudo apt-get install -y libssl-dev
+#sudo pip install pyasn1
 
 
 # Make necessary configuration for iSCSI
