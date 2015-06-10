@@ -9,7 +9,8 @@ Vagrantfile to create a three-VM EMC ScaleIO lab setup, with Flocker build from 
 
 # Usage
 
-*Tested with Vagrant 1.7.2
+- **Tested with Vagrant 1.7.2**
+- Scripts have been tested on a 3 node Amazon AWS cluster as well, though this is not automated with the ```--provider``` flag yet, (TODO)
 
 Get the source
 ```
