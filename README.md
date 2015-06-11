@@ -9,8 +9,6 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 ![EMC XtremIO Flocker Intergration Block Diagram Missing] 
 (https://github.com/emccorp/vagrant-xtremio-flocker/blob/master/EMCXtremIOFlocker.jpg)
 
-
-
 ## Installation
 Tested with Vagrant 1.7.2
 - Clone source code from git repository
@@ -20,19 +18,12 @@ Tested with Vagrant 1.7.2
 - Bring up vagrant machines
  * vagrant up<br>
    This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
-
-- Check the status of nodes<br>
-    vagrant status (it should print following)<br>
-        Current machine states:<br>
-        node                      running (virtualbox)<br>
-        node2                     running (virtualbox)<br>
 - Test login to the host<br>
-*  vagrant ssh node1
+* vagrant ssh node1
 * vagrant ssh node2<br>
-The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.33.11<br>
+The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11 for node2<br>
 
 - Discover iSCSI XtremIO portal on the host
- * vagrant ssh node1
  * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
  * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
  * lsssci (this should print XtremIO as one of the storage arrays)
@@ -40,10 +31,10 @@ The node1 gets a preassigned ip address node1: 192.168.33.10 and node2: 192.168.
  * vagrant ssh node2
  * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
  * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
- * lsssci (this should print XtremIO as one of the storage arrays)
+ * lsssci - This should print XtremIO as one of the storage arrays
 
 - Install ClusterHQ/Flocker<br>
-TBD
+ Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 
 - Install EMC Plugin for XtremIO<br>
 * git clone https://github.com/emccorp/xtremio-flocker-driver
@@ -55,7 +46,15 @@ TBD
    * vagrant ssh node2
    * cd /vagrant/xtremio-flocker-driver
    * sudo python setup.py install
-
+* To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:<br>
+control-service: {hostname: '192.168.33.10', port: 4524} <br>
+dataset: {backend: emc_xtremio_flocker_plugin} <br>
+version: 1 <br>
+dataset: <br>
+   backend: emc_xtremio_flocker_plugin <br>
+   xms_ip: ${xms_ip} <br> 
+   xms_user: ${xms_user} <br>
+   xms_password: ${xms_password} <br>
 
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application file for Cassandra server is present with this code.<br>
