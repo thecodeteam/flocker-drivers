@@ -34,7 +34,7 @@ Tested with Vagrant 1.7.2
             This should print XtremIO as one of the storage arrays
 
 - Install ClusterHQ/Flocker<br>
- Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
+ Refer to ubuntu install notes -> https://docs.clusterhq.com/
 - Install EMC Plugin for XtremIO
     * Clone EMX XtremIO Flocker Plugin in the same directory as vagrant images<br>
         git clone https://github.com/emccorp/xtremio-flocker-driver
