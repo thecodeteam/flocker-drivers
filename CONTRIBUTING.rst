@@ -29,7 +29,6 @@ Talk to Us
 
 Have questions or need help?
 
-* If you want to follow our development plans, our main issue tracker is https://clusterhq.atlassian.net.
 * You can open an account there to file issues, but we're also happy to accept Github Issues with feature requests or bug reports 
 * You can also join us on the ``#emccorp`` channel on the ``irc.freenode.net`` IRC network
 
