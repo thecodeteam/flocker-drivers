@@ -97,8 +97,10 @@ A sample deployment and application file for Cassandra server is present with th
       /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/
     * ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/<br>
     to get cassandra snapshot
-    * XtremIO snapshot: This can be performed using their management GUI or curl CLI interface.<br>
-   If performed from management GUI look for volume name block-121c60df-0c03-083d-2693-c251f15fdfb2, right click and <br>    select snapshot. While taking snapshot move it to a new folder VOL_FOLDER_SNAPSHOT
+    * XtremIO snapshot:<br>
+    EMC XtremIO Snapshots can be perfomed using python utility: XtemIOSnap available at           https://github.com/evanbattle/XtremIOSnap
+    python ./XtremIOSnap.py ${xms ip address} ${xms_username} ${xms_password} --f --snap=${flocker cluster id}
+    Snapshot in folder with _snapshots now exists on XtremIO
     * Delete local cassandra snapshot<br>
     The local cassandra snapshot can be deleted since we have an array preserved snapshot
         * sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
@@ -113,5 +115,3 @@ https://github.com/evanbattle/XtremIOSnap
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
-
-
