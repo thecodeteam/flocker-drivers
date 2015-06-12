@@ -106,7 +106,7 @@ A sample deployment and application file for Cassandra server is present with th
         * sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
         ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
    should show 0 files.
-- To automate snapshot management platform kindly try using tool<br>
+   * To automate snapshot management platform kindly try using tool<br>
 https://github.com/evanbattle/XtremIOSnap
 
 ## Future
