@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 EMC Corporation
 
 # Use like this sudo sh rm_volumes.sh <volume_id> <volume_id> ...+
 

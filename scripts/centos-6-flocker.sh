@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 EMC Corporation
 
 # install docker
 yum localinstall -y --nogpgcheck https://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 EMC Corporation
 
 # **For this to work, all volumes, but the default volume should be removed**
 # This script was used to recover from the cluster saying "not enough thin capacity"

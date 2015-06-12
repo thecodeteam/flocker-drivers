@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 EMC Corporation
 
 #INST=$1
 #if [ ! -d $INST ]; then

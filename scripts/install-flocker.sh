@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright 2015 EMC Corporation
 
 # Installs Flocker from Source
 USER=""

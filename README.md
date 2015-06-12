@@ -5,12 +5,13 @@ scaleio-flocker
 
 # Description
 
-Vagrantfile to create a three-VM EMC ScaleIO lab setup, with Flocker build from source, on CentOS 7
+This Vagrant environment and Vagrantfile helps create a three-VM EMC ScaleIO lab setup, with Flocker built from source, on CentOS 7
 
 # Usage
 
 - **Tested with Vagrant 1.7.2**
-- Scripts have been tested on a 3 node Amazon AWS cluster as well, though this is not automated with the ```--provider``` flag yet, (TODO)
+- **Tested with CentOS 7**
+- Scripts have been maunually run on a 3 node Amazon AWS cluster runing CentOS 7 AMI as well, though this is not automated in the current repo with ```--provider``` flag
 
 Get the source
 ```
@@ -20,6 +21,7 @@ cd scaleio-flocker
 ```
 
 Copy the RPMS into the source directory
+[You can download ScaleIO Here](http://www.emc.com/products-solutions/trial-software-download/scaleio.htm)
 ```
 cp EMC-ScaleIO-callhome-1.31-243.0.el7.x86_64.rpm E MC-ScaleIO-sdc-1.31-243.0.el7.x86_64.rpm
 EMC-ScaleIO-gateway-1.31-243.0.noarch.rpm  EMC-ScaleIO-sds-1.31-243.0.el7.x86_64.rpm
@@ -29,18 +31,14 @@ EMC-ScaleIO-lia-1.31-243.0.el7.x86_64.rpm EMC-ScaleIO-mdm-1.31-243.0.el7.x86_64.
 
 Copy the certs (if needed) into source/certs
 ```
-cp EMCSSL.crt EMCCA.crt certs/
+cp CompanySSL.crt CompanyCA.crt certs/
 ```
 
 # Start vagrant
+**Note, this takes a while to install, because we're installing a new kernel and ZFS, hopefully we'll be able to use custom boxes to streamline this in the near future**
 ```
 vagrant up
 ```
-
-# Tested
-
-With CentOS 7, ZFS, ScaleIO Integration with Flocker Public Git Source
-
 
 # Examples
 
@@ -49,6 +47,7 @@ in virtualbox. The example at the time of running this used vboxnet1 192.168.50.
 
 The plugin (https://github.com/emccorp/scaleio-flocker-driver) should come installed in this
 environment, as well as cluster certificates.
+
 ```
 version: 1
 control-service:
@@ -278,101 +277,6 @@ Volumes summary:
 	1 thick-provisioned volume. Total size: 8.0 GB (8192 MB)
 ```
 
-# REST API
-
-We can test the Gateway REST API for scaleio in this environment as well. Follow
-the below instructions to do so.
-
-Get the rest api test source and enter the directory (not public yet, EMC network only)
-
-```
-git clone https://git.lss.emc.com/scm/floc/scaleio-rest.git
-cd scaleio-rest
-```
-
-Next, set the IP of mdm1 to an environment var
-then we need to run a login, then thet tests
-
-```
-export SERVERIP="192.168.50.12"
-python test/login.py 
-INFO:rest_tests:ScaleIO request: https://192.168.50.12:443/api/login
-INFO:urllib3.connectionpool:Starting new HTTPS connection (1): 192.168.50.12
-INFO:rest_tests:Login response: "YWRtaW46MTQyNzk5NzMyMTY3MDplYjEzZTZkOGYyZTBkZmQ2N2Y1YmEwMGMyZWIwYWFmNw"
-
-Now run: export SCALEIOPASS="YWRtaW46MTQyNzk5NzMyMTY3MDplYjEzZTZkOGYyZTBkZmQ2N2Y1YmEwMGMyZWIwYWFmNw"
-
-```
-
-As it says, export the new password
-
-```
-export SCALEIOPASS="YWRtaW46MTQyNzk5NzMyMTY3MDplYjEzZTZkOGYyZTBkZmQ2N2Y1YmEwMGMyZWIwYWFmNw"
-```
-
-Now we can run the tests
-
-```
-python test/get_volumes.py | python -m json.tool
-INFO:rest_tests:ScaleIO request: https://192.168.50.12:443/api/types/Volume/instances/
-INFO:urllib3.connectionpool:Starting new HTTPS connection (1): 192.168.50.12
-[
-    {
-        "ancestorVolumeId": null,
-        "consistencyGroupId": null,
-        "creationTime": 1427961975,
-        "id": "2f93fa7700000000",
-        "isObfuscated": false,
-        "links": [
-            {
-                "href": "/api/instances/Volume::2f93fa7700000000",
-                "rel": "self"
-            },
-            {
-                "href": "/api/instances/Volume::2f93fa7700000000/relationships/Statistics",
-                "rel": "/api/Volume/relationship/Statistics"
-            },
-            {
-                "href": "/api/instances/VTree::db168d6300000000",
-                "rel": "/api/parent/relationship/vtreeId"
-            },
-            {
-                "href": "/api/instances/StoragePool::92fd353300000000",
-                "rel": "/api/parent/relationship/storagePoolId"
-            }
-        ],
-        "mappedScsiInitiatorInfo": null,
-        "mappedSdcInfo": [
-            {
-                "limitBwInMbps": 0,
-                "limitIops": 0,
-                "sdcId": "3c7a7c8b00000000",
-                "sdcIp": "192.168.50.11"
-            },
-            {
-                "limitBwInMbps": 0,
-                "limitIops": 0,
-                "sdcId": "3c7a7c8d00000002",
-                "sdcIp": "192.168.50.13"
-            },
-            {
-                "limitBwInMbps": 0,
-                "limitIops": 0,
-                "sdcId": "3c7a7c8c00000001",
-                "sdcIp": "192.168.50.12"
-            }
-        ],
-        "mappingToAllSdcsEnabled": false,
-        "name": "vol1",
-        "sizeInKb": 8388608,
-        "storagePoolId": "92fd353300000000",
-        "useRmcache": true,
-        "volumeType": "ThickProvisioned",
-        "vtreeId": "db168d6300000000"
-    }
-]
-```
-
 # Caveats
 
 Working with vagrant's insecure private key working correctly, flocker-deploy should
@@ -388,3 +292,27 @@ Test that this is working correctly against the tb node.
 you@yourmachine:~ ssh root@192.168.50.11 flocker-reportstate --version
 unknown
 ```
+
+# Future
+
+- Automate environment to use custom vagrant boxes to speed up deployment
+- Don't install from source, rather install from official packages
+- Automate certificate creation and service startup for flocker+scaleio driver
+
+# License
+
+   Copyright [2015] [EMC Corporation]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
