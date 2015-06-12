@@ -178,7 +178,7 @@ Create a fork of the project into your own reposity. Make all your necessary cha
 
 Licensing
 ---------
-**EMC CODE does not provide legal guidance on which open source license should be used in projects. We do expect that all projects and contributions will have a valid open source license, or align to the appropriate license for the project/contribution**
+**EMC will not provide legal guidance on which open source license should be used in projects. We do expect that all projects and contributions will have a valid open source license, or align to the appropriate license for the project/contribution**
 
 Copyright [2015] [EMC Corporation]
 
