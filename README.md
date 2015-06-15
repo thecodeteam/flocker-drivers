@@ -120,21 +120,18 @@ The above shall show the volume connected, mounted as file-system on the host
   EMC XtremIO comes Snapshotting capabilities which can be extended to Docker Cassandra for supporting application consistent snapshots
 ```bash
     sudo docker exec -it flocker-cassandra nodetool snapshot
-    sudo docker inspect | grep -i data
-    ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/
 ```
 EMC XtremIO Snapshots using XtremIOSnap: https://github.com/evanbattle/XtremIOSnap
 
 ```bash
     python ./XtremIOSnap.py ${xms ip address} ${xms_username} ${xms_password} --f --snap=${flocker cluster id}
 ```
-    Snapshot in folder with _snapshots now exists on XtremIO
+    Snapshot in folder with _snapshots now exists on XtremIO. The flocker cluster id can be found by referencing folder name on EMC XtremIO.
     * Delete local cassandra snapshot<br>
     The local cassandra snapshot can be deleted since we have an array preserved snapshot
-    ```baah
+```bash
         sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
-        ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
-    ```
+```
 ## Future
 - Add Chap protocol support for iSCSI
 - Add Multipathning support
