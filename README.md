@@ -126,9 +126,7 @@ EMC XtremIO Snapshots using XtremIOSnap: https://github.com/evanbattle/XtremIOSn
 ```bash
     python ./XtremIOSnap.py ${xms ip address} ${xms_username} ${xms_password} --f --snap=${flocker cluster id}
 ```
-    Snapshot in folder with _snapshots now exists on XtremIO. The flocker cluster id can be found by referencing folder name on EMC XtremIO.
-    * Delete local cassandra snapshot<br>
-    The local cassandra snapshot can be deleted since we have an array preserved snapshot
+Snapshot in folder with _snapshots now exists on XtremIO. The flocker cluster id can be found by referencing folder name on EMC XtremIO.
 ```bash
         sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
 ```
