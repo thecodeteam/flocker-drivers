@@ -47,9 +47,9 @@ dataset: {backend: emc_xtremio_flocker_plugin} <br>
 version: 1 <br>
 dataset: <br>
 backend: emc_xtremio_flocker_plugin <br> 
-* xms_ip: ${xms_ip} <br>
-* xms_user: ${xms_user} <br> 
-* xms_password: ${xms_password} <br>
+   xms_ip: ${xms_ip} <br>
+   xms_user: ${xms_user} <br> 
+   xms_password: ${xms_password} <br>
 ```
 A sample vagrant environment help 
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application can be found at https://github.com/emccorp/vagrant-xtremio-flocker 
