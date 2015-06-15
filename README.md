@@ -61,6 +61,23 @@ Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment a
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
 
+## Running Tests
+
+Sample vagrant environment can be found at: https://github.com/emccorp/vagrant-xtremio-flocker
+
+Setup the config file (edit values for your environment)
+```bash
+export XMS_CONFIG_FILE=//etc/flocker/xio_config_file.yml
+vi /etc/flocker/xio_config_file.yml
+XIO:
+  XMS_USER: ${XMS_USERNAME}
+  XMS_PASS: ${XMS_PASSWORD}
+  XMS_IP: ${XMS_IP}
+Run the tests
+sudo -E trial xtremio-flocker-driver.test_emc_xtremio
+```
+You should see the below if all was succesfull
+
 Licensing
 ---------
 **EMC will not provide legal guidance on which open source license should be used in projects. We do expect that all projects and contributions will have a valid open source license, or align to the appropriate license for the project/contribution**
