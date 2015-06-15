@@ -31,6 +31,7 @@ Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 
 ## Usage Instructions
 To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:
+```bash
 control-service: {hostname: '192.168.33.10', port: 4524}<br>
 dataset: {backend: emc_xtremio_flocker_plugin} <br>
 version: 1 <br>
@@ -42,7 +43,7 @@ backend: emc_xtremio_flocker_plugin <br>
 
 A sample vagrant environment help 
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application can be found at https://github.com/emccorp/vagrant-xtremio-flocker 
-
+```
 ## Future
 - Add Chap protocol support for iSCSI
 - Add 
