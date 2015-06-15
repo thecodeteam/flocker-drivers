@@ -49,13 +49,13 @@ The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11
   ```bash
         git clone https://github.com/emccorp/xtremio-flocker-driver
   ```
-        * Node 1
+    * Node 1
   ```bash
         vagrant ssh node1
         cd /vagrant/xtremio-flocker-driver
         sudo python setup.py install
   ```
-        * Node 2
+    * Node 2
   ```bash
         vagrant ssh node2
         cd /vagrant/xtremio-flocker-driver
@@ -68,10 +68,10 @@ control-service: {hostname: '192.168.33.10', port: 4524} <br>
 dataset: {backend: emc_xtremio_flocker_plugin} <br>
 version: 1 <br>
 dataset: <br>
-   backend: emc_xtremio_flocker_plugin <br>
-   xms_ip: ${xms_ip} <br> 
-   xms_user: ${xms_user} <br>
-   xms_password: ${xms_password} <br>
+    backend: emc_xtremio_flocker_plugin <br>
+        xms_ip: ${xms_ip} <br> 
+        xms_user: ${xms_user} <br>
+        xms_password: ${xms_password} <br>
 ```
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. <br>
@@ -82,56 +82,61 @@ A sample deployment and application file for Cassandra server is present with th
     vagrant ssh node1
     flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
 ```
-    The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
+The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
 ```bash
     sudo docker ps (you should now see cassandra docker deployed)
     sudo docker inspect flocker--cassandra
-````
-    This shall show the volume connected, mounted as file-system on the host
+```
+The above shall show the volume connected, mounted as file-system on the host
 - Check status of the Cassandra node
-    * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
-    * sudo docker exec -it flocker--cassandra nodetool status<br>
-	Status=Up/Down |/ State=Normal/Leaving/Joining/Moving<br>
-	--  Address       Load       Tokens  Owns    Host ID                               Rack<br>
-	UN  172.17.0.162  130.26 KB  256     ?       ef92d409-ee9f-4773-9ca7-bbb5df662b77  rack1<br>
+```bash
+    sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
+    sudo docker exec -it flocker--cassandra nodetool status
+```
 - Create sample keyspace in Cassandra database:
-    * sudo docker exec -it flocker--cassandra cqlsh<br>
-        The above gives you a cqlsh prompt
-    * Copy paste following to create database and table<br>
-     CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};<br>
+```bash
+    sudo docker exec -it flocker--cassandra cqlsh
+```
+
+    * The above gives you a cqlsh prompt. Copy paste following to create database and table<
+```bash
+    CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};
     CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text);
-- Check the schema created<br>
+```
+- Check the created schema
+```bash
     desc keyspace EMCXtremIO
+```
 - Migrate Cassandra database to node2<br>
   ClusterHQ flocker provides a way to migrate data from one node to another
     * Modify cassandra-deploy.yml file present in the root folder to specify target host at 192.168.33.11.
-        * vagrant ssh node1
-        * flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
-        * Check the existence of database EMCXtremIO
-        * sudo docker exec -it flocker--cassandra cqlsh
-        * desc keyspace EMCXtremIO
+```bash
+    vagrant ssh node1
+    flocker-deploy /vagrant/cassandra-deploy.yml /vagrant/cassandra-application.yml
+    sudo docker exec -it flocker--cassandra cqlsh
+    desc keyspace EMCXtremIO
+```
 - Protecting Cassandra Node with Docker<br>
   EMC XtremIO comes Snapshotting capabilities which can be extended to Docker Cassandra for supporting application consistent snapshots
-    * sudo docker exec -it flocker-cassandra nodetool snapshot
-    * sudo docker inspect | grep -i data (you should a data folder mapped to location mount point e.g.<br>
-      /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/
-    * ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/<br>
-    to get cassandra snapshot
-    * XtremIO snapshot:<br>
+```bash
+    sudo docker exec -it flocker-cassandra nodetool snapshot
+    sudo docker inspect | grep -i data
+    ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/snapshots/
+```
     EMC XtremIO Snapshots can be perfomed using python utility: XtemIOSnap available at           https://github.com/evanbattle/XtremIOSnap
+```bash
     python ./XtremIOSnap.py ${xms ip address} ${xms_username} ${xms_password} --f --snap=${flocker cluster id}
+```
     Snapshot in folder with _snapshots now exists on XtremIO
     * Delete local cassandra snapshot<br>
     The local cassandra snapshot can be deleted since we have an array preserved snapshot
-        * sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
+    ```baah
+        sudo docker exec -it flocker-cassandra nodetool clearsnapshot<br>
         ls -l /flocker/121c60df-0c03-083d-2693-c251f15fdfb2/data/emcxtremio/users-bc224f500abd11e58c4e4f5a89e1ffdd/
-   should show 0 files.
-   * To automate snapshot management platform kindly try using tool<br>
-https://github.com/evanbattle/XtremIOSnap
-
+    ```
 ## Future
 - Add Chap protocol support for iSCSI
-- Add 
+- Add Multipathning support
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
