@@ -28,16 +28,8 @@ This shall create two ubuntu trusty64 host and install all needed iSCSI software
     vagrant ssh node2
 ```
 The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11 for node2
-- Discover iSCSI XtremIO portal on the host
-    - Node1
+- Discover iSCSI XtremIO portal on the host on node1 and node2
 ```bash
-        /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
-        /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
-        lsssci
-```
-    - Node2
-```bash
-        vagrant ssh node2
         /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
         /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
         lsssci
@@ -45,22 +37,15 @@ The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11
 - Install ClusterHQ/Flocker<br>
  Refer to ubuntu install notes -> https://docs.clusterhq.com/
 - Install EMC Plugin for XtremIO
-    * Clone EMX XtremIO Flocker Plugin in the same directory as vagrant images<br>
+    * Clone EMX XtremIO Flocker Plugin in the same directory as vagrant images
   ```bash
         git clone https://github.com/emccorp/xtremio-flocker-driver
   ```
-    * Node 1
+    * Run plugin install on two nodes - node1 and node2
   ```bash
-        vagrant ssh node1
         cd /vagrant/xtremio-flocker-driver
         sudo python setup.py install
   ```
-    * Node 2
-  ```bash
-        vagrant ssh node2
-        cd /vagrant/xtremio-flocker-driver
-        sudo python setup.py install
-   ```
 - Enable Plugin<br>
     To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be     as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:<br><br>
 ```bash
