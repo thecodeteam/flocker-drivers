@@ -83,7 +83,8 @@ The above shall show the volume connected, mounted as file-system on the host
     sudo docker exec -it flocker--cassandra cqlsh
 ```
 
-    * The above gives you a cqlsh prompt. Copy paste following to create database and table<
+The above gives you a cqlsh prompt. Copy paste following to create database and table
+
 ```bash
     CREATE KEYSPACE EMCXtremIO WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 0};
     CREATE TABLE EMCXtremIO.users (userid text PRIMARY KEY, first_name text);
