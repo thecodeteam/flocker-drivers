@@ -24,4 +24,4 @@ You will need Python 2.7 and a recent version of PyPy installed on your developm
 
 Running Tests
 =============
-Please see how to run tests at https://github.com/emccorp/xtremio-flocker-driver/README.md#running-tests
+Please see how to run tests at https://github.com/emccorp/xtremio-flocker-driver/blob/master/README.md#running-tests
