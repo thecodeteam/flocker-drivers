@@ -271,6 +271,8 @@ class XtremIOiSCSIDriver():
         :param: volume id or blockdevice_id passed from flocker
         :param: hostname, we use hostname as initiator group's name. If hostname is not current host, things won't
         break
+        :return: none
+        :exception: Unknown volume, if volume not found
         """
         try:
             self.mgmt.request('lun-maps', 'POST', {'ig-id': compute_instance_id,
@@ -285,6 +287,8 @@ class XtremIOiSCSIDriver():
         """
         :param: volumeid or blockdevice_id passed from flocker
         :param: hostname used to identify initiator group
+        :return: none
+        :exception: Unknown volume if volume is not found
         """
         try:
             ig = self.mgmt.request('initiator-groups', name=compute_instance_id)['content']
@@ -303,13 +307,17 @@ class XtremIOiSCSIDriver():
     def get_lun_map(self, blockdevice_id):
         """
         :param blockdevice_id: Volume id
-        :return:
+        :return:return lun mapping if for the volume
+        :exception: Volume unattached, if no mapping was found
         """
         try:
             vol = self.mgmt.request('volumes', name=str(blockdevice_id))['content']
             if int(vol['num-of-lun-mappings']) == 0:
                 raise UnattachedVolume(blockdevice_id)
             else:
+                # EMC XtremIO gives unique lun number for each
+                # volume when it is attached. The unique lun number is
+                # generated in sequence
                 lun_mapping_list = vol['lun-mapping-list']
                 return lun_mapping_list[0][2]
         except DeviceExceptionObjNotFound:
@@ -383,6 +391,7 @@ class XtremIOiSCSIDriver():
         """
         :return: Returns chap password
         """
+        # We do not support chap protocol right now
         return 'password'
 
 
@@ -416,6 +425,7 @@ class EMCXtremIOBlockDeviceAPI(object):
         """
         :param: the flocker dataset_id
         :return: True if volume folder exists. For each dataset_id a new volume is created.
+        :exception: none
         """
         try:
             vol_folders = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS)
@@ -479,7 +489,7 @@ class EMCXtremIOBlockDeviceAPI(object):
     def _get(self, blockdevice_id):
         """
         :param blockdevice_id: - volume id
-        :return:
+        :return:volume object
         """
         try:
             volume = self.volume_list[str(blockdevice_id)]
@@ -494,6 +504,7 @@ class EMCXtremIOBlockDeviceAPI(object):
         """
         :param blockdevice_id - volume id
         :return:volume details
+        :exception: Unknown volume
         """
         try:
             vol = self.mgmt.request('volumes', 'GET', name=blockdevice_id)
@@ -511,7 +522,6 @@ class EMCXtremIOBlockDeviceAPI(object):
             )
             return volume
         except DeviceExceptionObjNotFound as exc:
-            # Message.new(Error=exc).write(_logger)
             raise UnknownVolume(blockdevice_id)
 
     def compute_instance_id(self):
@@ -709,7 +719,7 @@ def xio_from_configuration(cluster_id, xms_user, xms_password, xms_ip):
     :param xms_ip:
     :param xms_user:
     :param xms_password:
-    :return:
+    :return:EMCXtremIOBlockDeviceAPI object
     """
     return EMCXtremIOBlockDeviceAPI(
         configuration=ArrayConfiguration(xms_user, xms_password, xms_ip),
