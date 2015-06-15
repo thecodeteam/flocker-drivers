@@ -1,3 +1,7 @@
+# Copyright Hybrid Logic Ltd.
+# Copyright 2015 EMC Corporation
+# See LICENSE file for details.
+
 from flocker.node import BackendDescription, DeployerType
 from emc_xtremio_flocker_plugin.emc_xtremio_blockdevice import xio_from_configuration
 
