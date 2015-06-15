@@ -1,5 +1,6 @@
-# Copyright (c) 2015 -  EMC Corporation - Hybrid Logic Ltd
-# See LICENSE file for details.
+# Copyright Hybrid Logic Ltd.
+# Copyright 2015 EMC Corporation
+# See LICENSE file for details..
 
 from flocker.node.agents.blockdevice import (
 	VolumeException, AlreadyAttachedVolume,
