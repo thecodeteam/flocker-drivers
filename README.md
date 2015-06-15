@@ -21,39 +21,49 @@ Tested with Vagrant 1.7.2
 ```bash
    vagrant up
 ```
-    This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
+This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
 - Test login to the host<br>
-    * vagrant ssh node1
-    * vagrant ssh node2<br>
-    The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11 for node2
+```bash
+    vagrant ssh node1
+    vagrant ssh node2
+```
+The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11 for node2
 - Discover iSCSI XtremIO portal on the host
     - Node1
-        * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
-        * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
-        * lsssci<br>
-            This should print XtremIO as one of the storage arrays)
+```bash
+        /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+        /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+        lsssci
+```
     - Node2
-        * vagrant ssh node2
-        * /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
-        * /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
-        * lsssci<br>
-            This should print XtremIO as one of the storage arrays
-
+```bash
+        vagrant ssh node2
+        /vagrant/Config/iSCSIDiscover <EMC XtremIO iSCSI Portal IP>
+        /vagrant/Config/iSCSILogin <EMC XtremIO iSCSI Portal IP>
+        lsssci
+```
 - Install ClusterHQ/Flocker<br>
  Refer to ubuntu install notes -> https://docs.clusterhq.com/
 - Install EMC Plugin for XtremIO
     * Clone EMX XtremIO Flocker Plugin in the same directory as vagrant images<br>
+  ```bash
         git clone https://github.com/emccorp/xtremio-flocker-driver
+  ```
         * Node 1
-            * vagrant ssh node1
-            * cd /vagrant/xtremio-flocker-driver
-            * sudo python setup.py install
+  ```bash
+        vagrant ssh node1
+        cd /vagrant/xtremio-flocker-driver
+        sudo python setup.py install
+  ```
         * Node 2
-            * vagrant ssh node2
-             * cd /vagrant/xtremio-flocker-driver
-            * sudo python setup.py install
+  ```bash
+        vagrant ssh node2
+        cd /vagrant/xtremio-flocker-driver
+        sudo python setup.py install
+   ```
 - Enable Plugin<br>
     To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be     as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:<br><br>
+```bash
 control-service: {hostname: '192.168.33.10', port: 4524} <br>
 dataset: {backend: emc_xtremio_flocker_plugin} <br>
 version: 1 <br>
@@ -62,17 +72,21 @@ dataset: <br>
    xms_ip: ${xms_ip} <br> 
    xms_user: ${xms_user} <br>
    xms_password: ${xms_password} <br>
-
+```
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. <br>
 
 A sample deployment and application file for Cassandra server is present with this code.<br>
 - Deploying Cassandra Database on node1
-    * vagrant ssh node1
-    * flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml<br>
+```bash
+    vagrant ssh node1
+    flocker-deploy 192.168.33.10 /vagrant/cassandra-deployment.yml /vagrant/cassandra-application.yml
+```
     The default deployment node on /vagrant/cassandra-deployment.yml is 192.168.33.10.
-    * sudo docker ps (you should now see cassandra docker deployed)
-    * sudo docker inspect flocker--cassandra <br>
+```bash
+    sudo docker ps (you should now see cassandra docker deployed)
+    sudo docker inspect flocker--cassandra
+````
     This shall show the volume connected, mounted as file-system on the host
 - Check status of the Cassandra node
     * sudo docker exec -it flocker--cassandra nodetool status (you should get output as below)
