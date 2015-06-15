@@ -33,7 +33,8 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
    ```
 - Install ClusterHQ/Flocker<br>
 Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
-- Install EMC Plugin for XtremIO<br>
+- Install EMC Plugin for XtremIO
+
    ```bash
     git clone https://github.com/emccorp/xtremio-flocker-driver
     sudo python setup.py install
@@ -73,7 +74,9 @@ XIO:
   XMS_USER: ${XMS_USERNAME}
   XMS_PASS: ${XMS_PASSWORD}
   XMS_IP: ${XMS_IP}
+```
 Run the tests
+```bash
 sudo -E trial xtremio-flocker-driver.test_emc_xtremio
 ```
 You should see the below if all was succesfull
