@@ -10,11 +10,17 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 ## Installation
 Tested with Vagrant 1.7.2
 - Clone source code from git repository
-    * git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
+```bash
+    git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
+```
 - Change directory
-    * cd vagrant-xtremio-flocker
+```bash
+    cd vagrant-xtremio-flocker
+```
 - Bring up vagrant machines
-    * vagrant up<br>
+```bash
+   vagrant up
+```
     This shall create two ubuntu trusty64 host and install all needed iSCSI software on the host
 - Test login to the host<br>
     * vagrant ssh node1
