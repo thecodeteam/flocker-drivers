@@ -11,23 +11,33 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 ## Installation
 - Install OpeniSCSI 
     * Ubuntu<br>
+   ```bash
     sudo apt-get update <br>
     sudo apt-get install -y open-iscsi<br>
     sudo apt-get install -y lsscsi<br>
     sudo apt-get -y install scsitools
+    ```
     * Centos<br>
+    ```bash
     sudo yum -y install iscsi-initiator-utils<br>
     sudo yum -y install lsscsi<br>
     sudo yum -y install sg3_utils<br>
+    ```
 - Discover iSCSI XtremIO portal on the host<br>
+   ```bash
     iscsiadm -m discoverydb -t st -p ${XtremIO iSCSI Portal IP/hostname}:3260 --discover
-- Login iSCSI data port<br> 
-scsiadm -m node  -p ${XtremIO iSCSI Portal IP/hostname} --login
+    ```
+- Login iSCSI data port<br>
+   ```bash
+   scsiadm -m node  -p ${XtremIO iSCSI Portal IP/hostname} --login
+   ```
 - Install ClusterHQ/Flocker<br>
 Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 - Install EMC Plugin for XtremIO<br>
-    * git clone https://github.com/emccorp/xtremio-flocker-driver
-    * sudo python setup.py install
+   ```bash
+    git clone https://github.com/emccorp/xtremio-flocker-driver
+    sudo python setup.py install
+    ```
 
 ## Usage Instructions
 To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:
@@ -40,10 +50,10 @@ backend: emc_xtremio_flocker_plugin <br>
 * xms_ip: ${xms_ip} <br>
 * xms_user: ${xms_user} <br> 
 * xms_password: ${xms_password} <br>
-
+```
 A sample vagrant environment help 
 Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application can be found at https://github.com/emccorp/vagrant-xtremio-flocker 
-```
+
 ## Future
 - Add Chap protocol support for iSCSI
 - Add 
