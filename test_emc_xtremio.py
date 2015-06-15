@@ -13,20 +13,19 @@ from uuid import uuid4
 
 import functools
 
-XIO_ALLOCATION_UNIT = int(1024*1024)
+XIO_ALLOCATION_UNIT = int(1024 * 1024)
 
 from twisted.trial.unittest import SynchronousTestCase, SkipTest
 
-
 from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests
 from flocker.testtools import (
-	skip_except
+    skip_except
 )
-
 
 from testtools_emc_xio import (
     tidy_xio_client_for_test
 )
+
 
 def emcxtremioblockdeviceapi_for_test(test_case):
     """
@@ -78,17 +77,19 @@ def emcxtremioblockdeviceapi_for_test(test_case):
         'test_detach_volume',
         'test_get_device_path_device_repeatable_results',
         'test_device_size'
-        ]
+    ]
 )
 
+
 class EMCXtremIOBlockDeviceAPIInterfaceTests(
-        make_iblockdeviceapi_tests(
-            blockdevice_api_factory=functools.partial(emcxtremioblockdeviceapi_for_test),
-            minimum_allocatable_size=XIO_ALLOCATION_UNIT,
-            device_allocation_unit=None,
-	    unknown_blockdevice_id_factory=lambda test: u"vol-00000000"
-        )
+    make_iblockdeviceapi_tests(
+        blockdevice_api_factory=functools.partial(emcxtremioblockdeviceapi_for_test),
+        minimum_allocatable_size=XIO_ALLOCATION_UNIT,
+        device_allocation_unit=None,
+        unknown_blockdevice_id_factory=lambda test: u"vol-00000000"
+    )
 ):
-	"""
+
+    """
 	Interface adherence Tests for ``EMCXtremIOBlockDeviceAPI``
 	"""

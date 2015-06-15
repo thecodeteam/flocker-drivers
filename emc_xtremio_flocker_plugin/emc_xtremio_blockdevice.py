@@ -3,10 +3,10 @@
 # See LICENSE file for details..
 
 from flocker.node.agents.blockdevice import (
-	VolumeException, AlreadyAttachedVolume,
-	UnknownVolume, UnattachedVolume,
-	IBlockDeviceAPI, _blockdevicevolume_from_dataset_id,
-	_blockdevicevolume_from_blockdevice_id
+    VolumeException, AlreadyAttachedVolume,
+    UnknownVolume, UnattachedVolume,
+    IBlockDeviceAPI, _blockdevicevolume_from_dataset_id,
+    _blockdevicevolume_from_blockdevice_id
 )
 
 from eliot import Message, Logger
@@ -21,11 +21,11 @@ import json
 import os
 import re
 import socket
-import pdb
 
 
 class ArrayConfiguration(object):
     """
+    Wrapper object for EMC XtremIO Array Configuration
     """
 
     def __init__(self, login, password, host):
@@ -182,7 +182,7 @@ class XtremIOMgmt():
                 elif error['message'] == 'vol_obj_name_not_unique':
                     Message.new(error="can't create 2 volumes with the same name").write(_logger)
                     raise (InvalidVolumeMetadata('Volume by this name already exists'))
-	        raise
+                raise
         if response.code >= 300:
             Message.new(Error=response.msg).write(_logger)
             raise VolumeBackendAPIException(
@@ -316,7 +316,6 @@ class XtremIOiSCSIDriver():
             Message.new(Error="get_lun_map: could not be found for"
                               + str(blockdevice_id)).write(_logger)
 
-
     def rescan_scsi(self):
         """
         Rescan SCSI bus. This is needed in situations:
@@ -326,7 +325,7 @@ class XtremIOiSCSIDriver():
         :return:none
         """
         channel_number = self._get_channel_number()
-        ## Check for error condition
+        # Check for error condition
         if channel_number < 0:
             Message.new(error="iSCSI login not done for XtremIO bailing out").write(_logger)
             raise DeviceException
@@ -350,14 +349,14 @@ class XtremIOiSCSIDriver():
         # We shall parse the output above and to give out channel number
         # as 9
         for row in output.split('\n'):
-           if re.search(r'XtremApp', row, re.I):
-            channel_row = re.search('\d+', row)
-            if channel_row:
-                channel_number = channel_row.group()
-                return channel_number
+            if re.search(r'XtremApp', row, re.I):
+                channel_row = re.search('\d+', row)
+                if channel_row:
+                    channel_number = channel_row.group()
+                    return channel_number
 
-        ## Did not find channel number of xtremIO
-        ## The number cannot be negative
+        # Did not find channel number of xtremIO
+        # The number cannot be negative
         return -1
 
     def _get_initiator(self):
@@ -419,22 +418,22 @@ class EMCXtremIOBlockDeviceAPI(object):
         :return: True if volume folder exists. For each dataset_id a new volume is created.
         """
         try:
-           vol_folders = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS)
-           vol_folder = vol_folders['folders']
-           Message.new(folders=vol_folder).write(_logger)
-           for folder in vol_folder:
-               Message.new(folder_name=folder['name']).write(_logger)
-               ## Folder name comes with a "/" as absolute path
-               if folder['name'] == (str(XtremIOMgmt.BASE_PATH) + str(self._cluster_id)):
-                   Message.new(Debug="Volume folder found").write(_logger)
-                   return True
+            vol_folders = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS)
+            vol_folder = vol_folders['folders']
+            Message.new(folders=vol_folder).write(_logger)
+            for folder in vol_folder:
+                Message.new(folder_name=folder['name']).write(_logger)
+                # Folder name comes with a "/" as absolute path
+                if folder['name'] == (str(XtremIOMgmt.BASE_PATH) + str(self._cluster_id)):
+                    Message.new(Debug="Volume folder found").write(_logger)
+                    return True
 
         except DeviceExceptionObjNotFound as exc:
             Message.new(value="Volume folder not found").write(_logger)
         except:
             Message.new(value="All Exception caught").write(_logger)
 
-        return  False
+        return False
 
     def _create_volume_folder(self):
 
@@ -446,7 +445,7 @@ class EMCXtremIOBlockDeviceAPI(object):
                     self.mgmt.PARENT_FOLDER_ID: self.mgmt.BASE_PATH}
             self.mgmt.request(self.mgmt.VOLUME_FOLDERS, self.mgmt.POST, data)
         except DeviceExceptionObjNotFound as exe:
-            #Message.new(Error="Failed to create volume folder").write(_logger)
+            # Message.new(Error="Failed to create volume folder").write(_logger)
             raise exe
 
     def _check_version(self):
@@ -512,12 +511,12 @@ class EMCXtremIOBlockDeviceAPI(object):
             )
             return volume
         except DeviceExceptionObjNotFound as exc:
-            #Message.new(Error=exc).write(_logger)
+            # Message.new(Error=exc).write(_logger)
             raise UnknownVolume(blockdevice_id)
 
     def compute_instance_id(self):
         """
-        :return:
+        :return: Compute instance id
         """
         return self._compute_instance_id
 
@@ -534,7 +533,7 @@ class EMCXtremIOBlockDeviceAPI(object):
             if not self._check_for_volume_folder():
                 self._create_volume_folder()
         except DeviceVersionMismatch as exc:
-            #Message.new(Error=exc).write(_logger)
+            # Message.new(Error=exc).write(_logger)
             raise
         except """catch all other exception""":
             Message.new(Error="Unknown Exception occurred in last call")
@@ -583,17 +582,17 @@ class EMCXtremIOBlockDeviceAPI(object):
             raise UnknownVolume(blockdevice_id)
 
     def destroy_volume_folder(self):
-	"""
-	Destroy the volume folder
-	:param: none
-	"""
-	try:
+        """
+        Destroy the volume folder
+        :param: none
+        """
+        try:
             Message.new(Info="Destroying Volume folder" + str(self._cluster_id)).write(_logger)
-            self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS, XtremIOMgmt.DELETE, name=XtremIOMgmt.BASE_PATH +
-                                                                                   str(self._cluster_id))
+            self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS, XtremIOMgmt.DELETE,
+                              name=XtremIOMgmt.BASE_PATH + str(self._cluster_id))
         except DeviceExceptionObjNotFound as exc:
             raise UnknownVolume(self._cluster_id)
-		
+
     def attach_volume(self, blockdevice_id, attach_to):
         """
         Attach volume associates a volume with to a initiator group. The resultant of this is a
@@ -658,22 +657,22 @@ class EMCXtremIOBlockDeviceAPI(object):
         """
         volumes = []
         try:
-            ## Query for volume folder by name VOL_FLOCKER
-            ## and get list of volumes. The array may have
-            ## other volumes not owned by Flocker
+            # Query for volume folder by name VOL_FLOCKER
+            # and get list of volumes. The array may have
+            # other volumes not owned by Flocker
             vol_folder = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS,
                                            name=XtremIOMgmt.BASE_PATH + str(self._cluster_id))['content']
-            ## Get the number of volumes
+            # Get the number of volumes
             Message.new(NoOfVolumesFound=vol_folder['num-of-vols']).write(_logger)
             if int(vol_folder['num-of-vols']) > 0:
                 for vol in vol_folder['direct-list']:
-                    #Message.new(VolumeName=vol[1]).write(_logger)
+                    # Message.new(VolumeName=vol[1]).write(_logger)
                     volume = self._get_vol_details(vol[1])
                     volumes.append(volume)
-                    #Message.new(volume=volume).write(_logger)
+                    # Message.new(volume=volume).write(_logger)
         except Exception as exe:
             pass
-            #Message.new(Error=exe).write(_logger)
+            # Message.new(Error=exe).write(_logger)
 
         return volumes
 
@@ -695,12 +694,11 @@ class EMCXtremIOBlockDeviceAPI(object):
         # We shall parse the output above and give out path /dev/sde as in
         # this case
         for row in output.split('\n'):
-           if re.search(r'XtremApp', row, re.I):
-              if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
-                device_name = re.findall(r'/\w+', row, re.I)
-                if device_name:
-                    return FilePath(device_name[0] + device_name[1])
-
+            if re.search(r'XtremApp', row, re.I):
+                if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
+                    device_name = re.findall(r'/\w+', row, re.I)
+                    if device_name:
+                        return FilePath(device_name[0] + device_name[1])
 
         raise UnknownVolume(blockdevice_id)
 
