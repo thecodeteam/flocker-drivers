@@ -12,16 +12,16 @@ ClusterHQ/Flocker provides an efficient and easy way to connect persistent store
 - Install OpeniSCSI 
     * Ubuntu<br>
    ```bash
-    sudo apt-get update <br>
-    sudo apt-get install -y open-iscsi<br>
-    sudo apt-get install -y lsscsi<br>
+    sudo apt-get update
+    sudo apt-get install -y open-iscsi
+    sudo apt-get install -y lsscsi
     sudo apt-get -y install scsitools
     ```
     * Centos<br>
     ```bash
-    sudo yum -y install iscsi-initiator-utils<br>
-    sudo yum -y install lsscsi<br>
-    sudo yum -y install sg3_utils<br>
+    sudo yum -y install iscsi-initiator-utils
+    sudo yum -y install lsscsi
+    sudo yum -y install sg3_utils
     ```
 - Discover iSCSI XtremIO portal on the host<br>
    ```bash
