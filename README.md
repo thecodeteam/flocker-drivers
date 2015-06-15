@@ -49,14 +49,14 @@ The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11
 - Enable Plugin<br>
     To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml. This should be     as follows, replacing ${xms_ip}, ${xms_user} & ${xms_password} with the ip/hostname, username and password of XtremIO XMS port:<br><br>
 ```bash
-control-service: {hostname: '192.168.33.10', port: 4524} <br>
-dataset: {backend: emc_xtremio_flocker_plugin} <br>
-version: 1 <br>
-dataset: <br>
-    backend: emc_xtremio_flocker_plugin <br>
-        xms_ip: ${xms_ip} <br> 
-        xms_user: ${xms_user} <br>
-        xms_password: ${xms_password} <br>
+control-service: {hostname: '192.168.33.10', port: 4524}
+dataset: {backend: emc_xtremio_flocker_plugin}
+version: 1
+dataset:
+    backend: emc_xtremio_flocker_plugin
+        xms_ip: ${xms_ip}
+        xms_user: ${xms_user}
+        xms_password: ${xms_password}
 ```
 ## Usage Instructions
 Please refer to ClusterHQ/Flocker documentation for usage. <br>
