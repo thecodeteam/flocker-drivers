@@ -1,41 +1,27 @@
+==========================================
 Contributing to EMC XtemIO  Flocker Driver
+==========================================
+
 Introduction
+============
+Contributions are developed using test-driven development, code reviews and per-issue branches. Each unit of work is defined in an issue in the issue tracker and developed on a branch. Code is written using test-driven development. The issue is closed by merging the branch (via a GitHub pull request). Before a branch is merged it must pass code review.
 
-Contributions are developed using test-driven development, code reviews and per-issue branches.
-
-Each unit of work is defined in an issue in the issue tracker and developed on a branch.
-
-Code is written using test-driven development.
-
-The issue is closed by merging the branch (via a GitHub pull request).
-
-Before a branch is merged it must pass code review.
-
-The code reviewer ensures that the pull request:
-Follows the coding standard (Python's PEP 8).
-Includes appropriate documentation.
-Has full test coverage (unit tests and functional tests).
-Resolves the issue.
-Talk to Us
+- The code reviewer ensures that the pull request:
+- Follows the coding standard (Python's PEP 8).
+- Includes appropriate documentation.
+- Has full test coverage (unit tests and functional tests).
+- Resolves the issue.
+- Talk to Us
 
 Have questions or need help?
+============================
+You can open an account there to file issues, but we're also happy to accept Github Issues with feature requests or bug reports. You can also join us on the #emccorp channel on the irc.freenode.net IRC network.
 
-You can open an account there to file issues, but we're also happy to accept Github Issues with feature requests or bug reports
-You can also join us on the #emccorp channel on the irc.freenode.net IRC network
 Development Environment
-
+=======================
 Please visit the Vagrant Environment for XtremIO + Flocker at https://github.com/emccorp/vagrant-xtremio-flocker
 You will need Python 2.7 and a recent version of PyPy installed on your development machine.
+
 Running Tests
-
+=============
 Please see how to run tests at https://github.com/emccorp/xtremio-flocker-driver/README.md#running-tests
-
-Contributing to EMC ScaleIO Flocker Driver
-
-At a minimum you can simply submit a GitHub Pull Request with your changes. In order to maximize your chances of getting your code accepted, and to keep you from wasting time:
-
-Discuss your ideas with us in advance in a freenode or GitHub issue.
-Explain the purpose of your PR, and why these changes are necessary.
-Limit your PR to fixing a single problem or adding a single feature.
-See the merge requirements below for details about our testing and documentation requirements.
-Make sure your PR adds your name to AUTHORS.rst if you've never contributed before
