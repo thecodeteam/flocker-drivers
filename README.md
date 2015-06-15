@@ -1,4 +1,4 @@
-EMC ScaleIO Plugin/Driver for ClusterHQ/flocker
+EMC ScaleIO Plugin for ClusterHQ/flocker
 ======================
 
 ![EMC ScaleIO Flocker Intergration] 
@@ -26,15 +26,12 @@ cd scaleio-flocker-driver/
 sudo python setup.py install
 ```
 
-**If you get errors on pip install for scaleio-py, follow the below** (these should be resolved soon)
-
-Install latest [ScaleIO-py Release](https://github.com/swevm/scaleio-py/releases) or follow the below install from source
+You can optionally verify the correct packages are installed.
 ```bash
-git clone https://github.com/swevm/scaleio-py
-cd scaleio-py
-sudo python setup.py install
+ pip list | grep -i scaleio
+scaleio-flocker-driver (1.0)
+ScaleIO-py (0.3.3-3)
 ```
-then repeate the above installation for ```scaleio-flocker-driver```
 
 Then copy the example agent.yml that was created
 
