@@ -162,13 +162,15 @@ VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 
 - Add these functions depending on necessity
   - ScaleIO 1.30 Support
-  - ScaleIO 1.32 Support
+  - ~~ScaleIO 1.32 Support~~
+  - Test ScaleIO 1.32 (Currently Limited Testing)
   - Certification Verification
   - Enhanced Feature sets for volume in Flocker
   - Verify Other OS's
 - Clean up the code
   - Address ```#TODO``` items
   - Optimize check_login bug/work around
+  - Optimize block device cleanup in test suite
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
