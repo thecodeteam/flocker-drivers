@@ -41,6 +41,7 @@ class TidyScaleIOVolumeManager(
         # This deletes all flocker volumes from ScaleIO
         # TODO this doesnt take into account if it belongs to
         # flocker cluster, nore if it doesn't belong to testing.
+        # So all flocker volumes will be deleted. Need to optimimize
         for volume in self.original.volumes:
             if volume.name.startswith('f'):
                 siovolume = self.original.get_volume_by_name(
@@ -66,9 +67,6 @@ class IScaleIOVolumeManagerTestsMixin(object):
         self.assertTrue(verifyObject(IScaleIOVolumeManager, self.client))
 
 
-# I dont think this is needed, as we should customize
-# make_iblockdevicemanager_tests for anything needed that
-# is extra, see https://github.com/ClusterHQ/flocker-emc/issues/4
 def make_iscaleiovolumemanager_tests(client_factory):
     """
     Build a ``TestCase`` for verifying that an implementation of
