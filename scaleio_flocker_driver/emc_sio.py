@@ -64,7 +64,7 @@ HTTP = "http"
 HTTPS = "https"
 DEBUG = "DEBUG"
 
-#Default to 443
+# Default to 443
 DEFAULT_PORT = 443
 
 # TODO ScaleIO 1.30 has a minor blocker (see below)
@@ -74,9 +74,9 @@ DEFAULT_PORT = 443
 ScaleIO_1_30 = '1.0'
 # Tested
 ScaleIO_1_31 = '1.1'
-# Version 1.1 is in response from
+# Version 1.1 is the response from
 # both 1.31 and 1.32, other than that,
-# 1.32 will have errors temporarily.
+# 1.32 may have errors temporarily.
 # Untested
 # ScaleIO_1_32 = '1.2'
 SUPPORTED_API_VERSIONS = [ScaleIO_1_31]
@@ -87,7 +87,8 @@ class IScaleIOVolumeManager(Interface):
     The parts of ``scaleiopy.scaleio.ScaleIO`` that we use.
     """
     def create_volume(
-            self, volName, volSizeInMb, pdObj, spObj, thinProvision=True, **kwargs):
+            self, volName, volSizeInMb, pdObj, spObj,
+            thinProvision=True, **kwargs):
         """
         Creates a Volume
 
@@ -324,9 +325,9 @@ def _check_api_version(api, usr, passw, verify_ssl=False):
 
     """
     # Purposely arent using scaleio-py here
-    # beause we want bare bones call to API with
-    # user and password only. All version calls don't
-    # need token auth.
+    # because we want bare bones call to API with
+    # user and password only. API version calls don't
+    # need token auth requests.
     request = (api + "/version")
     r = requests.get(request, auth=(usr, passw),
                      verify=verify_ssl)
@@ -338,11 +339,11 @@ def _check_api_version(api, usr, passw, verify_ssl=False):
     return api_version
 
 
-# TODO Right now we can only handle one protection domain and one
-# storage pool. In order to take advantage of more, flocker
-# would need to supply metadata about how a container
-# wants a volume. E.g. Gold or "SSD" for storage pool
-# and protection=high for protection domains.
+# TODO Right now the driver can only handle one protection domain
+# and one storage pool. In order to take advantage of more, flocker
+# would need to supply metadata about how a container wants a volume.
+# E.g. Gold or "SSD" for storage pool and protection=high
+# for protection domains.
 def scaleio_client(usr, passw, mdm, port=DEFAULT_PORT,
                    pdomain=DEFAULT_PROTECTION_DOMAIN,
                    spool=DEFAULT_STORAGE_POOL,
@@ -376,11 +377,7 @@ def scaleio_client(usr, passw, mdm, port=DEFAULT_PORT,
 
     verify = False
     if crt is not None:
-        # The ScaleIO gateway automatically creates its own self-signed
-        # security certificate when it is installed or upgraded.
-        # If your organization has no special security certificate
-        # requirements, you can keep working with the default certificate.
-        # ***TODO*** (test with the following)
+        # TODO (support for certificates)
         # 1) "Replacing the default self-signed security certificate
         # with your own trusted certificate"
         # 2) "Replacing the default self-signed security certificate
@@ -452,10 +449,9 @@ def _blockdevicevolume_from_scaleio_volume(
     :returns: ``BlockDeviceVolume```
     """
 
-    # TODO this can get confusing, tests only put one mapping
-    # per volume, however ScaleIO can multi-map, which may make
-    # this and other tests harder
-    # should attached_to consider being a list?
+    # TODO only put one mapping per volume, however
+    # ScaleIO can multi-map, should attached_to
+    # consider being a list?
 
     # Return a ``BlockDeviceVolume``
     return BlockDeviceVolume(
@@ -469,10 +465,10 @@ def _blockdevicevolume_from_scaleio_volume(
 
 
 # This fixes https://github.com/ClusterHQ/flocker-emc/issues/14
-# but this is hacky, and redundant because it logs into the
-# SIO object to the gateway before every API call, which fixed
-# an error with python-requests getting SSL errors becuase of
-# other cluster logins.
+# but this is hacky and redundant because it logs into the
+# SIO object and the gateway before every Flocker API call
+# which fixed requests getting SSL errors becuase of
+# communication errors with the gateway.
 def check_login(api_func):
     """
     Decorator to check local SIO object login
@@ -514,7 +510,7 @@ class EMCScaleIOBlockDeviceAPI(object):
         """
         return int(GiB(8).to_Byte().value)
 
-    # TODO should we store this keep is as class attr?
+    # TODO should we keep is as class attr?
     @staticmethod
     def id_to_short(_id):
         """
@@ -531,6 +527,9 @@ class EMCScaleIOBlockDeviceAPI(object):
         :return str: Slice of the volume which is the
             hashed dataset_id
         """
+        # The SIO name does not have many chars to work
+        # with so we need to chop. Not be best in terms of
+        # collision consistency.
         return volume_name[23:]
 
     @staticmethod
@@ -540,8 +539,8 @@ class EMCScaleIOBlockDeviceAPI(object):
             that has not been reduced to ScaleIO restrictions.
         :return int: A granularity of ALLOCATION_GRANULARITY in MBytes
         """
-        # should we use self.allocation_unit()?
-        # instead of ALLOCATION_GRANULARITY
+        # Should we use self.allocation_unit()
+        # instead of ALLOCATION_GRANULARITY?
         div = round(int(MiB(size_mb).to_GiB().value) / ALLOCATION_GRANULARITY)
         if div > 0:
             return size_mb
@@ -575,8 +574,9 @@ class EMCScaleIOBlockDeviceAPI(object):
         ScaleIO Stored a UUID in the SDC kernel module.
         """
         # TODO this assume all nodes running the
-        # flocker-dataset-agent are running ScaleIO Converged
-        # We can change this to use unicode of 'hostname'
+        # flocker-dataset-agent are running ScaleIO in a
+        # Converged Architecture. We can change this
+        # to use unicode of 'hostname' if we need
         return unicode(check_output(
             ["/bin/emc/scaleio/drv_cfg",
              "--query_guid"]).rstrip('\r\n'))
@@ -585,9 +585,6 @@ class EMCScaleIOBlockDeviceAPI(object):
     def create_volume(self, dataset_id, size):
         """
         Create a new volume.
-
-        XXX: Probably needs to be some checking of valid sizes for different
-        backends. Perhaps the allowed sizes should be defined as constants?
 
         :param UUID dataset_id: The Flocker dataset ID of the dataset on this
             volume.
@@ -605,11 +602,12 @@ class EMCScaleIOBlockDeviceAPI(object):
         # see https://clusterhq.atlassian.net/browse/FLOC-1874
         check_supported_volume_size(size, dataset_id)
 
-        # convert bytes to megabytes for API
+        # Convert bytes to megabytes for API
         mb_size = bytes_to_mbytes(size)
         scaleio_size = self.to_scaleio_size(mb_size)
 
-        # flocker volumes start with and f
+        # Flocker volumes start with and f again,
+        # we only have 32 chars to work with in the ```name```
         volume_name = 'f%s%s' % (slug, str(self._cluster_id)[:8])
         volume = self._client.create_volume(
             volume_name,
@@ -617,7 +615,6 @@ class EMCScaleIOBlockDeviceAPI(object):
             self._client.get_pd_by_name(self._pdomain),
             self._client.get_storage_pool_by_name(self._spool))
 
-        # This seems like a wasteful request, just to log...
         siovolume = self._client.get_volume_by_name(
             volume_name)
         Message.new(Info="Created Volume "
@@ -676,7 +673,7 @@ class EMCScaleIOBlockDeviceAPI(object):
         :returns: A ``BlockDeviceVolume`` with a ``host`` attribute set to
             ``host``.
         """
-        # raises UnknownVolume
+        # Raises UnknownVolume
         volume = self._get(blockdevice_id)
         # raises AlreadyAttachedVolume
         if volume.attached_to is not None:
@@ -691,8 +688,7 @@ class EMCScaleIOBlockDeviceAPI(object):
 
         # Try mapping volumes
 
-        # TODO errors are currently hard to get from sclaeiopy
-        # which we are working on here
+        # TODO errors are currently hard to get from sclaeio-py
         # https://github.com/swevm/scaleio-py/issues/6
         # ultimately we should be able to get more specific
         # errors about why the failure happened such as
@@ -704,11 +700,9 @@ class EMCScaleIOBlockDeviceAPI(object):
                     str(blockdevice_id)), sdcObj=sdc,
                 allowMultipleMappings=False)
         except Exception as e:
-            # TODO add error handeling to scaleio-py where
-            # real errors are returned, this is terrible to assume
-            # the error is because it wouldnt map.
-            # For now, print the error, for testing purposes
-            print e
+            # TODO real errors need to be returned by scaleio-py
+            Message.new(Error=str(blockdevice_id) + " "
+                        + str(e)).write(_logger)
             raise AlreadyAttachedVolume(blockdevice_id)
 
         attached_volume = volume.set(
@@ -918,22 +912,25 @@ def scaleio_from_configuration(cluster_id, username, password, mdm_ip, port,
                                certificate, ssl, debug):
     """
     Returns Flocker ScaleIO BlockDeviceAPI from plugin config yml.
-       :param uuid cluster_id: The UUID of the cluster
-        :param string username: The username for ScaleIO Driver, this will be used
-            to login and enable requests to be made to the underlying ScaleIO
-            BlockDeviceAPI
-        :param string password: The username for ScaleIO Driver, this will be
-            used to login and enable requests to be made to the underlying
-            ScaleIO BlockDeviceAPI
-        :param unicode mdm_ip: The Main MDM IP address. ScaleIO Driver will
-            communicate with the ScaleIO Gateway Node to issue REST API
-            commands.
+        :param uuid cluster_id: The UUID of the cluster
+        :param string username: The username for ScaleIO Driver,
+            this will be used to login and enable requests to
+            be made to the underlying ScaleIO BlockDeviceAPI
+        :param string password: The username for ScaleIO Driver,
+            this will be used to login and enable requests to be
+            made to the underlying ScaleIO BlockDeviceAPI
+        :param unicode mdm_ip: The Main MDM IP address. ScaleIO
+            Driver will communicate with the ScaleIO Gateway
+            Node to issue REST API commands.
         :param integer port: MDM Gateway The port
-        :param string protection_domain: The protection domain for this driver instance
-        :param string storage_pool: The storage pool used for this driver instance
-        :param FilePath certificate: An optional certificate to be used for
-            optional authentication methods. The presence of this
-            certificate will change verify to True inside the requests.
+        :param string protection_domain: The protection domain
+            for this driver instance
+        :param string storage_pool: The storage pool used for
+            this driver instance
+        :param FilePath certificate: An optional certificate
+            to be used for optional authentication methods.
+            The presence of this certificate will change verify
+            to True inside the requests.
         :param boolean ssl: use SSL?
         :param boolean debug: verbosity
     """
@@ -946,4 +943,4 @@ def scaleio_from_configuration(cluster_id, username, password, mdm_ip, port,
         cluster_id,
         pd,
         sp
-    )   
+    )

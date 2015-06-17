@@ -35,9 +35,6 @@ def emcsioblockdeviceapi_for_test(cluster_id, test_case):
     :returns: A ``EMCCinderBlockDeviceAPI`` instance
     """
 
-    # TODO add the retrieval of the api for tests via the
-    # blockdevicefactory.py? Look at test_cinder for example?
-    # ``flocker/node/agents/functional/test_cinder.py#L36``
     client, pd, sp = tidy_scaleio_client_for_test(test_case)
     return emc_scaleio_api(
         client,
@@ -100,7 +97,7 @@ class EMCScaleIOBlockDeviceAPIInterfaceTests(
     """
 
 
-# EBS and Cinder implementations move the below tests up
+# TODO EBS and Cinder implementations move the below tests up
 # into <Driver>BlockDeviceAPIInterfaceTests
 # See https://github.com/ClusterHQ/flocker/blob/master
 #         /flocker/node/agents/functional/test_ebs.py#L84
@@ -117,5 +114,5 @@ class EMCScaleIOBlockDeviceAPIImplementationTests(SynchronousTestCase):
 
         self.assertTrue(block_device_api._client._logged_in is True)
 
-    # TODO ***other ScaleIO Specific tests, like protection domain,
-    # storage pools and other cluster information.***
+    # TODO add other ScaleIO Specific tests, like protection domain,
+    # storage pools and other cluster information ??
