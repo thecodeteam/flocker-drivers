@@ -76,7 +76,7 @@ You should see the below if all was succesfull
 PASSED (successes=28)
 ```
 
-Make sure you [Install Flocker-Node](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html#flocker-node) on every node you want the driver to run on, then make sure flocker services are running before using the CLI examples below.
+Make sure you [Install Flocker-Node](https://docs.clusterhq.com/en/1.0.0/using/installing/index.html#installing-clusterhq-flocker-node) on every node you want the driver to run on, then make sure flocker services are running before using the CLI examples below.
 
 ## Usage Instructions
 
