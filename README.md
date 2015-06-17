@@ -18,7 +18,7 @@ Flocker can help orchestrate and provision storage to your clustered docker cont
 
 **Tested on CentOS 7**
 
-Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/0.4.0/gettingstarted/index.html)
+Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/1.0.0/using/installing/index.html)
 
 ```bash
 git clone https://github.com/emccorp/scaleio-flocker-driver
