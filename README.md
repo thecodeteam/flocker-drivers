@@ -20,10 +20,22 @@ Flocker can help orchestrate and provision storage to your clustered docker cont
 
 Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/1.0.0/using/installing/index.html)
 
+**_ Be sure to use /opt/flocker/bin/python as this will install the driver into the right python environment_**
+
+Install using python
 ```bash
 git clone https://github.com/emccorp/scaleio-flocker-driver
 cd scaleio-flocker-driver/
-sudo python setup.py install
+sudo /opt/flocker/bin/python setup.py install
+```
+
+**_ Be sure to use /opt/flocker/bin/pip as this will install the driver into the right python environment_**
+
+Install using pip
+```
+git clone https://github.com/emccorp/scaleio-flocker-driver
+cd scaleio-flocker-driver/
+/opt/flocker/bin/pip install scaleio-flocker-driver/
 ```
 
 You can optionally verify the correct packages are installed.
