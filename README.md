@@ -164,9 +164,12 @@ VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
   - ScaleIO 1.30 Support
   - ~~ScaleIO 1.32 Support~~
   - Test ScaleIO 1.32 (Currently Limited Testing)
-  - Certification Verification
+  - Add Certification Verification
   - Enhanced Feature sets for volume in Flocker
-  - Verify Other OS's
+  - Address failure scenarios
+    - Docker Engine
+    - Host
+    - Flocker Daemon
 - Clean up the code
   - Address ```#TODO``` items
   - Optimize check_login bug/work around
