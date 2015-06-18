@@ -37,7 +37,7 @@ Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 
    ```bash
     git clone https://github.com/emccorp/xtremio-flocker-driver
-    sudo python setup.py install
+    sudo /opt/flocker/bin/python setup.py install
     ```
 
 ## Usage Instructions
