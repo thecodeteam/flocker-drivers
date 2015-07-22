@@ -15,9 +15,9 @@ This Vagrant environment and Vagrantfile helps create a three-VM EMC ScaleIO lab
 
 Get the source
 ```
-git clone https://github.com/wallnerryan/scaleio-flocker
+git clone https://github.com/emccorp/vagrant-scaleio-flocker
 
-cd scaleio-flocker
+cd vagrant-scaleio-flocker
 ```
 
 Copy the RPMS into the source directory
@@ -46,7 +46,12 @@ Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
 in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
 The plugin (https://github.com/emccorp/scaleio-flocker-driver) should come installed in this
-environment, as well as cluster certificates.
+environment, as well as cluster certificates and services started. 
+
+Services that need to be started are
+- (all nodes) **flocker-dataset-agent**
+- (all nodes) **flocker-container-agent**
+- (at least on one node) **flocker-control**
 
 ```
 version: 1
