@@ -577,9 +577,15 @@ class EMCScaleIOBlockDeviceAPI(object):
         # flocker-dataset-agent are running ScaleIO in a
         # Converged Architecture. We can change this
         # to use unicode of 'hostname' if we need
+
+        # TODO******https://github.com/ClusterHQ/flocker/issues/1872****
+        # query_guid return a capital string,
+        # flocker processes this an an opaque string
+        # but a mismatch happens during volume creations
+        # where its can mismatch CAP vs lowercase
         return unicode(check_output(
             ["/bin/emc/scaleio/drv_cfg",
-             "--query_guid"]).rstrip('\r\n'))
+             "--query_guid"]).rstrip('\r\n')).lower()
 
     @check_login
     def create_volume(self, dataset_id, size):
