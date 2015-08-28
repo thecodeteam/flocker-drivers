@@ -48,11 +48,7 @@ in virtualbox. The example at the time of running this used vboxnet1 192.168.50.
 The plugin (https://github.com/emccorp/scaleio-flocker-driver) should come installed in this
 environment, as well as cluster certificates and services started. 
 
-Services that need to be started are
-- (all nodes) **flocker-dataset-agent**
-- (all nodes) **flocker-container-agent**
-- (at least on one node) **flocker-control**
-
+The SIO driver is set up in this way
 ```
 version: 1
 control-service:
@@ -65,6 +61,33 @@ dataset:
   protection_domain: "pdomain"
   ssl: True
 ```
+
+Use the Flocker Docker Plugin
+```
+vagrant ssh mdm2
+docker run -ti -v test:/data --volume-driver=flocker busybox sh
+```
+
+You should see a volume created in the Volume CLI (See how to use volumes CLI below)
+
+Use the Volumes CLI (flocker-volumes cli is located in /opt/flocker/flocker-<version>/flocker-tools/bin/)
+```
+(Create a volume)
+cd /etc/flocker/
+1. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local create --node=8700ae98 --size=8589934592 --metadata="requester=yourname"
+2. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list 
+3. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list-nodes
+```
+
+Example Output
+```
+/opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list 
+DATAASET                               SIZE    METADATA             STATUS            SERVER                   
+59159c8c-2fde-430d-9fd7-7fe5092abc12   8.00G                        attached          649b2006 (192.168.50.13) 
+a9f38503-0cc8-46de-9d44-dd3ac350b2d6   8.00G   createdfor=testing   attached          649b2006 (192.168.50.13) 
+```
+
+You can also view the volumes and nodes in the UI, point your Vagrant Host Browser to ```http://127.0.0.1:8080/client/#/nodes/list?sortDir=ASC```
 
 Here is a fig file (mongo-application.yml) (you can find this in this repo as well under ./examples)
 
@@ -96,7 +119,7 @@ Here is a deployment file (mongo-deployment-1node.yml)
  "192.168.50.13": []
 ```
 
-Run the example
+Run the example (flocker-deploy is located in /opt/flocker/flocker-<version>/flocker-cli/bin/)
 ```
 flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
 ```
@@ -126,7 +149,7 @@ Here is a deployment file (mongo-deployment-2node.yml)
  "192.168.50.13": []
 ```
 
-Run the example to move the app
+Run the flocker-deploy example to move the app 
 ```
 flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
 ```
