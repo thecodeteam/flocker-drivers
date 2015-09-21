@@ -13,6 +13,8 @@ This Vagrant environment and Vagrantfile helps create a three-VM EMC ScaleIO lab
 - **Tested with CentOS 7**
 - Scripts have been maunually run on a 3 node Amazon AWS cluster runing CentOS 7 AMI as well, though this is not automated in the current repo with ```--provider``` flag
 
+Desclaimer (This takes a while to setup). If you want an easier way to install a 4 Node setup to test out flocker with scaleio, then visit (https://github.com/wallnerryan/flocker-scaleio-singlenode) 
+
 Get the source
 ```
 git clone https://github.com/emccorp/vagrant-scaleio-flocker
