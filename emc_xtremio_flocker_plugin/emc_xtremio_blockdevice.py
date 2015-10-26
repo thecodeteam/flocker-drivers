@@ -146,6 +146,7 @@ class XtremIOMgmt():
         :param idx: If not name, then index of the object at EMC XtremIO
         :return: REST Response
         """
+        response = None
 
         if name and idx:
             Message.new("Request can't handle both name and index")
@@ -228,7 +229,7 @@ class XtremIOiSCSIDriver():
         sys = self.mgmt.request('clusters', 'GET', idx=1)['content']
         use_chap = (sys.get('chap-authentication-mode', 'disabled') !=
                     'disabled')
-        dicovery_chap = (sys.get('chap-discovery-mode', 'disabled') !=
+        discovery_chap = (sys.get('chap-discovery-mode', 'disabled') !=
                          'disabled')
         initiator = self._get_initiator()
         try:
@@ -260,7 +261,7 @@ class XtremIOiSCSIDriver():
                 data['initiator-authentication-user-name'] = 'chap_user'
                 chap_passwd = self._get_password()
                 data['initiator-authentication-password'] = chap_passwd
-            if dicovery_chap:
+            if discovery_chap:
                 data['initiator-discovery-user-name'] = 'chap_user'
                 data['initiator-discovery-'
                      'password'] = self._get_password()
@@ -372,7 +373,7 @@ class XtremIOiSCSIDriver():
         Initiator name of the current host
         """
         if self._connector['initiator'] is not None:
-            return self._connector
+            return self._connector['initiator']
         else:
             # TODO there couldbe multiple interfaces
             iscsin = os.popen('cat %s' % INITIATOR_FILE).read()
