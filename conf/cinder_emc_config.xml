@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EMC>
+  <EcomServerIp>10.108.247.22</EcomServerIp>
+  <EcomServerPort>5988</EcomServerPort>
+  <EcomUserName>admin</EcomUserName>
+  <EcomPassword>#1Password</EcomPassword>
+  <PortGroups>
+    <PortGroup>iSCSI_1g0_2g0</PortGroup>
+  </PortGroups>
+  <Array>000198700440</Array>
+  <Pool>SATA_BRONZ1</Pool>
+</EMC>

@@ -1,0 +1,10 @@
+bitmath
+eliot
+oslo.config
+psycopg2
+pywbem
+PyYAML
+redis
+six
+twisted
+zope.interface
