@@ -13,9 +13,14 @@ This is a plugin driver for the [Flocker](https://clusterhq.com/) project which 
 
 **Tested on CentOS 7**
 
-Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/1.0.0/using/installing/index.html)
+Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/1.8.0/install/install-client.html)
 
 **_Be sure to use /opt/flocker/bin/python as this will install the driver into the right python environment_**
+
+Install required libraries
+```bash
+sudo apt-get -y install libpq-dev
+```
 
 Install using python
 ```bash
@@ -48,14 +53,39 @@ Location: /opt/flocker/lib/python2.7/site-packages
 Requires:
 
 
-1) Install redis
-    yum install redis   --or--
-    apt-get install redis
+1) Install OpeniSCSI
+    * Ubuntu<br>
+    ```bash
+    sudo apt-get update
+    sudo apt-get -y install open-iscsi
+    sudo apt-get -y install lsscsi
+    sudo apt-get -y install scsitools
+    ```
+    * Centos<br>
+    ```bash
+    sudo yum -y install iscsi-initiator-utils
+    sudo yum -y install lsscsi
+    sudo yum -y install sg3_utils
 
-2) Edit redis.conf and set listen address
+2) Install redis
+    * Ubuntu<br>
+    ```bash
+    sudo apt-get -y install redis-server
+    ```
+    * Centos<br>
+    ```bash
+    sudo yum -y install redis   --or--
+    ```
+
+3) Install EMC inq utility
+    ```bash
+    sudo wget ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 -O /usr/local/bin/inq
+    sudo chmod +x /usr/local/bin/inq
+    ```
+4) Edit redis.conf and set listen address
     bind 10.10.0.XX 127.0.0.1
 
-3) Add vmax flocker plugin to agent.yml
+5) Add vmax flocker plugin to agent.yml
 
     "dataset":
       "backend": "emc_vmax_flocker_plugin"
@@ -69,7 +99,7 @@ Requires:
         - "host": "<short name>"
           "initiator": "iqn.1994-05.com.redhat:319a849586e9"
 
-4) Create /etc/cinder/cinder_emc_config.xml
+6) Create /etc/cinder/cinder_emc_config.xml
 
     <?xml version="1.0" encoding="UTF-8"?>
     <EMC>
@@ -84,7 +114,7 @@ Requires:
       <Pool>Fast-Pool</Pool>
     </EMC>
 
-4) Run trial unit tests
+7) Run trial unit tests
 
 Set agent.yml location for test suite
 ```bash
