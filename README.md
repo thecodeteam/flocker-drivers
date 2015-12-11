@@ -32,7 +32,7 @@ sudo /opt/flocker/bin/python setup.py install
 **_Be sure to use /opt/flocker/bin/pip as this will install the driver into the right python environment_**
 
 Install using pip
-```
+```bash
 git clone https://github.com/emccorp/vmax-flocker-driver
 cd vmax-flocker-driver/
 /opt/flocker/bin/pip install vmax-flocker-driver/
@@ -41,6 +41,7 @@ cd vmax-flocker-driver/
 You can optionally verify the correct packages are installed.
 ```bash
  pip show emc-vmax-flocker-plugin
+```
 Metadata-Version: 2.0
 Name: emc-vmax-flocker-plugin
 Version: 1.0
@@ -55,33 +56,34 @@ Requires:
 
 1) Install OpeniSCSI
     * Ubuntu<br>
-    ```bash
+```bash
     sudo apt-get update
     sudo apt-get -y install open-iscsi
     sudo apt-get -y install lsscsi
     sudo apt-get -y install scsitools
-    ```
+```
     * Centos<br>
-    ```bash
+```bash
     sudo yum -y install iscsi-initiator-utils
     sudo yum -y install lsscsi
     sudo yum -y install sg3_utils
+```
 
 2) Install redis
     * Ubuntu<br>
-    ```bash
+```bash
     sudo apt-get -y install redis-server
-    ```
+```
     * Centos<br>
-    ```bash
+```bash
     sudo yum -y install redis   --or--
-    ```
+```
 
 3) Install EMC inq utility
-    ```bash
+```bash
     sudo wget ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 -O /usr/local/bin/inq
     sudo chmod +x /usr/local/bin/inq
-    ```
+```
 4) Edit redis.conf and set listen address
     bind 10.10.0.XX 127.0.0.1
 
@@ -123,11 +125,13 @@ export VMAX_CONFIG_FILE=/etc/flocker/agent.yml
 
 Run the login test
 ```bash
-/opt/flocker/bin/trial emc_vmax_flocker_plugin.test_emc_vmax.EMCVmaxBlockDeviceAPIImplementationTests.test_login```
+/opt/flocker/bin/trial emc_vmax_flocker_plugin.test_emc_vmax.EMCVmaxBlockDeviceAPIImplementationTests.test_login
+```
 
 You should see the below if all was succesfull
 ```bash
 PASSED (successes=1)
+```
 
 ## Future
 

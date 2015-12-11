@@ -37,7 +37,7 @@ setup(
 
     keywords='backend, plugin, flocker, docker, python',
     packages=find_packages(exclude=['test*']),
-    install_requires = [],
+    install_requires = install_requires,
     data_files=[('/etc/flocker/', ['conf/agent.yml'])]
 )
 
