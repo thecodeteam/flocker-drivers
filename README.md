@@ -1,5 +1,4 @@
 # EMC VMAX Plugin for ClusterHQ/flocker
-# =====================================
 
 This is a plugin driver for the [Flocker](https://clusterhq.com/) project which delivers Fast, local, persistent storage for Docker containers, Multi-host container management, Database migrations, and Flexible shared storage (SAN, NAS or block) for Docker when you want it
 
@@ -19,11 +18,6 @@ Make sure you have Flocker already installed. If not visit  ![Install Flocker](h
 
 **_Be sure to use /opt/flocker/bin/python as this will install the driver into the right python environment_**
 
-Install required libraries
-```bash
-sudo apt-get -y install libpq-dev
-```
-
 Install using python
 ```bash
 git clone https://github.com/emccorp/vmax-flocker-driver
@@ -31,19 +25,16 @@ cd vmax-flocker-driver/
 sudo /opt/flocker/bin/python setup.py install
 ```
 
-**_Be sure to use /opt/flocker/bin/pip as this will install the driver into the right python environment_**
-
 Install using pip
 ```bash
 git clone https://github.com/emccorp/vmax-flocker-driver
-cd vmax-flocker-driver/
-/opt/flocker/bin/pip install vmax-flocker-driver/
+sudo /opt/flocker/bin/pip install vmax-flocker-driver/
 ```
 
 You can optionally verify the correct packages are installed.
 ```bash
- pip show emc-vmax-flocker-plugin
-```
+ /opt/flocker/bin/pip show emc-vmax-flocker-plugin
+
 Metadata-Version: 2.0
 Name: emc-vmax-flocker-plugin
 Version: 1.0
@@ -54,37 +45,37 @@ Author-email: kevin@rodgersworld.com
 License: Apache 2.0
 Location: /opt/flocker/lib/python2.7/site-packages
 Requires:
-
-
-1) Install OpeniSCSI
-    * Ubuntu<br>
-```bash
-    sudo apt-get update
-    sudo apt-get -y install open-iscsi
-    sudo apt-get -y install lsscsi
-    sudo apt-get -y install scsitools
 ```
-    * Centos<br>
+
+1) Install OpeniSCSI and other required libraries
+    * Ubuntu
 ```bash
-    sudo yum -y install iscsi-initiator-utils
-    sudo yum -y install lsscsi
-    sudo yum -y install sg3_utils
+sudo apt-get update
+sudo apt-get -y install open-iscsi scsitools lsscsi
+sudo apt-get -y install libpq-dev
+```
+    * Centos
+```bash
+sudo yum -y install iscsi-initiator-utils lsscsi sg3_utils
+sudo yum -y install libpqxx-devel
 ```
 
 2) Install redis
-    * Ubuntu<br>
+    * Ubuntu
 ```bash
-    sudo apt-get -y install redis-server
+sudo apt-get -y install redis-server
 ```
-    * Centos<br>
+    * Centos
 ```bash
-    sudo yum -y install redis   --or--
+sudo yum -y install redis   --or--
 ```
 
 3) Install EMC inq utility
 ```bash
-    sudo wget ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 -O /usr/local/bin/inq
-    sudo chmod +x /usr/local/bin/inq
+sudo wget \
+    ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 \
+    -O /usr/local/bin/inq
+sudo chmod +x /usr/local/bin/inq
 ```
 4) Edit redis.conf and set listen address
     bind 10.10.0.XX 127.0.0.1
