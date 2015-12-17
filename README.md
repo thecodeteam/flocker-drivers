@@ -47,27 +47,27 @@ Location: /opt/flocker/lib/python2.7/site-packages
 Requires:
 ```
 
-1) Install OpeniSCSI and other required libraries
-    * Ubuntu
+1) Install OpeniSCSI and other required libraries<br>
+On Ubuntu
 ```bash
 sudo apt-get update
 sudo apt-get -y install open-iscsi scsitools lsscsi
 sudo apt-get -y install libpq-dev
 ```
-    * Centos
+On Centos
 ```bash
 sudo yum -y install iscsi-initiator-utils lsscsi sg3_utils
 sudo yum -y install libpqxx-devel
 ```
 
-2) Install redis
-    * Ubuntu
+2) Install redis<br>
+On Ubuntu
 ```bash
 sudo apt-get -y install redis-server
 ```
-    * Centos
+On Centos
 ```bash
-sudo yum -y install redis   --or--
+sudo yum -y install redis
 ```
 
 3) Install EMC inq utility
@@ -77,7 +77,7 @@ sudo wget \
     -O /usr/local/bin/inq
 sudo chmod +x /usr/local/bin/inq
 ```
-4) Edit redis.conf and set listen address
+4) Edit redis.conf and set listen (bind) address<br>
     bind 10.10.0.XX 127.0.0.1
 
 5) Add vmax flocker plugin to agent.yml
@@ -118,10 +118,11 @@ export VMAX_CONFIG_FILE=/etc/flocker/agent.yml
 
 Run the login test
 ```bash
-/opt/flocker/bin/trial emc_vmax_flocker_plugin.test_emc_vmax.EMCVmaxBlockDeviceAPIImplementationTests.test_login
+/opt/flocker/bin/trial \
+    emc_vmax_flocker_plugin.test_emc_vmax.EMCVmaxBlockDeviceAPIImplementationTests.test_login
 ```
 
-You should see the below if all was succesfull
+You should see the below if all was successful
 ```bash
 PASSED (successes=1)
 ```
@@ -134,7 +135,7 @@ PASSED (successes=1)
   - Address ```#TODO``` items
 
 ## Contribution
-Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
+Create a fork of the project into your own repository. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
 
 Licensing
 ---------
