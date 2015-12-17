@@ -1,4 +1,7 @@
+# Copyright Hybrid Logic Ltd.
 # Copyright 2015 EMC Corporation
+# See LICENSE file for details.
+
 import oslo_i18n
 
 _translators = oslo_i18n.TranslatorFactory(domain='oslo.log')

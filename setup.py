@@ -1,4 +1,6 @@
+# Copyright Hybrid Logic Ltd.
 # Copyright 2015 EMC Corporation
+# See LICENSE file for details.
 
 from setuptools import setup, find_packages
 import codecs  # To use a consistent encoding

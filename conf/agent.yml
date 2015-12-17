@@ -1,17 +1,17 @@
 "version": 1
 "control-service":
-  "hostname": "dsib2236.lss.emc.com"
+  "hostname": "example.com"
   "port": 4524
 "dataset":
   "backend": "emc_vmax_flocker_plugin"
-  "lockdir": "/tmp"
+  "lockdir": "/var/flocker/vmax"
   "database": "localhost"
   "min_allocation": 15
   "protocol": "iSCSI"
   "hosts":
-    - "host": "dsib2237"
+    - "host": "example-01"
       "initiator": "iqn.1994-05.com.redhat:583d44b98a1b"
-    - "host": "dsib2236"
+    - "host": "example-02"
       "initiator": "iqn.1994-05.com.redhat:319a849586e9"
 
 
