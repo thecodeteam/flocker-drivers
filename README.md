@@ -14,7 +14,7 @@ Flocker can help orchestrate and provision storage to your clustered docker cont
 
 **Tested on ubuntu 14.04**
 
-Make sure you have Flocker already installed. If not visit  ![Install Flocker](https://docs.clusterhq.com/en/1.8.0/install/install-client.html)
+Make sure you have Flocker already installed. If not visit  [Install Flocker](https://docs.clusterhq.com/en/1.8.0/install/install-client.html)
 
 **_Be sure to use /opt/flocker/bin/python as this will install the driver into the right python environment_**
 
