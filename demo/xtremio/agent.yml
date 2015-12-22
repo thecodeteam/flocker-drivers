@@ -1,0 +1,8 @@
+control-service: {hostname: '192.168.33.10', port: 4524}
+dataset: {backend: emc_xtremio_flocker_plugin}
+version: 1
+dataset:
+   backend: emc_xtremio_flocker_plugin
+   xms_ip:<xms_ip>
+   xms_user: <xms_user>
+   xms_password: <xms_password>
