@@ -56,3 +56,8 @@ docs/_build/
 
 # PyBuilder
 target/
+ECS*
+EMC-ScaleIO*
+.vagrant
+ScaleIO*
+EMC*.crt
