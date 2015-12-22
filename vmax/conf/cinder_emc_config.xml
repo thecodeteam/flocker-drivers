@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EMC>
+  <EcomServerIp>XX.XX.XX.XX</EcomServerIp>
+  <EcomServerPort>5988</EcomServerPort>
+  <EcomUserName>admin</EcomUserName>
+  <EcomPassword>password</EcomPassword>
+  <PortGroups>
+    <PortGroup>iSCSIportgroup</PortGroup>
+  </PortGroups>
+  <Array>012345678901</Array>
+  <Pool>poolname</Pool>
+</EMC>
