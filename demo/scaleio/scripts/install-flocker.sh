@@ -4,7 +4,7 @@
 # Flocker ports need to be open
 systemctl enable firewalld
 systemctl start firewalld
-firewall-cmd --add-icmp-block=echo-request 
+firewall-cmd --add-icmp-block=echo-request
 firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
 firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -j ACCEPT
 # Docker port
@@ -52,7 +52,7 @@ mkdir flocker-$FLOCKERVERSION
 cd flocker-$FLOCKERVERSION/
 wget -nv https://clusterhq-archive.s3.amazonaws.com/python/Flocker-$FLOCKERVERSION-py2-none-any.whl
 
-# Installs Flocker 
+# Installs Flocker
 yum -yy install epel-release openssl openssl-devel libffi-devel python-virtualenv libyaml clibyaml-devel
 yum install -yy sshpass
 
@@ -78,13 +78,13 @@ virtualenv --python=/usr/bin/python2.7 flocker-cli
 /opt/flocker/flocker-$FLOCKERVERSION/flocker-cli/bin/pip install /opt/flocker/flocker-$FLOCKERVERSION/Flocker-$FLOCKERVERSION-py2-none-any.whl
 
 # Constants for where code lives
-SIO_PLUGIN="https://github.com/emccorp/scaleio-flocker-driver"
+SIO_PLUGIN="https://github.com/emccode/flocker-drivers"
 # Clone in ScaleIO Plugin
 cd /opt/flocker/
 /usr/bin/git clone $SIO_PLUGIN
 
 # Install ScaleIO Driver
-cd /opt/flocker/scaleio-flocker-driver
+cd /opt/flocker/flocker-drivers/scaleio
 /opt/flocker/bin/python setup.py install
 
 # Configure Agent YML
@@ -177,12 +177,12 @@ systemctl start docker
 if [ "$HOSTNAME" = tb.scaleio.local ]; then
     echo '[Unit]
     Description=flocker-plugin - flocker-docker-plugin job file
-    
+
     [Service]
     Environment=FLOCKER_CONTROL_SERVICE_BASE_URL=https://tb.scaleio.local:4523/v1
     Environment=MY_NETWORK_IDENTITY=192.168.50.11
     ExecStart=/opt/flocker/flocker-'$FLOCKERVERSION'/flocker-tools/bin/flocker-docker-plugin
-    
+
     [Install]
     WantedBy=multi-user.target' >> /etc/systemd/system/flocker-docker-plugin.service
 
@@ -211,12 +211,12 @@ fi
 if [ "$HOSTNAME" = mdm1.scaleio.local ]; then
     echo '[Unit]
     Description=flocker-plugin - flocker-docker-plugin job file
-    
+
     [Service]
     Environment=FLOCKER_CONTROL_SERVICE_BASE_URL=https://tb.scaleio.local:4523/v1
     Environment=MY_NETWORK_IDENTITY=192.168.50.12
     ExecStart=/opt/flocker/flocker-'$FLOCKERVERSION'/flocker-tools/bin/flocker-docker-plugin
-    
+
     [Install]
     WantedBy=multi-user.target' >> /etc/systemd/system/flocker-docker-plugin.service
 
@@ -241,7 +241,7 @@ if [ "$HOSTNAME" = mdm2.scaleio.local ]; then
     Environment=FLOCKER_CONTROL_SERVICE_BASE_URL=https://tb.scaleio.local:4523/v1
     Environment=MY_NETWORK_IDENTITY=192.168.50.13
     ExecStart=/opt/flocker/flocker-'$FLOCKERVERSION'/flocker-tools/bin/flocker-docker-plugin
-    
+
     [Install]
     WantedBy=multi-user.target' >> /etc/systemd/system/flocker-docker-plugin.service
 
@@ -271,7 +271,7 @@ if [ "$HOSTNAME" = mdm2.scaleio.local ]; then
 
     # MDM2
     systemctl restart flocker-container-agent
-    systemctl restart flocker-dataset-agent 
+    systemctl restart flocker-dataset-agent
 
     # Retart docker incase flocker wipes DOCKER chainc
     systemctl restart docker

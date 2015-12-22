@@ -29,7 +29,7 @@ Talk to Us
 
 Have questions or need help?
 
-* You can open an account there to file issues, but we're also happy to accept Github Issues with feature requests or bug reports 
+* You can open an account there to file issues, but we're also happy to accept Github Issues with feature requests or bug reports
 * You can also join us on the ``#emccorp`` channel on the ``irc.freenode.net`` IRC network
 
 Development Environment
@@ -42,7 +42,7 @@ Development Environment
 Running Tests
 =============
 
-Please see how to run tests at https://github.com/emccorp/scaleio-flocker-driver#running-tests
+Please see how to run tests at https://github.com/emccode/flocker-drivers/scaleio#running-tests
 
 
 Contributing to EMC ScaleIO Flocker Driver

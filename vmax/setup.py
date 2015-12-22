@@ -20,7 +20,7 @@ setup(
     long_description=long_description,
     author='Kevin Rodgers',
     author_email='kevin.rodgers@emc.com',
-    url='https://github.com/emccorp/vmax-flocker-driver',
+    url='https://github.com/emccode/flocker-drivers/vmax',
     license='Apache 2.0',
 
     classifiers=[
@@ -33,7 +33,7 @@ setup(
 
     'License :: OSI Approved :: Apache Software License',
 
-    # Python versions supported 
+    # Python versions supported
     'Programming Language :: Python :: 2.7',
     ],
 
@@ -42,4 +42,3 @@ setup(
     install_requires = install_requires,
     data_files=[('/etc/flocker/', ['conf/agent.yml'])]
 )
-

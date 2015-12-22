@@ -1,15 +1,11 @@
 EMC XtremIO Flocker Plugin
 ======================
-The plugin for EMC XtremIO Flocker integration.
-
-## Description
-ClusterHQ/Flocker provides an efficient and easy way to connect persistent store with Docker containers. This project provides a plugin to provision resillient storage from EMC XtremIO.
 
 ## EMC XtremIO Flocker Intergration Block Diagram
-![EMC XtremIO Flocker Intergration Block Diagram Missing] 
-(https://github.com/emccorp/vagrant-xtremio-flocker/blob/master/EMCXtremIOFlocker.jpg)
+![EMC XtremIO Flocker Intergration Block Diagram Missing]
+(https://github.com/emccode/flocker-plugins/demo/xtremio/blob/master/EMCXtremIOFlocker.jpg)
 ## Installation
-- Install OpeniSCSI 
+- Install OpeniSCSI
     * Ubuntu<br>
    ```bash
     sudo apt-get update
@@ -36,7 +32,8 @@ Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 - Install EMC Plugin for XtremIO
 
    ```bash
-    git clone https://github.com/emccorp/xtremio-flocker-driver
+    git clone https://github.com/emccode/flocker-drivers
+    cd xtremio
     sudo /opt/flocker/bin/python setup.py install
     ```
 
@@ -52,19 +49,19 @@ backend: emc_xtremio_flocker_plugin
    xms_user: ${xms_user}
    xms_password: ${xms_password}
 ```
-A sample vagrant environment help 
-Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application can be found at https://github.com/emccorp/vagrant-xtremio-flocker 
+A sample vagrant environment help
+Please refer to ClusterHQ/Flocker documentation for usage. A sample deployment and application can be found at https://github.com/emccode/flocker-drivers/demo/xtremio
 
 ## Future
 - Add Chap protocol support for iSCSI
-- Add 
+- Add
 
 ## Contribution
 Create a fork of the project into your own reposity. Make all your necessary changes and create a pull request with a description on what was added or removed and details explaining the changes in lines of code. If approved, project owners will merge it.
 
 ## Running Tests
 
-Sample vagrant environment can be found at: https://github.com/emccorp/vagrant-xtremio-flocker
+Sample vagrant environment can be found at: https://github.com/emccode/flocker-drivers/demo/xtremio
 
 Setup the config file (edit values for your environment)
 ```bash

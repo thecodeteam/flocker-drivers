@@ -1,7 +1,7 @@
 scaleio-flocker
 ---------------
 
-![Alt text](/examples/flocker-scaleio-TestEnv.png?raw=true "Environment Diagram")
+![Alt text](examples/flocker-scaleio-TestEnv.png?raw=true "Environment Diagram")
 
 # Description
 
@@ -13,13 +13,13 @@ This Vagrant environment and Vagrantfile helps create a three-VM EMC ScaleIO lab
 - **Tested with CentOS 7**
 - Scripts have been maunually run on a 3 node Amazon AWS cluster runing CentOS 7 AMI as well, though this is not automated in the current repo with ```--provider``` flag
 
-Desclaimer (This takes a while to setup). If you want an easier way to install a 4 Node setup to test out flocker with scaleio, then visit (https://github.com/wallnerryan/flocker-scaleio-singlenode) 
+Desclaimer (This takes a while to setup). If you want an easier way to install a 4 Node setup to test out flocker with scaleio, then visit (https://github.com/wallnerryan/flocker-scaleio-singlenode)
 
 Get the source
 ```
-git clone https://github.com/emccorp/vagrant-scaleio-flocker
+git clone https://github.com/emccode/flocker-drivers
 
-cd vagrant-scaleio-flocker
+cd demo/scaleio
 ```
 
 Copy the RPMS into the source directory
@@ -47,8 +47,8 @@ vagrant up
 Your 3 Nodes containing ScaleIO + Flocker will be on a private address space
 in virtualbox. The example at the time of running this used vboxnet1 192.168.50.1/24
 
-The plugin (https://github.com/emccorp/scaleio-flocker-driver) should come installed in this
-environment, as well as cluster certificates and services started. 
+The plugin (https://github.com/emccode/flocker-drivers/scaleio) should come installed in this
+environment, as well as cluster certificates and services started.
 
 The SIO driver is set up in this way
 ```
@@ -77,16 +77,16 @@ Use the Volumes CLI (flocker-volumes cli is located in /opt/flocker/flocker-<ver
 (Create a volume)
 cd /etc/flocker/
 1. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local create --node=8700ae98 --size=8589934592 --metadata="requester=yourname"
-2. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list 
+2. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list
 3. /opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list-nodes
 ```
 
 Example Output
 ```
-/opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list 
+/opt/flocker/flocker-1.0.0/flocker-tools/bin/flocker-volumes --control-service=tb.scaleio.local list
 DATAASET                               SIZE    METADATA             STATUS            SERVER                   
-59159c8c-2fde-430d-9fd7-7fe5092abc12   8.00G                        attached          649b2006 (192.168.50.13) 
-a9f38503-0cc8-46de-9d44-dd3ac350b2d6   8.00G   createdfor=testing   attached          649b2006 (192.168.50.13) 
+59159c8c-2fde-430d-9fd7-7fe5092abc12   8.00G                        attached          649b2006 (192.168.50.13)
+a9f38503-0cc8-46de-9d44-dd3ac350b2d6   8.00G   createdfor=testing   attached          649b2006 (192.168.50.13)
 ```
 
 You can also view the volumes and nodes in the UI, point your Vagrant Host Browser to ```http://127.0.0.1:8080/client/#/nodes/list?sortDir=ASC```
@@ -123,7 +123,7 @@ Here is a deployment file (mongo-deployment-1node.yml)
 
 Run the example (flocker-deploy is located in /opt/flocker/flocker-<version>/flocker-cli/bin/)
 ```
-flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
+flocker-deploy mongo-deployment-1node.yml mongo-application.yml
 ```
 
 **You should be able to see the volumes on the node (tb == 192.168.50.11)**
@@ -133,13 +133,13 @@ Retrieved 1 volume(s)
 VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
-You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB
 
-![Alt text](/examples/connected.png?raw=true)
+![Alt text](examples/connected.png?raw=true)
 
 Also view the containers on the node (Image shows 192.168.50.11)
 
-![Alt text](/examples/bothcontainers.png?raw=true)
+![Alt text](examples/bothcontainers.png?raw=true)
 
 Here is a deployment file (mongo-deployment-2node.yml)
 
@@ -151,24 +151,24 @@ Here is a deployment file (mongo-deployment-2node.yml)
  "192.168.50.13": []
 ```
 
-Run the flocker-deploy example to move the app 
+Run the flocker-deploy example to move the app
 ```
-flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
+flocker-deploy mongo-deployment-2node.yml mongo-application.yml
 ```
 
 You should be able go to a web browser 192.168.50.11:8080 and see the app is NOT connected to MongoDB while MongoDB is moving, this is temporary, you may look at the log to see the connection status for ```flocker--mongodbconn```
 
-![Alt text](/examples/cannot_connect.png?raw=true)
+![Alt text](examples/cannot_connect.png?raw=true)
 
 You should see 1 container on each host after the ```mongodbserver``` is migrated.
 
 (Image shows 192.168.50.11)
 
-![Alt text](/examples/mongoconnonly.png?raw=true)
+![Alt text](examples/mongoconnonly.png?raw=true)
 
 (Image shows 192.168.50.12)
 
-![Alt text](/examples/mongodbonly.png?raw=true)
+![Alt text](examples/mongodbonly.png?raw=true)
 
 After the mongodbserver is succesfully migrated, You should be able go to a web browser 192.168.50.11:8080 and see the app is again connected to MongoDB.
 
@@ -234,7 +234,7 @@ System Info:
 
 License info:
 	Installation ID: 32228409739fd8c3
-	SWID: 
+	SWID:
 	Maximum capacity: Unlimited
 	Usage time left: 30 days (Initial License)
 	Enterprise features: Enabled
@@ -344,5 +344,3 @@ unknown
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-

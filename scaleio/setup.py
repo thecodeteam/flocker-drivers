@@ -15,7 +15,7 @@ setup(
     long_description=long_description,
     author='Ryan Wallner',
     author_email='wallnerryan@gmail.com',
-    url='https://github.com/emccorp/scaleio-flocker-driver',
+    url='https://github.com/emccode/flocker-drivers/scaleio',
     license='Apache 2.0',
 
     classifiers=[
@@ -28,7 +28,7 @@ setup(
 
     'License :: OSI Approved :: Apache Software License',
 
-    # Python versions supported 
+    # Python versions supported
     'Programming Language :: Python :: 2.7',
     ],
 

@@ -1,19 +1,6 @@
 EMC ScaleIO Plugin for ClusterHQ/flocker
 ======================
 
-![EMC ScaleIO Flocker Intergration] 
-(https://github.com/emccorp/vagrant-scaleio-flocker/blob/master/examples/bare-env.png)
-
-This is a plugin driver for the [Flocker](https://clusterhq.com/) project which delivers Fast, local, persistent storage for Docker containers, Multi-host container management, Database migrations, and Flexible shared storage (SAN, NAS or block) for Docker when you want it
-
-## Description
-Flocker can help orchestrate and provision storage to your clustered docker container microservices applications. Use cases include -->
-- Seamlessly Running Stateful Microservices
-  - Run Databases in Containers
-        - MongoDB, Cassandra, Postgres, MySQL, and more! 
-- Generally orchestrate and schedule your container applications across a cluster that optionally provides flexible shared storage when you need it.
-- Use it with [Docker Native Extensions](https://github.com/ClusterHQ/flocker-docker-plugin)
-
 ## Installation
 
 **Tested on CentOS 7**
@@ -24,8 +11,8 @@ Make sure you have Flocker already installed. If not visit  [Install Flocker](ht
 
 Install using python
 ```bash
-git clone https://github.com/emccorp/scaleio-flocker-driver
-cd scaleio-flocker-driver/
+git clone https://github.com/emccode/flocker-drivers
+cd flocker-drivers/scaleio
 sudo /opt/flocker/bin/python setup.py install
 ```
 
@@ -33,8 +20,8 @@ sudo /opt/flocker/bin/python setup.py install
 
 Install using pip
 ```
-git clone https://github.com/emccorp/scaleio-flocker-driver
-cd scaleio-flocker-driver/
+git clone https://github.com/emccode/flocker-drivers
+cd flocker-drivers/scaleio
 /opt/flocker/bin/pip install scaleio-flocker-driver/
 ```
 
@@ -63,7 +50,7 @@ dataset:
   username: "<Insert ScaleIO Username>"
   password: "<Insert ScaleIO gateway User Password>"
   mdm: "<Insert Scaleio Gateway MDM's IP Address>"
-  protection_domain: "<Protection Domain>" (Defaults to "default") 
+  protection_domain: "<Protection Domain>" (Defaults to "default")
   storage_pool: "<Storage Pool>" (Defaults to "default")
   certificate: "</path/to/cert>" (Unsupported Right now)
   ssl: <True | False> (Defaults to True)
@@ -126,7 +113,7 @@ Here is a deployment file (mongo-deployment-1node.yml)
 
 Run the example
 ```bash
-flocker-deploy mongo-deployment-1node.yml mongo-application.yml 
+flocker-deploy mongo-deployment-1node.yml mongo-application.yml
 ```
 
 **You should be able to see the volumes on the node (tb == 192.168.50.11)**
@@ -136,7 +123,7 @@ Retrieved 1 volume(s)
 VOL-ID aea92e8700000000 MDM-ID 62a34bc20b360b1c
 ```
 
-You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB 
+You should be able go to a web browser 192.168.50.11:8080 and see the app is connected to MongoDB
 
 Also view the containers on the node (Image shows 192.168.50.11)
 
@@ -152,7 +139,7 @@ Here is a deployment file (mongo-deployment-2node.yml)
 
 Run the example to move the app
 ```bash
-flocker-deploy mongo-deployment-2node.yml mongo-application.yml 
+flocker-deploy mongo-deployment-2node.yml mongo-application.yml
 ```
 
 You should be able go to a web browser 192.168.50.11:8080 and see the app is NOT connected to MongoDB while MongoDB is moving, this is temporary, you may look at the log to see the connection status for ```flocker--mongodbconn```

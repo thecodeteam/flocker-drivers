@@ -19,9 +19,9 @@ You can open an account there to file issues, but we're also happy to accept Git
 
 Development Environment
 =======================
-Please visit the Vagrant Environment for XtremIO + Flocker at https://github.com/emccorp/vagrant-xtremio-flocker
+Please visit the Vagrant Environment for XtremIO + Flocker at https://github.com/emccode/flocker-drivers/demo/xtremio
 You will need Python 2.7 and a recent version of PyPy installed on your development machine.
 
 Running Tests
 =============
-Please see how to run tests at https://github.com/emccorp/xtremio-flocker-driver/blob/master/README.md#running-tests
+Please see how to run tests at https://github.com/emccode/flocker-drivers/blob/master/xtremio/README.md#running-tests

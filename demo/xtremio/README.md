@@ -5,17 +5,17 @@ This project Vagrant environment for trying EMC XtremIO Flocker intergration.
 ## Description
 ClusterHQ/Flocker provides an efficient and easy way to connect persistent store with Docker containers. This project provides a sample vagrant environment for trying out solution.
 ## EMC XtremIO Flocker Intergration Block Diagram
-![EMC XtremIO Flocker Intergration Block Diagram Missing] 
-(https://github.com/emccorp/vagrant-xtremio-flocker/blob/master/EMCXtremIOFlocker.jpg)
+![EMC XtremIO Flocker Intergration Block Diagram Missing]
+(https://github.com/emccode/flcoker-drivers/blob/master/xtremio/EMCXtremIOFlocker.jpg)
 ## Installation
 Tested with Vagrant 1.7.2
 - Clone source code from git repository
 ```bash
-    git clone https://github.com/emccorp/vagrant-xtremio-flocker.git
+    git clone https://github.com/emccode/flocker-drivers.git
 ```
 - Change directory
 ```bash
-    cd vagrant-xtremio-flocker
+    cd flocker-drivers/demo/xtremio
 ```
 - Bring up vagrant machines
 ```bash
@@ -39,11 +39,11 @@ The nodes get preassigned ip addresses 192.168.33.10 for node1 and 192.168.33.11
 - Install EMC Plugin for XtremIO
     * Clone EMX XtremIO Flocker Plugin in the same directory as vagrant images
   ```bash
-        git clone https://github.com/emccorp/xtremio-flocker-driver
+        git clone https://github.com/emccode/flocker-drivers
   ```
     * Run plugin install on two nodes - node1 and node2
   ```bash
-        cd /vagrant/xtremio-flocker-driver
+        cd /vagrant/flocker-drivers/xtremio
         sudo python setup.py install
   ```
 - Enable Plugin<br>
