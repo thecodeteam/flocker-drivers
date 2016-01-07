@@ -3,7 +3,7 @@ EMC XtremIO Flocker Plugin
 
 ## EMC XtremIO Flocker Intergration Block Diagram
 ![EMC XtremIO Flocker Intergration Block Diagram Missing]
-(https://github.com/emccode/flocker-plugins/demo/xtremio/blob/master/EMCXtremIOFlocker.jpg)
+(https://github.com/emccode/flocker-drivers/blob/master/demo/xtremio/EMCXtremIOFlocker.jpg)
 ## Installation
 - Install OpeniSCSI
     * Ubuntu<br>
