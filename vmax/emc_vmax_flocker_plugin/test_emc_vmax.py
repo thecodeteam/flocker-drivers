@@ -14,12 +14,10 @@ import functools
 import traceback
 from uuid import uuid4
 
-from bitmath import MiB, KiB
-
 from twisted.trial.unittest import SynchronousTestCase
 from flocker.node.agents.blockdevice import UnknownVolume
 
-from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test
+from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
 from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests
 
 
@@ -35,8 +33,8 @@ def emcvmaxblockdeviceapi_for_test(test_case=None):
 class EMCVmaxBlockDeviceAPIInterfaceTests(
         make_iblockdeviceapi_tests(
             blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
-            minimum_allocatable_size=int(MiB(960).to_Byte().value),
-            device_allocation_unit=int(MiB(960).to_Byte().value),
+            minimum_allocatable_size=vmax_allocation_unit(1),
+            device_allocation_unit=vmax_allocation_unit(1),
             unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
         )
 ):
@@ -61,24 +59,10 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         print "\ntest_login"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            print block_device_api.get_volume_stats()
-            print block_device_api._get_symmetrix_id()
+            print 'symm info = %s' % block_device_api.get_volume_stats()
+            print 'symmetrix id = %s' % block_device_api._get_symmetrix_id()
+            print 'allocation unit = %s' % str(block_device_api.allocation_unit())
             self.assertTrue(block_device_api._has_connection())
-        except Exception as e:
-            traceback.print_exc()
-            self.fail(e.message)
-
-    def test_min_allocation(self):
-        """
-        Test EMCVmaxBlockDeviceAPI Login
-        """
-        print "\ntest_min_allocation"
-        try:
-            block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            allocation_bytes = block_device_api.allocation_unit()
-            cylinder = int(KiB(960).to_Byte().value)
-            print str(allocation_bytes) + '/' + str(cylinder)
-            self.assertTrue((allocation_bytes % cylinder) == 0)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -140,14 +124,39 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
 
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            block = block_device_api.create_volume(uuid4(), int(MiB(960).to_Byte().value))
+            block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
             print 'db connection = ' + block_device_api.dbconn._show_db()
             print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
-            vmax_hosts = block_device_api.get_vmax_hosts()
-            for vh in vmax_hosts:
-                block = block_device_api.attach_volume(block.blockdevice_id, vh['host'])
-                print 'volume attached to = ' + str(block.attached_to)
-                break
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
+    def test_simple_attach(self):
+        print "\ntest_simple_attach"
+
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
+            print 'db connection = ' + block_device_api.dbconn._show_db()
+            print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
+            vmax_host = block_device_api.compute_instance_id()
+            block = block_device_api.attach_volume(block.blockdevice_id, vmax_host)
+            print 'volume attached to = ' + str(block.attached_to)
+            path = block_device_api.get_device_path(block.blockdevice_id)
+            print 'device path is ' + str(path)
+            output = block_device_api._execute_inq()
+            print "inq output: \n%s" % str(output)
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
+    def test_inq_and_rescan(self):
+        print "\ntest_inq_and_rescan"
+
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            output = block_device_api._execute_inq()
+            print "inq output: \n%s" % str(output)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)

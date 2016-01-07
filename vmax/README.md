@@ -8,33 +8,32 @@ Make sure you have Flocker already installed. If not visit  [Install Flocker](ht
 
 **_Be sure to use /opt/flocker/bin/python as this will install the driver into the right python environment_**
 
-Install using python
+Install OpenStack Cinder
 ```bash
-git clone https://github.com/emccode/flocker-drivers
-cd flocker-drivers/vmax
-sudo /opt/flocker/bin/python setup.py install
+git clone -b stable/liberty https://github.com/openstack/cinder.git
+sudo /opt/flocker/bin/pip install ./cinder/
 ```
 
-Install using pip
+Install VMAX Flocker plugin
 ```bash
 git clone https://github.com/emccode/flocker-drivers
-sudo /opt/flocker/bin/pip install flocker-drivers/vmax/
+sudo /opt/flocker/bin/pip install ./flocker-drivers/vmax/
 ```
 
 You can optionally verify the correct packages are installed.
 ```bash
  /opt/flocker/bin/pip show emc-vmax-flocker-plugin
-
-Metadata-Version: 2.0
+---
+Metadata-Version: 1.1
 Name: emc-vmax-flocker-plugin
-Version: 1.0
-Summary: EMC VMAX Backend Plugin for ClusterHQ/Flocker
+Version: 0.9.0
+Summary: EMC VMAX Backend Plugin for ClusterHQ/Flocker 
 Home-page: https://github.com/emccode/flocker-drivers/vmax
 Author: Kevin Rodgers
-Author-email: kevin@rodgersworld.com
+Author-email: kevin.rodgers@emc.com
 License: Apache 2.0
 Location: /opt/flocker/lib/python2.7/site-packages
-Requires:
+Requires: bitmath, eliot, oslo.concurrency, oslo.config, oslo.i18n, oslo.serialization, oslo.utils, pywbem, redis, testtools, Twisted, zope.interface
 ```
 
 1) Install OpeniSCSI and other required libraries<br>
@@ -68,15 +67,15 @@ sudo wget \
 sudo chmod +x /usr/local/bin/inq
 ```
 4) Edit redis.conf and set listen (bind) address<br>
-    bind 10.10.0.XX 127.0.0.1
+    bind <host-ip-address> 127.0.0.1 or simply bind *
 
 5) Add vmax flocker plugin to agent.yml
 
     "dataset":
       "backend": "emc_vmax_flocker_plugin"
-      "lockdir": "/tmp"
+      "lockdir": "/var/flocker/vmax"
+      "logfile": "/var/log/vmax_flocker.log"
       "database": "<your redis server IP>"
-      "min_allocation": 15
       "protocol": "iSCSI"
       "hosts":
         - "host": "<short name>"
@@ -119,7 +118,6 @@ PASSED (successes=1)
 
 ## Future
 - Add these functions depending on necessity
-  - VMAX-3 Support
   - FC SAN Support
 - Clean up the code
   - Address ```#TODO``` items

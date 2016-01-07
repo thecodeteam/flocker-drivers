@@ -4,7 +4,6 @@
 
 from setuptools import setup, find_packages
 import codecs  # To use a consistent encoding
-from os import path
 
 # Get the long description from the relevant file
 with codecs.open('DESCRIPTION.rst', encoding='utf-8') as f:
@@ -15,7 +14,7 @@ with open("requirements.txt") as requirements:
 
 setup(
     name='emc_vmax_flocker_plugin',
-    version='0.1',
+    version='0.9.0',
     description='EMC VMAX Backend Plugin for ClusterHQ/Flocker ',
     long_description=long_description,
     author='Kevin Rodgers',
@@ -39,6 +38,6 @@ setup(
 
     keywords='backend, plugin, flocker, docker, python',
     packages=find_packages(exclude=['test*']),
-    install_requires = install_requires,
-    data_files=[('/etc/flocker/', ['conf/agent.yml'])]
+    install_requires=install_requires,
+    data_files=[]
 )
