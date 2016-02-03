@@ -74,7 +74,7 @@ XIO:
 ```
 Run the tests
 ```bash
-sudo -E trial xtremio-flocker-driver.test_emc_xtremio
+sudo -E trial test_emc_xtremio
 ```
 You should see the below if all was succesfull
 

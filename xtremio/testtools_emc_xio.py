@@ -32,7 +32,7 @@ def xio_client_from_environment():
     else:
         raise SkipTest(
             'Supply the path to a EMC XtremIO config file '
-            'using the XIO_CONFIG_FILE environment variable. '
+            'using the XMS_CONFIG_FILE environment variable. '
             'See: '
             'https://docs.clusterhq.com/en/latest/gettinginvolved/acceptance-testing.html '  # noqa
             'for details of the expected format.'

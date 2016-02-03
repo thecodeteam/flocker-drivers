@@ -5,14 +5,14 @@
 from flocker.node.agents.blockdevice import (
     VolumeException, AlreadyAttachedVolume,
     UnknownVolume, UnattachedVolume,
-    IBlockDeviceAPI, _blockdevicevolume_from_dataset_id,
-    _blockdevicevolume_from_blockdevice_id
+    IBlockDeviceAPI, BlockDeviceVolume
 )
 
 from eliot import Message, Logger
 from twisted.python.filepath import FilePath
 from zope.interface import implementer
 from subprocess import check_output
+from uuid import UUID
 
 import base64
 import urllib
@@ -501,6 +501,41 @@ class EMCXtremIOBlockDeviceAPI(object):
         except:
             raise UnknownVolume(blockdevice_id)
 
+
+    def _blockdevicevolume_from_blockdevice_id(self, blockdevice_id, size,
+                                           attached_to=None):
+        """
+        Create a new ``BlockDeviceVolume`` with a ``dataset_id`` derived from
+        the given ``blockdevice_id``.
+        This reverses the transformation performed by
+        ``_blockdevicevolume_from_dataset_id``.
+        Parameters accepted have the same meaning as the attributes of
+        ``BlockDeviceVolume``.
+        """
+        # Strip the "block-" prefix we added.
+        dataset_id = UUID(blockdevice_id[6:])
+        return BlockDeviceVolume(
+            size=size, attached_to=attached_to,
+            dataset_id=dataset_id,
+            blockdevice_id=blockdevice_id,
+        )
+
+    def _blockdevicevolume_from_dataset_id(self, dataset_id, size,
+                                       attached_to=None):
+        """
+        Create a new ``BlockDeviceVolume`` with a ``blockdevice_id`` derived
+        from the given ``dataset_id``.
+        This is for convenience of implementation of the loopback backend (to
+        avoid needing a separate data store for mapping dataset ids to block
+        device ids and back again).
+        Parameters accepted have the same meaning as the attributes of
+        ``BlockDeviceVolume``.
+        """
+        return BlockDeviceVolume(
+            size=size, attached_to=attached_to,
+            dataset_id=dataset_id, blockdevice_id=u"block-{0}".format(dataset_id),
+        )
+
     def _get_vol_details(self, blockdevice_id):
         """
         :param blockdevice_id - volume id
@@ -516,7 +551,7 @@ class EMCXtremIOBlockDeviceAPI(object):
             else:
                 is_attached_to = unicode(vol_content['lun-mapping-list'][0][0][1])
 
-            volume = _blockdevicevolume_from_blockdevice_id(
+            volume = self._blockdevicevolume_from_blockdevice_id(
                 blockdevice_id=blockdevice_id,
                 size=self._convert_size(int(vol_content['vol-size'])),
                 attached_to=is_attached_to
@@ -570,9 +605,9 @@ class EMCXtremIOBlockDeviceAPI(object):
         # Round up to 1MB boundaries
         size_mb = self._convert_size(size, 'MB')
 
-        volume = _blockdevicevolume_from_dataset_id(
-            size=size, dataset_id=dataset_id,
-        )
+        volume = self._blockdevicevolume_from_dataset_id(
+                      dataset_id=dataset_id, 
+                      size=size)
         data = {'vol-name': str(volume.blockdevice_id),
                 'vol-size': str(size_mb) + 'm',
                 'parent-folder-id': XtremIOMgmt.BASE_PATH + str(self._cluster_id)}
