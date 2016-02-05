@@ -21,6 +21,7 @@ import json
 import os
 import re
 import socket
+import ssl
 
 
 class ArrayConfiguration(object):
@@ -172,7 +173,8 @@ class XtremIOMgmt():
         request.get_method = lambda: request_typ
         request.add_header("Authorization", "Basic %s" % (self.base64_auth,))
         try:
-            response = urllib2.urlopen(request)
+            gcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+            response = urllib2.urlopen(request, context=gcontext)
         except (urllib2.HTTPError) as exc:
             if exc.code == 400 and hasattr(exc, 'read'):
                 error = json.load(exc)
