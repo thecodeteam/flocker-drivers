@@ -665,6 +665,8 @@ class EMCXtremIOBlockDeviceAPI(object):
         self.volume_list[str(blockdevice_id)] = attached_volume
         Message.new(attached_to=attached_volume.attached_to).write(_logger)
         self.data.rescan_scsi()
+        self.data.rescan_scsi()
+        self.data.rescan_scsi()
         return attached_volume
 
     def resize_volume(self, blockdevice_id, size):
