@@ -23,6 +23,8 @@ import re
 import socket
 import ssl
 import sys
+import time
+import pdb
 
 
 class ArrayConfiguration(object):
@@ -122,7 +124,7 @@ class XtremIOMgmt():
 
     CAPTION = 'caption'
     PARENT_FOLDER_ID = 'parent-folder-id'
-    BASE_PATH = '/'
+    BASE_PATH = '/Volume/'
 
     def __init__(self, configuration):
 
@@ -215,6 +217,7 @@ class XtremIOiSCSIDriver():
       '<auth method> <auth username> <auth password>'.
       `CHAP` is the only auth_method in use at the moment.
     """
+    DEFAULT_MULTIPATH_DEVICE_PATH = "/dev/mapper/"
 
     def __init__(self, mgmt, compute_instance_id):
         """
@@ -345,7 +348,7 @@ class XtremIOiSCSIDriver():
             Message.new(error="iSCSI login not done for XtremIO bailing out").write(_logger)
             raise DeviceException
         else:
-            check_output(["rescan-scsi-bus", "-r", "-c", channel_number])
+            check_output(["/usr/bin/rescan-scsi-bus.sh", "-r", "-c", channel_number])
 
     def _get_channel_number(self):
         """
@@ -411,12 +414,14 @@ class EMCXtremIOBlockDeviceAPI(object):
     VERSION = '0.1'
     driver_name = 'XtremIO'
     MIN_XMS_VERSION = [2, 4, 0]
+    DEFAULT_MULTIPATH_DEVICE_PATH = "/dev/mapper/"
 
     def __init__(self, configuration, cluster_id, compute_instance_id=socket.gethostname(), allocation_unit=None):
         """
 
        :param configuration: Arrayconfiguration
        """
+
         self._cluster_id = cluster_id
         self._compute_instance_id = compute_instance_id
         self.volume_list = {}
@@ -441,7 +446,7 @@ class EMCXtremIOBlockDeviceAPI(object):
             for folder in vol_folder:
                 Message.new(folder_name=folder['name']).write(_logger)
                 # Folder name comes with a "/" as absolute path
-                if folder['name'] == (str(XtremIOMgmt.BASE_PATH) + str(self._cluster_id)):
+                if folder['name'] == (str(XtremIOMgmt.BASE_PATH))  + str(self._cluster_id):
                     Message.new(Debug="Volume folder found").write(_logger)
                     return True
 
@@ -461,6 +466,8 @@ class EMCXtremIOBlockDeviceAPI(object):
             data = {self.mgmt.CAPTION: str(self._cluster_id),
                     self.mgmt.PARENT_FOLDER_ID: self.mgmt.BASE_PATH}
             self.mgmt.request(self.mgmt.VOLUME_FOLDERS, self.mgmt.POST, data)
+            self.list_volumes()
+
         except DeviceExceptionObjNotFound as exe:
             # Message.new(Error="Failed to create volume folder").write(_logger)
             raise exe
@@ -547,6 +554,7 @@ class EMCXtremIOBlockDeviceAPI(object):
         :param blockdevice_id - volume id
         :return:volume details
         :exception: Unknown volume
+
         """
         try:
             vol = self.mgmt.request('volumes', 'GET', name=blockdevice_id)
@@ -616,7 +624,7 @@ class EMCXtremIOBlockDeviceAPI(object):
                       size=size)
         data = {'vol-name': str(volume.blockdevice_id),
                 'vol-size': str(size_mb) + 'm',
-                'parent-folder-id': XtremIOMgmt.BASE_PATH + str(self._cluster_id)}
+                'parent-folder-id': XtremIOMgmt.BASE_PATH  + str(self._cluster_id)}
         self.mgmt.request('volumes', 'POST', data)
         self.volume_list[str(volume.blockdevice_id)] = volume
         return volume
@@ -639,9 +647,9 @@ class EMCXtremIOBlockDeviceAPI(object):
         :param: none
         """
         try:
-            Message.new(Info="Destroying Volume folder" + str(self._cluster_id)).write(_logger)
+            Message.new(Info="Destroying Volume folder " + str(self._cluster_id)).write(_logger)
             self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS, XtremIOMgmt.DELETE,
-                              name=XtremIOMgmt.BASE_PATH + str(self._cluster_id))
+                              name=XtremIOMgmt.BASE_PATH  + str(self._cluster_id))
         except DeviceExceptionObjNotFound as exc:
             raise UnknownVolume(self._cluster_id)
 
@@ -653,7 +661,6 @@ class EMCXtremIOBlockDeviceAPI(object):
         See ``IBlockDeviceAPI.attach_volume`` for parameter and return type
         documentation.
         """
-
         volume = self._get_vol_details(blockdevice_id)
 
         if volume.attached_to is None:
@@ -694,6 +701,7 @@ class EMCXtremIOBlockDeviceAPI(object):
         :raises: unknownvolume exception if not found
         """
         vol = self._get_vol_details(blockdevice_id)
+
         if vol.attached_to is not None:
             self.data.destroy_lun_map(blockdevice_id, self._compute_instance_id)
             self.data.rescan_scsi()
@@ -715,10 +723,14 @@ class EMCXtremIOBlockDeviceAPI(object):
             # and get list of volumes. The array may have
             # other volumes not owned by Flocker
             vol_folder = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS,
-                                           name=XtremIOMgmt.BASE_PATH + str(self._cluster_id))['content']
+                                           name=XtremIOMgmt.BASE_PATH  + str(self._cluster_id))['content']
             # Get the number of volumes
             Message.new(NoOfVolumesFound=vol_folder['num-of-vols']).write(_logger)
-            if int(vol_folder['num-of-vols']) > 0:
+
+            #TODO: num-of-vols not getting updated on 4.0.0.-64
+            # TODO: num-of-items not present in V2. But updated in V4
+
+            if int(vol_folder['num-of-vols’]) > 0:
                 for vol in vol_folder['direct-list']:
                     # Message.new(VolumeName=vol[1]).write(_logger)
                     volume = self._get_vol_details(vol[1])
@@ -730,29 +742,87 @@ class EMCXtremIOBlockDeviceAPI(object):
 
         return volumes
 
+    def check_multipath(self):
+        """"
+        Method to check if multipathing kernel modules are installed
+                and if  multipath deamon process is running
+        """
+        multipath_on = False
+        try:
+            #Check whether kernel modules are installed
+            output = check_output([b"/usr/sbin/lsmod | grep multipath"], shell=True)
+            if re.search(r'dm_multipath', output, re.I):
+                #Check if multipathd is running
+                output = check_output([b"ps -ef | grep multipathd"], shell=True)
+                if re.search(r'/sbin/multipathd', output, re.I):
+                    multipath_on = True
+        except Exception as exe:
+            Message.new(value="check_multipath returned exception").write(_logger)
+
+        return multipath_on
+
+    def return_multipath_device(self, blockdevice_id):
+        """
+
+        :param blockdevice_id:
+        :return: DeviveAbsPath - Multipath device path
+        """
+        lunid = self.data.get_lun_map(blockdevice_id)
+        try :
+            #Query multipath for the device name
+            output = check_output([b"multipath -v2 -ll"], shell=True)
+            #multipath -v2 -ll sample output as below :
+            #3514f0c5461400172 dm-5 XtremIO ,XtremApp
+            #size=1.0M features='0' hwhandler='0' wp=rw
+            #`-+- policy='queue-length 0' prio=0 status=active
+            # |- 7:0:0:2 sdg 8:96 active faulty running
+            # `- 3:0:0:2 sdf 8:80 active faulty running
+
+            # Parse the above output for the device name under /dev/mapper
+            for row in output.split('\n'):
+                if re.search(r'XtremApp', row, re.I) :
+                    deviceName = row.split(' ')[0]
+                if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
+                    deviceAbsPath = EMCXtremIOBlockDeviceAPI.DEFAULT_MULTIPATH_DEVICE_PATH + deviceName
+                    if os.path.exists(deviceAbsPath):
+                        output = check_output([b"mkfs.ext3 " + deviceAbsPath], shell=True)
+                        return deviceAbsPath
+        except Exception as ex :
+            Message.new(value="Exception when quering for multipath device").write(_logger)
+            raise UnknownVolume(blockdevice_id)
+
+
     def get_device_path(self, blockdevice_id):
         """
         :param blockdevice_id:
         :return:the device path
         """
-        # Query LunID from XtremIO
         lunid = self.data.get_lun_map(blockdevice_id)
-        output = check_output([b"/usr/bin/lsscsi"])
-        # lsscsi gives output in the following form:
-        # [0:0:0:0]    disk    ATA      ST91000640NS     SN03  /dev/sdp
-        # [1:0:0:0]    disk    DGC      LUNZ             0532  /dev/sdb
-        # [1:0:1:0]    disk    DGC      LUNZ             0532  /dev/sdc
-        # [8:0:0:0]    disk    MSFT     Virtual HD       6.3   /dev/sdd
-        # [9:0:0:0]    disk XtremIO  XtremApp         2400     /dev/sde
+        devicePath = " "
 
-        # We shall parse the output above and give out path /dev/sde as in
-        # this case
-        for row in output.split('\n'):
-            if re.search(r'XtremApp', row, re.I):
-                if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
-                    device_name = re.findall(r'/\w+', row, re.I)
-                    if device_name:
-                        return FilePath(device_name[0] + device_name[1])
+        #Check if multipathing is  available on host and return the multipathing device
+        if(self.check_multipath()) :
+           if  self.return_multipath_device(blockdevice_id) :
+                return FilePath(self.return_multipath_device(blockdevice_id))
+
+        else :
+            # Query LunID from XtremIO
+            output = check_output([b"/usr/bin/lsscsi"])
+            # lsscsi gives output in the following form:
+            # [0:0:0:0]    disk    ATA      ST91000640NS     SN03  /dev/sdp
+            # [1:0:0:0]    disk    DGC      LUNZ             0532  /dev/sdb
+            # [1:0:1:0]    disk    DGC      LUNZ             0532  /dev/sdc
+            # [8:0:0:0]    disk    MSFT     Virtual HD       6.3   /dev/sdd
+            # [9:0:0:0]    disk XtremIO  XtremApp         240   0     /dev/sde
+
+            # We shall parse the output above and give out path /dev/sde as in
+            # this case
+            for row in output.split('\n'):
+                if re.search(r'XtremApp', row, re.I):
+                    if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
+                        device_name = re.findall(r'/\w+', row, re.I)
+                        if device_name:
+                            return FilePath(device_name[0] + device_name[1])
 
         raise UnknownVolume(blockdevice_id)
 
