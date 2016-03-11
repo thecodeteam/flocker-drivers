@@ -122,7 +122,7 @@ class XtremIOMgmt():
 
     CAPTION = 'caption'
     PARENT_FOLDER_ID = 'parent-folder-id'
-    BASE_PATH = '/'
+    BASE_PATH = '/Volume/'
 
     def __init__(self, configuration):
 
@@ -167,7 +167,7 @@ class XtremIOMgmt():
             request = urllib2.Request(url)
         elif data:
             Message.new(data=json.dumps(data)).write(_logger)
-            request = urllib2.Request(url, json.dumps(data))
+            request = urllib2.Request(url,( json.dumps(data)))
         else:
             request = urllib2.Request(url)
         Message.new(url=url).write(_logger)
@@ -215,6 +215,7 @@ class XtremIOiSCSIDriver():
       '<auth method> <auth username> <auth password>'.
       `CHAP` is the only auth_method in use at the moment.
     """
+    DEFAULT_MULTIPATH_DEVICE_PATH = "/dev/mapper/"
 
     def __init__(self, mgmt, compute_instance_id):
         """
@@ -345,7 +346,7 @@ class XtremIOiSCSIDriver():
             Message.new(error="iSCSI login not done for XtremIO bailing out").write(_logger)
             raise DeviceException
         else:
-            check_output(["rescan-scsi-bus", "-r", "-c", channel_number])
+            check_output(["rescan-scsi-bus.sh", "-r", "-c", channel_number])
 
     def _get_channel_number(self):
         """
@@ -411,12 +412,14 @@ class EMCXtremIOBlockDeviceAPI(object):
     VERSION = '0.1'
     driver_name = 'XtremIO'
     MIN_XMS_VERSION = [2, 4, 0]
+    DEFAULT_MULTIPATH_DEVICE_PATH = "/dev/mapper/"
 
     def __init__(self, configuration, cluster_id, compute_instance_id=socket.gethostname(), allocation_unit=None):
         """
 
        :param configuration: Arrayconfiguration
        """
+
         self._cluster_id = cluster_id
         self._compute_instance_id = compute_instance_id
         self.volume_list = {}
@@ -425,7 +428,10 @@ class EMCXtremIOBlockDeviceAPI(object):
         self._allocation_unit = allocation_unit
         self.mgmt = XtremIOMgmt(configuration)
         self.data = XtremIOiSCSIDriver(self.mgmt, self._compute_instance_id)
-        self._initialize_setup()
+        self.version = self._initialize_setup()
+        self.multipath_on = False
+        if(self.check_multipath()):
+            self.multipath_on = True
 
     def _check_for_volume_folder(self):
 
@@ -479,6 +485,8 @@ class EMCXtremIOBlockDeviceAPI(object):
         else:
             msg = "EMCXtremIO SW version " + sys['sys-sw-version']
             Message.new(version=msg).write(_logger)
+        version = sys['sys-sw-version']
+        return version
 
     def _convert_size(self, size, to='BYTES'):
         """
@@ -580,7 +588,7 @@ class EMCXtremIOBlockDeviceAPI(object):
         """
 
         try:
-            self._check_version()
+            version = self._check_version()
             self.data.initialize_connection()
             if not self._check_for_volume_folder():
                 self._create_volume_folder()
@@ -589,6 +597,8 @@ class EMCXtremIOBlockDeviceAPI(object):
             raise
         except """catch all other exception""":
             Message.new(Error="Unknown Exception occurred in last call")
+
+        return version
 
     def allocation_unit(self):
         """
@@ -716,9 +726,17 @@ class EMCXtremIOBlockDeviceAPI(object):
             # other volumes not owned by Flocker
             vol_folder = self.mgmt.request(XtremIOMgmt.VOLUME_FOLDERS,
                                            name=XtremIOMgmt.BASE_PATH + str(self._cluster_id))['content']
+
+            #Identified Bug in s/w version 4.0.0-64 that num-of-vols attribute is not updated.
+            if self.version == "4.0.0-64" :
+                numOfVolumes = vol_folder['num-of-items']
+            else :
+                numOfVolumes = vol_folder['num-of-vols']
+
             # Get the number of volumes
             Message.new(NoOfVolumesFound=vol_folder['num-of-vols']).write(_logger)
-            if int(vol_folder['num-of-vols']) > 0:
+
+            if int(numOfVolumes) > 0:
                 for vol in vol_folder['direct-list']:
                     # Message.new(VolumeName=vol[1]).write(_logger)
                     volume = self._get_vol_details(vol[1])
@@ -730,29 +748,94 @@ class EMCXtremIOBlockDeviceAPI(object):
 
         return volumes
 
+    def check_multipath(self):
+        """"
+        Method to check if multipathing kernel modules are installed
+                and if  multipath deamon process is running
+        """
+        multipath_on = False
+        try:
+            #Check whether kernel modules are installed
+            output = check_output([b"lsmod | grep multipath"], shell=True)
+            if re.search(r'dm_multipath', output, re.I):
+                #Check if multipathd is running. Multipathd will not start without /etc/multipath.d file
+                output = check_output([b"ps -ef | grep multipathd"], shell=True)
+                if re.search(r'/sbin/multipathd', output, re.I):
+                    if os.path.exists("/etc/multipath.conf") and re.search(r'XtremIO', check_output([b"cat /etc/multipath.conf"], shell=True), re.I):
+                        multipath_on = True
+                    else:
+                        raise Exception
+        except Exception as exe:
+            Message.new(value="check_multipath returned exception").write(_logger)
+            raise Exception
+
+        return multipath_on
+
+    def return_multipath_device(self, blockdevice_id):
+        """
+
+        :param blockdevice_id:
+        :return: DeviveAbsPath - Multipath device path
+        """
+        lunid = self.data.get_lun_map(blockdevice_id)
+        try :
+            #Query multipath for the device name
+            output = check_output([b"multipath -v2 -ll"], shell=True)
+            #multipath -v2 -ll sample output as below :
+            #3514f0c5461400172 dm-5 XtremIO ,XtremApp
+            #size=1.0M features='0' hwhandler='0' wp=rw
+            #`-+- policy='queue-length 0' prio=0 status=active
+            # |- 7:0:0:2 sdg 8:96 active faulty running
+            # `- 3:0:0:2 sdf 8:80 active faulty running
+
+            # Parse the above output for the device name under /dev/mapper
+            for row in output.split('\n'):
+                if re.search(r'XtremApp', row, re.I) :
+                    deviceName = row.split(' ')[0]
+                if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
+                    deviceAbsPath = EMCXtremIOBlockDeviceAPI.DEFAULT_MULTIPATH_DEVICE_PATH + deviceName
+                    if os.path.exists(deviceAbsPath):
+                        output = check_output([b"mkfs.ext3 " + deviceAbsPath], shell=True)
+                        return deviceAbsPath
+        except Exception as ex :
+            Message.new(value="Exception when quering for multipath device").write(_logger)
+            raise UnknownVolume(blockdevice_id)
+
+
     def get_device_path(self, blockdevice_id):
         """
         :param blockdevice_id:
         :return:the device path
         """
-        # Query LunID from XtremIO
         lunid = self.data.get_lun_map(blockdevice_id)
-        output = check_output([b"/usr/bin/lsscsi"])
-        # lsscsi gives output in the following form:
-        # [0:0:0:0]    disk    ATA      ST91000640NS     SN03  /dev/sdp
-        # [1:0:0:0]    disk    DGC      LUNZ             0532  /dev/sdb
-        # [1:0:1:0]    disk    DGC      LUNZ             0532  /dev/sdc
-        # [8:0:0:0]    disk    MSFT     Virtual HD       6.3   /dev/sdd
-        # [9:0:0:0]    disk XtremIO  XtremApp         2400     /dev/sde
+        devicePath = " "
 
-        # We shall parse the output above and give out path /dev/sde as in
-        # this case
-        for row in output.split('\n'):
-            if re.search(r'XtremApp', row, re.I):
-                if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
-                    device_name = re.findall(r'/\w+', row, re.I)
-                    if device_name:
-                        return FilePath(device_name[0] + device_name[1])
+        #Check if multipathing is  available on host and return the multipathing device
+        if(self.multipath_on) :
+            devicePath = self.return_multipath_device(blockdevice_id)
+        else :
+            # Query LunID from XtremIO
+
+            output = check_output([b"/usr/bin/lsscsi"])
+            # lsscsi gives output in the following form:
+            # [0:0:0:0]    disk    ATA      ST91000640NS     SN03  /dev/sdp
+            # [1:0:0:0]    disk    DGC      LUNZ             0532  /dev/sdb
+            # [1:0:1:0]    disk    DGC      LUNZ             0532  /dev/sdc
+            # [8:0:0:0]    disk    MSFT     Virtual HD       6.3   /dev/sdd
+            # [9:0:0:0]    disk XtremIO  XtremApp         240   0     /dev/sde
+
+            # We shall parse the output above and give out path /dev/sde as in
+            # this case
+            for row in output.split('\n'):
+                if re.search(r'XtremApp', row, re.I):
+                    if re.search(r'\d:\d:\d:' + str(lunid), row, re.I):
+                        device_name = re.findall(r'/\w+', row, re.I)
+                        if device_name:
+                            devicePath = device_name[0] + device_name[1]
+
+        if devicePath:
+            Message.new(value="get_device_path returned : " + devicePath).write(_logger)
+            return FilePath(devicePath)
 
         raise UnknownVolume(blockdevice_id)
 
