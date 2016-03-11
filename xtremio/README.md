@@ -20,13 +20,13 @@ EMC XtremIO Flocker Plugin
     sudo yum -y install sg3_utils
     ```
 - Multipathing Installation
-    * Ubuntu<br>
+    * Centos<br>
    ```bash
     sudo modprobe dm-multipath
     cp multipath.conf /etc/multipath.conf
     systemctl start multipathd
    ```
-    * Centos<br>
+    * Ubuntu<br>
    ```bash
     sudo apt-get multipath-tools
     cp multipath.conf /etc/multipath.conf
