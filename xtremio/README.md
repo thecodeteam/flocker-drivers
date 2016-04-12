@@ -19,6 +19,18 @@ EMC XtremIO Flocker Plugin
     sudo yum -y install lsscsi
     sudo yum -y install sg3_utils
     ```
+- Multipathing Installation
+    * Centos<br>
+   ```bash
+    sudo modprobe dm-multipath
+    cp multipath.conf /etc/multipath.conf
+    systemctl start multipathd
+   ```
+    * Ubuntu<br>
+   ```bash
+    sudo apt-get multipath-tools
+    cp multipath.conf /etc/multipath.conf
+   ```
 - Discover iSCSI XtremIO portal on the host<br>
    ```bash
     iscsiadm -m discoverydb -t st -p ${XtremIO iSCSI Portal IP/hostname}:3260 --discover
@@ -74,7 +86,7 @@ XIO:
 ```
 Run the tests
 ```bash
-sudo -E trial xtremio-flocker-driver.test_emc_xtremio
+sudo -E trial test_emc_xtremio
 ```
 You should see the below if all was succesfull
 
