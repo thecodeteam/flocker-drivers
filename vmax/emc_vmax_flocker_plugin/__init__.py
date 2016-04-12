@@ -20,17 +20,7 @@ def api_factory(cluster_id, **kwargs):
     if 'database' in kwargs:
         dbhost = kwargs['database']
 
-    lock_path = '/tmp'
-    if 'lockdir' in kwargs:
-        lock_path = kwargs['lockdir']
-
-    log_file = None
-    if 'logfile' in kwargs:
-        log_file = kwargs['logfile']
-
-    return vmax_from_configuration(cluster_id=cluster_id, protocol=protocol,
-                                   hosts=hosts, dbhost=dbhost,
-                                   lock_path=lock_path, log_file=log_file)
+    return vmax_from_configuration(cluster_id=cluster_id, protocol=protocol, hosts=hosts, dbhost=dbhost)
 
 FLOCKER_BACKEND = BackendDescription(
     name=u"emc_vmax_flocker_plugin",  # name isn't actually used for 3rd party plugins

@@ -55,12 +55,7 @@ def vmax_client_for_test():
     protocol = dataset['protocol']
     hosts = dataset['hosts']
     dbhost = dataset['database']
-    lock_path = dataset['lockdir']
-    log_file = None
-    if 'logfile' in dataset:
-        log_file = dataset['logfile']
-    return vmax_from_configuration(cluster_id=unicode(uuid4()), hosts=hosts, protocol=protocol,
-                                   dbhost=dbhost, lock_path=lock_path, log_file=log_file)
+    return vmax_from_configuration(cluster_id=unicode(uuid4()), hosts=hosts, protocol=protocol, dbhost=dbhost)
 
 
 def tidy_vmax_client_for_test(test_case):
