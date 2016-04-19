@@ -15,10 +15,10 @@ import traceback
 from uuid import uuid4
 
 from twisted.trial.unittest import SynchronousTestCase
-from flocker.node.agents.blockdevice import UnknownVolume
+from flocker.node.agents.blockdevice import UnknownVolume, MandatoryProfiles
 
 from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
-from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests
+from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests, make_iprofiledblockdeviceapi_tests
 
 
 def emcvmaxblockdeviceapi_for_test(test_case=None):
@@ -31,15 +31,26 @@ def emcvmaxblockdeviceapi_for_test(test_case=None):
 
 
 class EMCVmaxBlockDeviceAPIInterfaceTests(
-        make_iblockdeviceapi_tests(
-            blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
-            minimum_allocatable_size=vmax_allocation_unit(1),
-            device_allocation_unit=vmax_allocation_unit(1),
-            unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
-        )
+    make_iblockdeviceapi_tests(
+        blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
+        minimum_allocatable_size=vmax_allocation_unit(1),
+        device_allocation_unit=vmax_allocation_unit(1),
+        unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
+    )
 ):
     """
-    Interface adherence Tests for ``EMCVmaxBlockDeviceAPI``
+    Interface adherence Tests for ``EMCVmaxBlockDeviceAPIInterfaceTests``
+    """
+
+
+class EMCVmaxIProfiledBlockDeviceAPITestsMixin(
+    make_iprofiledblockdeviceapi_tests(
+        profiled_blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
+        dataset_size=vmax_allocation_unit(1)
+    )
+):
+    """
+    Interface adherence Tests for ``EMCVmaxIProfiledBlockDeviceAPITestsMixin``
     """
 
 
@@ -50,7 +61,7 @@ class EMCVmaxBlockDeviceAPIInterfaceTests(
 # as an example
 class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
     """
-    Implementation specific tests for ``EMCVmaxBlockDeviceAPI``.
+    Implementation specific tests for ``EMCVmaxBlockDeviceAPIImplementationTests``.
     """
     def test_login(self):
         """
@@ -61,7 +72,6 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             print 'allocation unit = %s' % str(block_device_api.allocation_unit())
             for profile in block_device_api.get_profile_list():
-                self.assertTrue(block_device_api._has_connection(profile=profile))
                 print 'symmetrix id = %s' % block_device_api._get_symmetrix_id(profile=profile)
         except Exception as e:
             traceback.print_exc()
@@ -114,7 +124,6 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             hosts = block_device_api.get_vmax_hosts()
             for h in hosts:
                 print str(h)
-            print block_device_api._generate_host()
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -125,8 +134,21 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'db connection = ' + block_device_api.dbconn._show_db()
             print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
+    def test_create_with_profile(self):
+        print "\ntest_create_with_profile"
+
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            for profile in (c.value for c in MandatoryProfiles.iterconstants()):
+                block = block_device_api.create_volume_with_profile(uuid4(),
+                                                                    block_device_api.allocation_unit(), profile)
+                print 'uuid = ' + block.blockdevice_id + ' profile = ' + str(profile) \
+                      + ' size = ' + str(block.size)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -137,7 +159,6 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'db connection = ' + block_device_api.dbconn._show_db()
             print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
             vmax_host = block_device_api.compute_instance_id()
             block = block_device_api.attach_volume(block.blockdevice_id, vmax_host)

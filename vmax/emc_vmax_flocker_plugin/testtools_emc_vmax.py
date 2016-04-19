@@ -36,6 +36,7 @@ def _cleanup(api):
                 api.detach_volume(blockdevice.blockdevice_id)
             print 'destroy = ' + blockdevice.blockdevice_id
             api.destroy_volume(blockdevice.blockdevice_id)
+        del api
     except Exception as e:
         print str(e.message)
 
@@ -52,10 +53,16 @@ def vmax_client_for_test():
     :returns: An instance of ``scaleiopy.scaleio.ScaleIO`` authenticated
     """
     dataset = _read_vmax_yaml()
+    config_file = dataset['config_file']
     protocol = dataset['protocol']
     hosts = dataset['hosts']
-    dbhost = dataset['database']
-    return vmax_from_configuration(cluster_id=unicode(uuid4()), hosts=hosts, protocol=protocol, dbhost=dbhost)
+    dbhost = '%s:%s' % (dataset['database'], 'test_emc_flocker_hash')
+    profiles = {}
+    if 'profiles' in dataset:
+        profiles = dataset['profiles']
+    return vmax_from_configuration(cluster_id=unicode(uuid4()), config_file=config_file,
+                                   hosts=hosts, profiles=profiles, protocol=protocol,
+                                   dbhost=dbhost)
 
 
 def tidy_vmax_client_for_test(test_case):
