@@ -94,6 +94,18 @@ class EMCVmaxBlockDeviceAPI(object):
     def get_profile_list(self):
         return self.vmax_common.keys()
 
+    def _get_default_profile(self):
+        profile_list = self.vmax_common.keys()
+        if MandatoryProfiles.DEFAULT.value in profile_list:
+            profile_name = MandatoryProfiles.DEFAULT.value
+        elif MandatoryProfiles.BRONZE.value in profile_list:
+            profile_name = MandatoryProfiles.BRONZE.value
+        elif MandatoryProfiles.SILVER.value in profile_list:
+            profile_name = MandatoryProfiles.SILVER.value
+        else:
+            profile_name = profile_list[0]
+        return profile_name
+
     def _gather_info(self, profile):
         if profile not in self.vmax_common:
             LOG.error("_gather_info: VolumeException, unknown profile " + unicode(profile))
@@ -114,7 +126,7 @@ class EMCVmaxBlockDeviceAPI(object):
         if host is None:
             host = self.compute_instance.split('.')[0]
         if profile is None:
-            profile = self.get_profile_list()[0]
+            profile = self._get_default_profile()
         if pool is None:
             if self.default_pool[profile] is not None:
                 pool = self.default_pool[profile]['pool_name']
@@ -247,13 +259,13 @@ class EMCVmaxBlockDeviceAPI(object):
         """
         if profile_name not in self.get_profile_list():
             LOG.error('Ignoring unknown profile name ' + unicode(profile_name))
-            profile_name = self.get_profile_list()[0]
+            profile_name = self._get_default_profile()
 
         volume = {'id': unicode(dataset_id),
                   'size': int(Byte(size).to_GB().value),
                   'actual_size': size,
                   'PROFILE': profile_name,
-                  'host': self._generate_host(),
+                  'host': self._generate_host(profile=profile_name),
                   'attach_to': None}
 
         provider_location = self._create_vmax_vomume(volume)
@@ -270,7 +282,7 @@ class EMCVmaxBlockDeviceAPI(object):
         :returns: ``BlockDeviceVolume`` when
             the volume has been created.
         """
-        return self.create_volume_with_profile(dataset_id, size, self.get_profile_list()[0])
+        return self.create_volume_with_profile(dataset_id, size, self._get_default_profile())
 
     def destroy_volume(self, blockdevice_id):
         """
