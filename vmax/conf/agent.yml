@@ -12,3 +12,10 @@
       "initiator": "iqn.1994-05.com.redhat:583d44b98a1b"
     - "host": "example-02"
       "initiator": "iqn.1994-05.com.redhat:319a849586e9"
+  "profiles":
+    - "name": "gold"
+      "backend": "ISCSI_GOLD"
+    - "name": "silver"
+      "backend": "ISCSI_SILVER"
+    - "name": "bronze"
+      "backend": "ISCSI_BRONZE"

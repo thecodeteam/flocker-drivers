@@ -14,6 +14,11 @@ from emc_vmax_blockdevice import vmax_from_configuration, EMCVmaxBlockDeviceAPI
 
 
 def _read_vmax_yaml():
+    """
+    Reads agent.yml file and returns VMAX plugin dataset dictionary
+    :return:
+    VMAX plugin dataset dictionary
+    """
     config_file_path = os.environ.get('VMAX_CONFIG_FILE')
     if config_file_path is None:
         if os.path.exists('/etc/flocker/agent.yml'):
@@ -27,14 +32,16 @@ def _read_vmax_yaml():
 
 
 def _cleanup(api):
-    print 'calling _cleanup method'
+    """
+    Delete any volumes created by test
+    :param api: api object used in test case
+    :return:
+    """
     try:
         blockdevices = api.list_volumes()
         for blockdevice in blockdevices:
             if blockdevice.attached_to is not None:
-                print 'detach = ' + blockdevice.blockdevice_id + " from " + blockdevice.attached_to
                 api.detach_volume(blockdevice.blockdevice_id)
-            print 'destroy = ' + blockdevice.blockdevice_id
             api.destroy_volume(blockdevice.blockdevice_id)
         del api
     except Exception as e:
@@ -42,6 +49,12 @@ def _cleanup(api):
 
 
 def vmax_allocation_unit(size_in_gb):
+    """
+    Round size to next greatest allocation unit
+    :param size_in_gb: size in GigaBytes
+    :return:
+    Size in bytes
+    """
     return EMCVmaxBlockDeviceAPI.vmax_round_allocation(int(GiB(size_in_gb).to_Byte().value))
 
 

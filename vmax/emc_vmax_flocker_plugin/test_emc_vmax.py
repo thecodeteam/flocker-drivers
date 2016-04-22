@@ -77,6 +77,18 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             traceback.print_exc()
             self.fail(e.message)
 
+    def test_list_profiles(self):
+        """
+        Test EMCVmaxBlockDeviceAPI List Profiles
+        """
+        print "\ntest_list_profiles"
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            print 'profiles = %s' % str(block_device_api.get_profile_list())
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
     def test_flocker_db(self):
         """
         Test EMCVmaxBlockDeviceAPI redis db
@@ -115,6 +127,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_get_vmax_hosts(self):
+        """
+        Test EMCVmaxBlockDeviceAPI list hosts in agent.yml
+        """
         print "\ntest_get_vmax_hosts"
 
         try:
@@ -129,6 +144,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_simple_create(self):
+        """
+        Test EMCVmaxBlockDeviceAPI create a volume
+        """
         print "\ntest_simple_create"
 
         try:
@@ -140,6 +158,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_create_with_profile(self):
+        """
+        Test EMCVmaxBlockDeviceAPI create a volume for each defined profile
+        """
         print "\ntest_create_with_profile"
 
         try:
@@ -154,6 +175,10 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_simple_attach(self):
+        """
+        Test EMCVmaxBlockDeviceAPI attach a volume to this host, this host
+        must be in agent.yml
+        """
         print "\ntest_simple_attach"
 
         try:
@@ -172,6 +197,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_inq_and_rescan(self):
+        """
+        Test EMCVmaxBlockDeviceAPI Test inquiry and rescan commands
+        """
         print "\ntest_inq_and_rescan"
 
         try:
@@ -183,6 +211,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_get_not_exist(self):
+        """
+        Test EMCVmaxBlockDeviceAPI Test getting a non existent volume fails
+        """
         print "\ntest_get_not_exist"
 
         try:
@@ -196,6 +227,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_list_all(self):
+        """
+        Test EMCVmaxBlockDeviceAPI List all volumes in database
+        """
         print "\ntest_list_all"
 
         try:

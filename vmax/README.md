@@ -26,7 +26,7 @@ You can optionally verify the correct packages are installed.
 ---
 Metadata-Version: 1.1
 Name: emc-vmax-flocker-plugin
-Version: 0.9.0
+Version: 0.9.1
 Summary: EMC VMAX Backend Plugin for ClusterHQ/Flocker 
 Home-page: https://github.com/emccode/flocker-drivers/vmax
 Author: Kevin Rodgers
@@ -73,8 +73,7 @@ sudo chmod +x /usr/local/bin/inq
 
     "dataset":
       "backend": "emc_vmax_flocker_plugin"
-      "lockdir": "/var/flocker/vmax"
-      "logfile": "/var/log/vmax_flocker.log"
+      "config_file": "/etc/flocker/vmax3.conf"
       "database": "<your redis server IP>"
       "protocol": "iSCSI"
       "hosts":
@@ -82,8 +81,50 @@ sudo chmod +x /usr/local/bin/inq
           "initiator": "iqn.1994-05.com.redhat:583d44b98a1b"
         - "host": "<short name>"
           "initiator": "iqn.1994-05.com.redhat:319a849586e9"
+      "profiles":
+        - "name": "gold"
+          "backend": "GOLD"
+        - "name": "silver"
+          "backend": "SILVER"
+        - "name": "bronze"
+          "backend": "BRONZE"
 
-6) Create /etc/cinder/cinder_emc_config.xml
+6) Create VMAX config_file (/etc/flocker/vmax3.conf)
+    [DEFAULT]
+    lock_path=/var/lib/flocker
+    use_syslog=True
+    use_stderr=False
+    debug=False
+    syslog_log_facility=LOG_LOCAL3
+    log_dir=/var/lib/flocker
+    log_level=INFO
+    enabled_backends=GOLD.SILVER.BRONZE
+
+    #
+    # VMAX-3 GOLD type that uses VMAX iSCSI Driver
+    #
+    [GOLD]
+    volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
+    cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_GOLD.xml
+    volume_backend_name=GOLD_BE
+
+    #
+    # VMAX-3 SILVER type that uses VMAX iSCSI Driver
+    #
+    [SILVER]
+    volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
+    cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_SILVER.xml
+    volume_backend_name=SILVER_BE
+
+    #
+    # VMAX-3 BRONZE type that uses VMAX iSCSI Driver
+    #
+    [BRONZE]
+    volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
+    cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_BRONZE.xml
+    volume_backend_name=BRONZE_BE
+
+7) Create cinder_emc_config_file files specified in VMAX configuration file (cinder_emc_config_ISCSI_BRONZE.xml)
 
     <?xml version="1.0" encoding="UTF-8"?>
     <EMC>
@@ -98,7 +139,7 @@ sudo chmod +x /usr/local/bin/inq
       <Pool>Fast-Pool</Pool>
     </EMC>
 
-7) Run trial unit tests
+8) Run trial unit tests
 
 Set agent.yml location for test suite
 ```bash

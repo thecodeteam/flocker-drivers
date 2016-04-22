@@ -5,7 +5,7 @@
 from flocker.node import BackendDescription, DeployerType
 from emc_vmax_blockdevice import vmax_from_configuration
 
-__VERSION__ = '0.0.1'
+__VERSION__ = '0.9.1'
 
 def api_factory(cluster_id, **kwargs):
     config_file = '/etc/flocker/vmax3.conf'

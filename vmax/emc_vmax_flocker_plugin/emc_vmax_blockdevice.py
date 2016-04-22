@@ -75,7 +75,6 @@ class EMCVmaxBlockDeviceAPI(object):
         self.default_pool = {}
         for profile in self.vmax_common.keys():
             self.vmax_common[profile]._initial_setup = self._initial_setup
-            self.vmax_common[profile].create_volume = self._create_vmax_vomume
             self._gather_info(profile)
             self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
             self.default_pool[profile] = None \
@@ -86,15 +85,28 @@ class EMCVmaxBlockDeviceAPI(object):
         lockutils.set_defaults(lock_path)
 
     def __del__(self):
+        """
+        Clear object references before closing object
+        :return:
+        """
         for profile in self.vmax_common.keys():
             del self.default_pool[profile]
             del self.volume_stats[profile]
             del self.vmax_common[profile]
 
     def get_profile_list(self):
+        """
+        List supportted profiles by name
+        :return:
+        list of profile names
+        """
         return self.vmax_common.keys()
 
     def _get_default_profile(self):
+        """
+
+        :return:
+        """
         profile_list = self.vmax_common.keys()
         if MandatoryProfiles.DEFAULT.value in profile_list:
             profile_name = MandatoryProfiles.DEFAULT.value
@@ -107,6 +119,11 @@ class EMCVmaxBlockDeviceAPI(object):
         return profile_name
 
     def _gather_info(self, profile):
+        """
+
+        :param profile:
+        :return:
+        """
         if profile not in self.vmax_common:
             LOG.error("_gather_info: VolumeException, unknown profile " + unicode(profile))
             raise VolumeException(profile)
@@ -114,6 +131,11 @@ class EMCVmaxBlockDeviceAPI(object):
         self.vmax_common[profile]._gather_info()
 
     def _get_volume(self, blockdevice_id):
+        """
+
+        :param blockdevice_id:
+        :return:
+        """
         volume = self.dbconn.get_volume_by_uuid(blockdevice_id)
         if volume is None:
             LOG.error("_get_volume: UnknownVolume, " + unicode(blockdevice_id))
@@ -123,6 +145,14 @@ class EMCVmaxBlockDeviceAPI(object):
         return volume, profile
 
     def _generate_host(self, host=None, profile=None, backend='Backend', pool=None):
+        """
+
+        :param host:
+        :param profile:
+        :param backend:
+        :param pool:
+        :return:
+        """
         if host is None:
             host = self.compute_instance.split('.')[0]
         if profile is None:
@@ -172,6 +202,10 @@ class EMCVmaxBlockDeviceAPI(object):
         return unicode(self.compute_instance)
 
     def get_vmax_hosts(self):
+        """
+
+        :return:
+        """
         return self.vmax_hosts
 
     def _initial_setup(self, volume, volumeTypeId=None):
@@ -216,7 +250,7 @@ class EMCVmaxBlockDeviceAPI(object):
 
         return extra_specs
 
-    def _create_vmax_vomume(self, volume):
+    def _create_vmax_volume(self, volume):
         """
         :param volume:
         :return:
@@ -235,7 +269,7 @@ class EMCVmaxBlockDeviceAPI(object):
             rc, volume_dict, storage_system_name = (
                 self.vmax_common[profile]._create_composite_volume(volume, volume_name, volume_size_bytes, extra_specs))
 
-        LOG.debug('_create_vmax_vomume: rc = %s, volume = %s' % (str(rc), str(volume_dict)))
+        LOG.debug('_create_vmax_volume: rc = %s, volume = %s' % (str(rc), str(volume_dict)))
         if hasattr(self.vmax_common[profile], 'version'):
             volume_dict['version'] = self.vmax_common[profile].version
 
@@ -268,7 +302,7 @@ class EMCVmaxBlockDeviceAPI(object):
                   'host': self._generate_host(profile=profile_name),
                   'attach_to': None}
 
-        provider_location = self._create_vmax_vomume(volume)
+        provider_location = self._create_vmax_volume(volume)
 
         volume['name'] = provider_location['keybindings']['DeviceID']
         volume['provider_location'] = unicode(provider_location)
@@ -296,6 +330,11 @@ class EMCVmaxBlockDeviceAPI(object):
         self.vmax_common[profile].delete_volume(volume)
 
     def _find_vmax_host(self, attach_to):
+        """
+
+        :param attach_to:
+        :return:
+        """
         connector = None
         s_attach_to = attach_to.split('.')[0]
         for host in self.vmax_hosts:
@@ -383,10 +422,15 @@ class EMCVmaxBlockDeviceAPI(object):
             LOG.error("get_device_path: UnattachedVolume, " + unicode(blockdevice_id))
             raise UnattachedVolume(blockdevice_id)
 
-        LOG.debug("get_device_path: bid = %s, path = %s" %  (unicode(blockdevice_id), unicode(device_path)))
+        LOG.debug("get_device_path: bid = %s, path = %s" % (unicode(blockdevice_id), unicode(device_path)))
         return device_path
 
     def _get_symmetrix_id(self, profile=None):
+        """
+
+        :param profile:
+        :return:
+        """
         LOG.debug(str(profile) + ' ' + str(self.default_pool))
         if self.default_pool[profile] is not None:
             location_info = self.default_pool[profile]['location_info']
@@ -397,6 +441,10 @@ class EMCVmaxBlockDeviceAPI(object):
 
     @staticmethod
     def _rescan_scsi_bus():
+        """
+
+        :return:
+        """
         iscsiadm_command = find_executable('iscsiadm')
         try:
             check_output([iscsiadm_command, "-m", "session", "--rescan"], stderr=STDOUT)
@@ -412,6 +460,10 @@ class EMCVmaxBlockDeviceAPI(object):
             LOG.error("%s: error, %s" % (rescan_command, str(e)))
 
     def _execute_inq(self):
+        """
+
+        :return:
+        """
         try:
             self._rescan_scsi_bus()
             output = check_output(["/usr/local/bin/inq", "-sym_wwn"], stderr=STDOUT)
@@ -441,6 +493,17 @@ def _blockdevicevolume_from_vmax_volume(blockdevice_id, volume):
 def vmax_from_configuration(cluster_id=None, protocol="iSCSI",
                             config_file='/etc/flocker/vmax3.conf', hosts=None,
                             profiles=None, compute_instance=None, dbhost='localhost:emc_flocker_hash'):
+    """
+
+    :param cluster_id:
+    :param protocol:
+    :param config_file:
+    :param hosts:
+    :param profiles:
+    :param compute_instance:
+    :param dbhost:
+    :return:
+    """
     CONF(default_config_files=[config_file], args=[])
     CONF.register_opts(flocker_opts)
     oslo_logging.setup(CONF, __name__)
