@@ -6,7 +6,7 @@
   "backend": "emc_vmax_flocker_plugin"
   "protocol": "iSCSI"
   "config_file": "/etc/flocker/vmax3.conf"
-  "database": "localhost"
+  "database": "<hostname or IP address>"
   "hosts":
     - "host": "example-01"
       "initiator": "iqn.1994-05.com.redhat:583d44b98a1b"
@@ -14,8 +14,9 @@
       "initiator": "iqn.1994-05.com.redhat:319a849586e9"
   "profiles":
     - "name": "gold"
-      "backend": "ISCSI_GOLD"
+      "backend": "GOLD"
     - "name": "silver"
-      "backend": "ISCSI_SILVER"
+      "backend": "SILVER"
     - "name": "bronze"
-      "backend": "ISCSI_BRONZE"
+      "backend": "BRONZE"
+

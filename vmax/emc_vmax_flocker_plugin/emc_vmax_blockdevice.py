@@ -427,9 +427,10 @@ class EMCVmaxBlockDeviceAPI(object):
 
     def _get_symmetrix_id(self, profile=None):
         """
-
-        :param profile:
+        Get Symmetrix Id
+        :param profile: storage profile name
         :return:
+        string: Symmetrix Id
         """
         LOG.debug(str(profile) + ' ' + str(self.default_pool))
         if self.default_pool[profile] is not None:
@@ -442,7 +443,7 @@ class EMCVmaxBlockDeviceAPI(object):
     @staticmethod
     def _rescan_scsi_bus():
         """
-
+        Rescan for new  SCSI devices
         :return:
         """
         iscsiadm_command = find_executable('iscsiadm')
@@ -461,8 +462,9 @@ class EMCVmaxBlockDeviceAPI(object):
 
     def _execute_inq(self):
         """
-
+        Run inq shell comamnd
         :return:
+        string output from inq command
         """
         try:
             self._rescan_scsi_bus()
@@ -476,8 +478,9 @@ class EMCVmaxBlockDeviceAPI(object):
 
 def _blockdevicevolume_from_vmax_volume(blockdevice_id, volume):
     """
+    Convert volume dictionary into BlockDeviceVolume object
     :param unicode blockdevice_id: An opaque identifier for the volume
-    :param volume: a VMAX device Id
+    :param volume: a VMAX volume data dictionary
     :returns: ``BlockDeviceVolume```
     """
     size = int(volume['actual_size'])

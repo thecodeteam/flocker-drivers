@@ -72,7 +72,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             print 'allocation unit = %s' % str(block_device_api.allocation_unit())
             for profile in block_device_api.get_profile_list():
-                print 'symmetrix id = %s' % block_device_api._get_symmetrix_id(profile=profile)
+                print 'profile = %s symmetrix id = %s' % (profile, block_device_api._get_symmetrix_id(profile=profile))
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
