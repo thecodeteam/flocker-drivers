@@ -104,11 +104,13 @@ def scaleio_client_from_environment():
     SCALEIO_PASSWORD = scaleio_config['password']
     MDM_GW_IP = scaleio_config['mdm']
     PROTECTION_DOMAIN = scaleio_config['pdomain']
+    STORAGE_POOL = scaleio_config['storage_pool']
     SSL = scaleio_config['ssl']
     DEBUG = scaleio_config['debug']
     sio, pd, sp = scaleio_client(
         SCALEIO_USERNAME, SCALEIO_PASSWORD,
-        MDM_GW_IP, pdomain=PROTECTION_DOMAIN, ssl=SSL,
+        MDM_GW_IP, pdomain=PROTECTION_DOMAIN, 
+        spool=STORAGE_POOL, ssl=SSL,
         debug_level=DEBUG
     )
     return sio, pd, sp
