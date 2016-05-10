@@ -90,6 +90,7 @@ sudo chmod +x /usr/local/bin/inq
           "backend": "BRONZE"
 
 6) Create VMAX config_file (/etc/flocker/vmax3.conf)
+
     [DEFAULT]
     lock_path=/var/lib/flocker
     use_syslog=True
