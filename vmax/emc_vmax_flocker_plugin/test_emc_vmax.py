@@ -15,10 +15,10 @@ import traceback
 from uuid import uuid4
 
 from twisted.trial.unittest import SynchronousTestCase
-from flocker.node.agents.blockdevice import UnknownVolume
+from flocker.node.agents.blockdevice import UnknownVolume, MandatoryProfiles
 
 from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
-from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests
+from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests, make_iprofiledblockdeviceapi_tests
 
 
 def emcvmaxblockdeviceapi_for_test(test_case=None):
@@ -31,15 +31,26 @@ def emcvmaxblockdeviceapi_for_test(test_case=None):
 
 
 class EMCVmaxBlockDeviceAPIInterfaceTests(
-        make_iblockdeviceapi_tests(
-            blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
-            minimum_allocatable_size=vmax_allocation_unit(1),
-            device_allocation_unit=vmax_allocation_unit(1),
-            unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
-        )
+    make_iblockdeviceapi_tests(
+        blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
+        minimum_allocatable_size=vmax_allocation_unit(1),
+        device_allocation_unit=vmax_allocation_unit(1),
+        unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
+    )
 ):
     """
-    Interface adherence Tests for ``EMCVmaxBlockDeviceAPI``
+    Interface adherence Tests for ``EMCVmaxBlockDeviceAPIInterfaceTests``
+    """
+
+
+class EMCVmaxIProfiledBlockDeviceAPITestsMixin(
+    make_iprofiledblockdeviceapi_tests(
+        profiled_blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
+        dataset_size=vmax_allocation_unit(1)
+    )
+):
+    """
+    Interface adherence Tests for ``EMCVmaxIProfiledBlockDeviceAPITestsMixin``
     """
 
 
@@ -50,7 +61,7 @@ class EMCVmaxBlockDeviceAPIInterfaceTests(
 # as an example
 class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
     """
-    Implementation specific tests for ``EMCVmaxBlockDeviceAPI``.
+    Implementation specific tests for ``EMCVmaxBlockDeviceAPIImplementationTests``.
     """
     def test_login(self):
         """
@@ -59,10 +70,21 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         print "\ntest_login"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            print 'symm info = %s' % block_device_api.get_volume_stats()
-            print 'symmetrix id = %s' % block_device_api._get_symmetrix_id()
             print 'allocation unit = %s' % str(block_device_api.allocation_unit())
-            self.assertTrue(block_device_api._has_connection())
+            for profile in block_device_api.get_profile_list():
+                print 'profile = %s symmetrix id = %s' % (profile, block_device_api._get_symmetrix_id(profile=profile))
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
+    def test_list_profiles(self):
+        """
+        Test EMCVmaxBlockDeviceAPI List Profiles
+        """
+        print "\ntest_list_profiles"
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            print 'profiles = %s' % str(block_device_api.get_profile_list())
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -105,6 +127,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_get_vmax_hosts(self):
+        """
+        Test EMCVmaxBlockDeviceAPI list hosts in agent.yml
+        """
         print "\ntest_get_vmax_hosts"
 
         try:
@@ -114,30 +139,51 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             hosts = block_device_api.get_vmax_hosts()
             for h in hosts:
                 print str(h)
-            print block_device_api._generate_host()
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
 
     def test_simple_create(self):
+        """
+        Test EMCVmaxBlockDeviceAPI create a volume
+        """
         print "\ntest_simple_create"
 
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'db connection = ' + block_device_api.dbconn._show_db()
             print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
 
+    def test_create_with_profile(self):
+        """
+        Test EMCVmaxBlockDeviceAPI create a volume for each defined profile
+        """
+        print "\ntest_create_with_profile"
+
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            for profile in (c.value for c in MandatoryProfiles.iterconstants()):
+                block = block_device_api.create_volume_with_profile(uuid4(),
+                                                                    block_device_api.allocation_unit(), profile)
+                print 'uuid = ' + block.blockdevice_id + ' profile = ' + str(profile) \
+                      + ' size = ' + str(block.size)
+        except Exception as e:
+            traceback.print_exc()
+            self.fail(e.message)
+
     def test_simple_attach(self):
+        """
+        Test EMCVmaxBlockDeviceAPI attach a volume to this host, this host
+        must be in agent.yml
+        """
         print "\ntest_simple_attach"
 
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'db connection = ' + block_device_api.dbconn._show_db()
             print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
             vmax_host = block_device_api.compute_instance_id()
             block = block_device_api.attach_volume(block.blockdevice_id, vmax_host)
@@ -151,6 +197,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_inq_and_rescan(self):
+        """
+        Test EMCVmaxBlockDeviceAPI Test inquiry and rescan commands
+        """
         print "\ntest_inq_and_rescan"
 
         try:
@@ -162,6 +211,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_get_not_exist(self):
+        """
+        Test EMCVmaxBlockDeviceAPI Test getting a non existent volume fails
+        """
         print "\ntest_get_not_exist"
 
         try:
@@ -175,6 +227,9 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             self.fail(e.message)
 
     def test_list_all(self):
+        """
+        Test EMCVmaxBlockDeviceAPI List all volumes in database
+        """
         print "\ntest_list_all"
 
         try:
