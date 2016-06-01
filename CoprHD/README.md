@@ -94,9 +94,6 @@ When docker starts host will get created on Vipr
 
 In Vipr when storage is getting provisioned the same will get refrected in the vipr Dashboard in the task list
 
-## Future
-- Add Chap protocol support for iSCSI
-- Add 
 
 10. Generating & using security file
 =========================================
