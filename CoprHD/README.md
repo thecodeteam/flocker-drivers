@@ -2,15 +2,12 @@ COPRHD Flocker Plugin
 ======================
 The plugin for COPRHD Flocker integration.
 
-## Description
-ClusterHQ/Flocker provides an efficient and easy way to connect persistent store with Docker containers. This project provides a plugin to provision storage from COPRHD.
-
 ## COPRHD Flocker Intergration Block Diagram
  ![alt text]( CoprHD-Flocker.png "CoprHD-Flocker")
 
 
 Tested the coprHD
-1.	 Ubuntu – 14.04.03 – LTS 
+1.	Ubuntu – 14.04.03 – LTS 
 2.	Flocker – 1.10.2
 3.	Docker – 1.10.1 - build 9e83765
 4.	2 Node setup
