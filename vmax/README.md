@@ -42,11 +42,13 @@ On Ubuntu
 sudo apt-get update
 sudo apt-get -y install open-iscsi scsitools lsscsi
 sudo apt-get -y install libpq-dev
+sudo apt-get -y swig
 ```
 On Centos
 ```bash
 sudo yum -y install iscsi-initiator-utils lsscsi sg3_utils
 sudo yum -y install libpqxx-devel
+sudo yum -y install swig
 ```
 
 2) Install redis<br>

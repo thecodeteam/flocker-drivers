@@ -14,7 +14,7 @@ with open("requirements.txt") as requirements:
 
 setup(
     name='emc_vmax_flocker_plugin',
-    version='0.9.1',
+    version='0.9.2',
     description='EMC VMAX Backend Plugin for ClusterHQ/Flocker ',
     long_description=long_description,
     author='Kevin Rodgers',
