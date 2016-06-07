@@ -69,7 +69,7 @@ Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 
 - Install CoprHD-cli 2.3 or above
    ```bash
-   Refer the below link for more information
+   Refer section "Install the ViPR Controller CLI on Linux" in the given below link
    http://www.emc.com/collateral/TechnicalDocument/docu62079.pdf
    ```
    
