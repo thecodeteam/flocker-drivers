@@ -13,13 +13,13 @@ Flocker – 1.10.2
 Docker – 1.10.1 - build 9e83765
 
 
-Pre-requsities
+## Installation
 ---------------
-1. Install CoprHD 2.4.1, please refer below links to download,build and setup CoprHD.
-https://coprhd.atlassian.net/wiki/display/COP/How+to+Build+and+Run+CoprHD 
-https://coprhd.atlassian.net/wiki/display/COP/How+to+download+and+build+CoprHD 
+- Install CoprHD 2.4.1, please refer below links to download,build and setup CoprHD.
+    https://coprhd.atlassian.net/wiki/display/COP/How+to+Build+and+Run+CoprHD 
+    https://coprhd.atlassian.net/wiki/display/COP/How+to+download+and+build+CoprHD 
 
-2. once you are able to install and login to CoprHD. you should discover storage systems, create virtual arrays and virtual pools. Below you can see screenshots.
+- once you are able to install and login to CoprHD. you should discover storage systems, create virtual arrays and virtual pools. Below you can see screenshots.
 
 	![alt text]( ViprStorageSystems.png "Storage Arrays")
     
@@ -32,26 +32,47 @@ https://coprhd.atlassian.net/wiki/display/COP/How+to+download+and+build+CoprHD
 	![alt text]( ViprVirtualPools.png "Virtual Pools")
 
 
-3. Install scsi tools
+- Install OpeniSCSI 
 
-sudo apt-get update
-sudo apt-get install -y open-iscsi
-sudo apt-get install -y lsscsi
-sudo apt-get -y install scsitools
-
-3. Install ClusterHQ/Flocker
+    * Ubuntu<br>
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y open-iscsi
+    sudo apt-get install -y lsscsi
+    sudo apt-get -y install scsitools
+    ```
+    * Centos<br>
+    ```bash
+    sudo yum -y install iscsi-initiator-utils
+    sudo yum -y install lsscsi
+    sudo yum -y install sg3_utils
+    ```
+	
+- Discover iSCSI of storage array<br>
+   ```bash
+    sudo iscsiadm -m discovery -t st -p {ipaddress of storage array iscsi port}
+	```
+- Login iSCSI data port<br>
+   ```bash
+   scsiadm -m node  -p ${ipaddress of storage array iscsi portal} --login
+   ```
+   
+- Install ClusterHQ/Flocker
 Refer to ubuntu install notes -> https://docs.clusterhq.com/en/0.4.0/
 
-4. Install CoprHD Plugin 
-git clone https://<userid>@review.coprhd.org/scm/ce/flocker-driver.git
-cd copr-hd
-sudo /opt/flocker/bin/python setup.py install
+- Install CoprHD Flocker Plugin 
+	```bash
+	git clone https://<userid>@review.coprhd.org/scm/ce/flocker-driver.git
+	cd copr-hd
+	sudo /opt/flocker/bin/python setup.py install
+	```
 
-5. Install CoprHD-cli 2.4 or above
-
-Refer the below link for more information
-http://www.emc.com/collateral/TechnicalDocument/docu62079.pdf
-
+- Install CoprHD-cli 2.3 or above
+   ```bash
+   Refer the below link for more information
+   http://www.emc.com/collateral/TechnicalDocument/docu62079.pdf
+   ```
+   
 ## Usage Instructions
 To start the plugin on a node, a configuration file must exist on the node at /etc/flocker/agent.yml.
 ```bash
