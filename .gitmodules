@@ -1,4 +1,2 @@
 
-[submodule "CoprHD/flocker-driver"]
-	path = CoprHD/flocker-driver
-	url = https://review.coprhd.org/scm/ce/flocker-driver
+
