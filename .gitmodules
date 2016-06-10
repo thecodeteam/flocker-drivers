@@ -1,5 +1,1 @@
 
-
-[submodule "CoprHD/flocker-driver.git"]
-	path = CoprHD/flocker-driver.git
-	url = https://review.coprhd.org/scm/ce/flocker-driver.git
