@@ -1,0 +1,3 @@
+[submodule "CorpHD/flocker-driver"]
+	path = CorpHD/flocker-driver
+	url = https://review.coprhd.org/scm/ce/flocker-driver.git
