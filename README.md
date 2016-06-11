@@ -16,10 +16,18 @@ Drivers
 - ScaleIO
 - XtremIO
 - VMAX
+- CorpHD
 
 Driver Download
 ---------
 Please refer the repository sub-directories above for information relating to reach driver.
+
+The CorpHD driver is uploaded as submodule. For downloading CorpHD driver kindly run following two extra commands
+
+```
+git submodule init
+git submodule update
+```
 
 Demo
 ----
