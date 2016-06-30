@@ -89,39 +89,17 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             traceback.print_exc()
             self.fail(e.message)
 
-    def test_flocker_db(self):
+    def test_ecom_list_volumes(self):
         """
-        Test EMCVmaxBlockDeviceAPI redis db
+        Test EMCVmaxBlockDeviceAPI ecom
         """
-        print "\ntest_flocker_db"
+        print "\ntest_ecom_list_volumes"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            dbconn = block_device_api.dbconn
 
-            volume = eval("{'name': u'FFC08', 'attach_to': None, "
-                          "'provider_location': u\"{'classname': u'Symm_StorageVolume', "
-                          "'keybindings': {'CreationClassName': u'Symm_StorageVolume', "
-                          "'SystemName': u'SYMMETRIX+000198700440', 'DeviceID': u'FFC08', "
-                          "'SystemCreationClassName': u'Symm_StorageSystem'}, 'version': '0.0.1'}\", "
-                          "'host': 'rodgek-localdomain@Backend#SATA_BRONZ1+000198700440', "
-                          "'id': u'cada636d-f287-44b6-8eb8-c914d37f9788', 'size': 960}")
-            uuid = dbconn.add_volume(volume)
-            print uuid + ' added'
-
-            volumes = dbconn.get_all_volumes()
+            volumes = block_device_api.list_flocker_volumes()
             for v in volumes:
-                if v['uuid'] == volume['uuid']:
-                    print uuid + ' found by get_all_volumes()'
-                    for key in v:
-                        if v[key] != volume[key]:
-                            self.fail("key mismatch " + key)
-                break
-            else:
-                self.fail(uuid + ": entry not found")
-
-            dbconn.delete_volume_by_id(uuid)
-            print uuid + ' removed'
-
+                print str(v)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)

@@ -33,7 +33,7 @@ Author: Kevin Rodgers
 Author-email: kevin.rodgers@emc.com
 License: Apache 2.0
 Location: /opt/flocker/lib/python2.7/site-packages
-Requires: bitmath, eliot, oslo.concurrency, oslo.config, oslo.i18n, oslo.serialization, oslo.utils, pywbem, redis, testtools, Twisted, zope.interface
+Requires: bitmath, eliot, oslo.concurrency, oslo.config, oslo.i18n, oslo.serialization, oslo.utils, pywbem, testtools, Twisted, zope.interface
 ```
 
 1) Install OpeniSCSI and other required libraries<br>
@@ -42,7 +42,7 @@ On Ubuntu
 sudo apt-get update
 sudo apt-get -y install open-iscsi scsitools lsscsi
 sudo apt-get -y install libpq-dev
-sudo apt-get -y swig
+sudo apt-get -y install swig
 ```
 On Centos
 ```bash
@@ -51,32 +51,18 @@ sudo yum -y install libpqxx-devel
 sudo yum -y install swig
 ```
 
-2) Install redis<br>
-On Ubuntu
-```bash
-sudo apt-get -y install redis-server
-```
-On Centos
-```bash
-sudo yum -y install redis
-```
-
-3) Install EMC inq utility
+2) Install EMC inq utility
 ```bash
 sudo wget \
     ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 \
     -O /usr/local/bin/inq
 sudo chmod +x /usr/local/bin/inq
 ```
-4) Edit redis.conf and set listen (bind) address<br>
-    bind <host-ip-address> 127.0.0.1 or simply bind *
-
-5) Add vmax flocker plugin to agent.yml
+3) Add vmax flocker plugin to agent.yml
 
     "dataset":
       "backend": "emc_vmax_flocker_plugin"
       "config_file": "/etc/flocker/vmax3.conf"
-      "database": "<your redis server IP>"
       "protocol": "iSCSI"
       "hosts":
         - "host": "<short name>"
@@ -91,7 +77,7 @@ sudo chmod +x /usr/local/bin/inq
         - "name": "bronze"
           "backend": "BRONZE"
 
-6) Create VMAX config_file (/etc/flocker/vmax3.conf)
+4) Create VMAX config_file (/etc/flocker/vmax3.conf)
 
     [DEFAULT]
     lock_path=/var/lib/flocker
@@ -127,7 +113,7 @@ sudo chmod +x /usr/local/bin/inq
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_BRONZE.xml
     volume_backend_name=BRONZE_BE
 
-7) Create cinder_emc_config_file files specified in VMAX configuration file (cinder_emc_config_ISCSI_BRONZE.xml)
+5) Create cinder_emc_config_file files specified in VMAX configuration file (cinder_emc_config_ISCSI_BRONZE.xml)
 
     <?xml version="1.0" encoding="UTF-8"?>
     <EMC>
@@ -142,7 +128,7 @@ sudo chmod +x /usr/local/bin/inq
       <Pool>Fast-Pool</Pool>
     </EMC>
 
-8) Run trial unit tests
+6) Run trial unit tests
 
 Set agent.yml location for test suite
 ```bash

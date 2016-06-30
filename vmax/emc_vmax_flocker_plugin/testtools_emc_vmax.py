@@ -8,6 +8,7 @@ EMC Test helpers for ``flocker.node.agents``.
 
 import os
 import yaml
+import traceback
 from uuid import uuid4
 from bitmath import GiB
 from emc_vmax_blockdevice import vmax_from_configuration, EMCVmaxBlockDeviceAPI
@@ -45,6 +46,7 @@ def _cleanup(api):
             api.destroy_volume(blockdevice.blockdevice_id)
         del api
     except Exception as e:
+        traceback.print_exc()
         print str(e.message)
 
 
@@ -69,13 +71,11 @@ def vmax_client_for_test():
     config_file = dataset['config_file']
     protocol = dataset['protocol']
     hosts = dataset['hosts']
-    dbhost = '%s:%s' % (dataset['database'], 'test_emc_flocker_hash')
     profiles = {}
     if 'profiles' in dataset:
         profiles = dataset['profiles']
     return vmax_from_configuration(cluster_id=unicode(uuid4()), config_file=config_file,
-                                   hosts=hosts, profiles=profiles, protocol=protocol,
-                                   dbhost=dbhost)
+                                   hosts=hosts, profiles=profiles, protocol=protocol)
 
 
 def tidy_vmax_client_for_test(test_case):
