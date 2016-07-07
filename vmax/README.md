@@ -10,7 +10,7 @@ Make sure you have Flocker already installed. If not visit  [Install Flocker](ht
 
 Install OpenStack Cinder
 ```bash
-git clone -b stable/liberty https://github.com/openstack/cinder.git
+git clone -b stable/mitaka https://github.com/openstack/cinder.git
 sudo /opt/flocker/bin/pip install ./cinder/
 ```
 
