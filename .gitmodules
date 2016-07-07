@@ -1,0 +1,3 @@
+[submodule "CoprHD"]
+	path = CoprHD
+	url = https://github.com/CoprHD/flocker-driver
