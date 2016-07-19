@@ -1,0 +1,10 @@
+bitmath
+eliot
+eventlet
+monotonic
+pyrsistent
+retrying
+six
+storops
+Twisted
+zope.interface
