@@ -103,6 +103,8 @@ __Note:__
 Set agent.yml location for test suite
 ```bash
 export VNX_CONFIG_FILE=/etc/flocker/agent.yml
+# Optional: turn off the urllib InsecureRequestWarning
+export PYTHONWARNINGS="ignore:Unverified HTTPS request"
 ```
 
 Run the test

@@ -117,7 +117,7 @@ class EMCUnityBlockAPI(object):
 
         self.scheduler = {
             'profile': scheduler.ProfileBasePoolScheduler(self.client),
-            'capacity': scheduler.ProfileBasePoolScheduler(self.client),
+            'capacity': scheduler.CapacityPoolScheduler(self.client),
         }
 
         LOG.info(u'Exiting EMCUnityBlockAPI.__init__')

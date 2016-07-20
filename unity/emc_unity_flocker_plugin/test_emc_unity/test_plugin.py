@@ -30,11 +30,11 @@ if os.path.basename(sys.argv[0]) == "trial":
 
 
 def emcblockdeviceapi_for_test(cluster_id, test_case):
-    """Create ``EMCUuityBlockAPI`` instance.
+    """Create ``EMCUnityBlockAPI`` instance.
 
-    :returns: A ``EMCUuityBlockAPI`` instance
+    :returns: A ``EMCUnityBlockAPI`` instance
     """
-    config_file_path = os.environ.get('Unity_CONFIG_FILE')
+    config_file_path = os.environ.get('UNITY_CONFIG_FILE')
     config_file = open(config_file_path)
     # configure file parameter:
     #   [Mandatory]
