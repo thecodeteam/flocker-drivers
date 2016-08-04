@@ -18,7 +18,7 @@ from uuid import uuid4
 from twisted.trial.unittest import SynchronousTestCase
 from flocker.node.agents.blockdevice import UnknownVolume, MandatoryProfiles
 
-from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
+from testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
 from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests, make_iprofiledblockdeviceapi_tests
 
 

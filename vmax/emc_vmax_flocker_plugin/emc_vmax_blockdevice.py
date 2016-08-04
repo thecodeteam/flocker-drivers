@@ -153,7 +153,7 @@ class EMCVmaxBlockDeviceAPI(object):
         :return:
         """
         volume = self.find_volume_by_element_name(blockdevice_id)
-        profile = self.get_profile_list()[0] if 'PROFILE' not in volume else volume['PROFILE']
+        profile = self._get_default_profile() if 'PROFILE' not in volume else volume['PROFILE']
         volume['PROFILE'] = profile
         return volume, profile
 
@@ -366,12 +366,14 @@ class EMCVmaxBlockDeviceAPI(object):
         """
         try:
             profile = volumeTypeId if volumeTypeId is not None else volume['PROFILE']
+            LOG.debug('Profile returned is %(profile)s', {'profile': six.text_type(profile)})
             common = self.vmax_common[profile]
             configuration_file = common.configuration.cinder_emc_config_file
             array_info = common.utils.parse_file_to_get_array_map(configuration_file)
 
             pool = common._validate_pool(volume)
             LOG.debug("Pool returned is %(pool)s.", {'pool': pool})
+            LOG.debug("Array info returned is %(array_info)s.", {'array_info': six.text_type(array_info)})
 
             pool_record = common.utils.extract_record(array_info, pool)
             if not pool_record:
@@ -386,7 +388,8 @@ class EMCVmaxBlockDeviceAPI(object):
             else:
                 # V2 extra specs
                 extra_specs = common._set_v2_extra_specs({}, pool_record)
-        except Exception:
+        except Exception as e:
+            LOG.error(e.message)
             raise VolumeException(self._volume_id_to_blockdevice_id(volume['id']))
 
         return extra_specs
