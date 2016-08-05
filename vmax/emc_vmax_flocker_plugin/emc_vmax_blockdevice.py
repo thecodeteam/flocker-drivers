@@ -153,9 +153,7 @@ class EMCVmaxBlockDeviceAPI(object):
         :return:
         """
         volume = self.find_volume_by_element_name(blockdevice_id)
-        profile = self._get_default_profile() if 'PROFILE' not in volume else volume['PROFILE']
-        volume['PROFILE'] = profile
-        return volume, profile
+        return volume, volume['PROFILE']
 
     def get_ecom_connection(self):
         """
@@ -241,9 +239,26 @@ class EMCVmaxBlockDeviceAPI(object):
             'attach_to': self.get_volume_attach_to(conn, volume),
             'actual_size': actual_size,
             'size': int(Byte(actual_size).to_GiB().value),
-            'provider_location': six.text_type(provider_location)}
+            'provider_location': six.text_type(provider_location),
+            'PROFILE': self.get_device_profile(conn, volume.path)}
 
         return volume_dict
+
+    def get_device_profile(self, conn, volume_path):
+        profile = self._get_default_profile()
+
+        profiles = conn.Associators(volume_path, ResultClass='Symm_SRPStoragePool')
+        if profiles is None or len(profiles) != 1:
+            profiles = conn.Associators(volume_path, ResultClass='EMC_VirtualProvisioningPool')
+
+        if profiles is not None and len(profiles) == 1:
+            pool = profiles[0]['PoolID']
+            for p in self.get_profile_list():
+                if self.default_pool[p] is not None and self.default_pool[p]['pool_name'].startswith(pool):
+                    profile = p
+                    break
+
+        return profile
 
     def list_flocker_volumes(self):
         """
@@ -591,7 +606,7 @@ class EMCVmaxBlockDeviceAPI(object):
         if profile is None:
             profile = self._get_default_profile()
 
-        LOG.debug(six.text_type(profile) + ' ' + six.text_type(self.default_pool))
+        LOG.debug(six.text_type(profile) + ' ' + six.text_type(self.default_pool[profile]))
         if self.default_pool[profile] is not None:
             location_info = self.default_pool[profile]['location_info']
         else:
