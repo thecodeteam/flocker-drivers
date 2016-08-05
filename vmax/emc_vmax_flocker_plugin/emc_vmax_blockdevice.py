@@ -258,7 +258,6 @@ class EMCVmaxBlockDeviceAPI(object):
                 if self.default_pool[p] is not None and self.default_pool[p]['pool_name'].startswith(pool):
                     profile = p
                     break
-        
         return profile
 
     def list_flocker_volumes(self):
@@ -511,7 +510,7 @@ class EMCVmaxBlockDeviceAPI(object):
         """
         for host in self.vmax_hosts:
             if host['initiator'].lower() == iqn_or_wwn.lower():
-                connector = host['host']
+                connector = unicode(host['host'])
                 break
         else:
             connector = None
