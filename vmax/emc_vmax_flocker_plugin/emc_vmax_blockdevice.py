@@ -231,16 +231,17 @@ class EMCVmaxBlockDeviceAPI(object):
             'keybindings': keybindings,
             'version': u'0.0.1'}
 
+        profile = self.get_device_profile(conn, volume.path)
         actual_size = volume['ConsumableBlocks'] * volume['BlockSize']
         volume_dict = {
             'name': volume['DeviceID'],
             'id': volume['ElementName'],
-            'host': self._generate_host(),
+            'host': self._generate_host(profile=profile),
             'attach_to': self.get_volume_attach_to(conn, volume),
             'actual_size': actual_size,
             'size': int(Byte(actual_size).to_GiB().value),
             'provider_location': six.text_type(provider_location),
-            'PROFILE': self.get_device_profile(conn, volume.path)}
+            'PROFILE': profile}
 
         return volume_dict
 
@@ -257,7 +258,7 @@ class EMCVmaxBlockDeviceAPI(object):
                 if self.default_pool[p] is not None and self.default_pool[p]['pool_name'].startswith(pool):
                     profile = p
                     break
-
+        
         return profile
 
     def list_flocker_volumes(self):
