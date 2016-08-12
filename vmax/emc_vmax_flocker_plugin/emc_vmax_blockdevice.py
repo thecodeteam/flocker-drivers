@@ -240,7 +240,7 @@ class EMCVmaxBlockDeviceAPI(object):
             'attach_to': self.get_volume_attach_to(conn, volume),
             'actual_size': actual_size,
             'size': int(Byte(actual_size).to_GiB().value),
-            'provider_location': six.text_type(provider_location),
+            'provider_location': unicode(provider_location),
             'PROFILE': profile}
 
         return volume_dict
@@ -355,7 +355,7 @@ class EMCVmaxBlockDeviceAPI(object):
             provider-specific node identifier which identifies the node where
             the method is run.
         """
-        return six.text_type(self.compute_instance)
+        return unicode(self.compute_instance)
 
     def get_vmax_hosts(self):
         """
@@ -454,7 +454,7 @@ class EMCVmaxBlockDeviceAPI(object):
             LOG.error('Ignoring unknown profile name ' + six.text_type(profile_name))
             profile_name = self._get_default_profile()
 
-        blockdevice_id = six.text_type(dataset_id)
+        blockdevice_id = unicode(dataset_id)
         volume = {'id': self._blockdevice_id_to_volume_id(blockdevice_id),
                   'size': int(Byte(size).to_GB().value),
                   'actual_size': size,
@@ -465,7 +465,7 @@ class EMCVmaxBlockDeviceAPI(object):
         provider_location = self._create_vmax_volume(volume)
 
         volume['name'] = provider_location['keybindings']['DeviceID']
-        volume['provider_location'] = six.text_type(provider_location)
+        volume['provider_location'] = unicode(provider_location)
 
         return _blockdevicevolume_from_vmax_volume(blockdevice_id, volume)
 
@@ -536,7 +536,7 @@ class EMCVmaxBlockDeviceAPI(object):
 
         LOG.info("attach_volume " + six.text_type(volume) + " to " + six.text_type(connector))
 
-        volume['attach_to'] = six.text_type(attach_to)
+        volume['attach_to'] = unicode(attach_to)
         self.vmax_common[profile].initialize_connection(volume, connector)
         return _blockdevicevolume_from_vmax_volume(blockdevice_id, volume)
 
@@ -590,10 +590,10 @@ class EMCVmaxBlockDeviceAPI(object):
                 device_path = six.text_type(FilePath(fields[0]))
                 break
         else:
-            LOG.error("get_device_path: UnattachedVolume, " + blockdevice_id)
+            LOG.error("get_device_path: UnattachedVolume, " + six.text_type(blockdevice_id))
             raise UnattachedVolume(blockdevice_id)
 
-        LOG.debug("get_device_path: bid = %s, path = %s" % (blockdevice_id, device_path))
+        LOG.debug("get_device_path: bid = %s, path = %s" % (six.text_type(blockdevice_id), six.text_type(device_path)))
         return device_path
 
     def _get_symmetrix_id(self, profile=None):
