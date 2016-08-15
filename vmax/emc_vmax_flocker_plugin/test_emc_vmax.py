@@ -12,7 +12,6 @@ we may change thay in the future.
 """
 import functools
 import traceback
-import six
 from uuid import uuid4
 
 from twisted.trial.unittest import SynchronousTestCase
@@ -36,7 +35,7 @@ class EMCVmaxBlockDeviceAPIInterfaceTests(
         blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
         minimum_allocatable_size=vmax_allocation_unit(1),
         device_allocation_unit=vmax_allocation_unit(1),
-        unknown_blockdevice_id_factory=lambda test: six.text_type(uuid4())
+        unknown_blockdevice_id_factory=lambda test: str(uuid4())
     )
 ):
     """
@@ -71,7 +70,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         print "\ntest_login"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            print 'allocation unit = %s' % six.text_type(block_device_api.allocation_unit())
+            print 'allocation unit = %s' % str(block_device_api.allocation_unit())
             for profile in block_device_api.get_profile_list():
                 print 'profile = %s symmetrix id = %s' % (profile, block_device_api._get_symmetrix_id(profile=profile))
         except Exception as e:
@@ -85,7 +84,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         print "\ntest_list_profiles"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            print 'profiles = %s' % six.text_type(block_device_api.get_profile_list())
+            print 'profiles = %s' % str(block_device_api.get_profile_list())
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -100,7 +99,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
 
             volumes = block_device_api.list_flocker_volumes()
             for v in volumes:
-                print six.text_type(v)
+                print str(v)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -114,10 +113,10 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             host_id = block_device_api.compute_instance_id()
-            print six.text_type(host_id)
+            print str(host_id)
             hosts = block_device_api.get_vmax_hosts()
             for h in hosts:
-                print six.text_type(h)
+                print str(h)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -131,7 +130,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'uuid = ' + block.blockdevice_id + ' size = ' + six.text_type(block.size)
+            print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -147,8 +146,8 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             for profile in (c.value for c in MandatoryProfiles.iterconstants()):
                 block = block_device_api.create_volume_with_profile(uuid4(),
                                                                     block_device_api.allocation_unit(), profile)
-                print 'uuid = ' + block.blockdevice_id + ' profile = ' + six.text_type(profile) \
-                      + ' size = ' + six.text_type(block.size)
+                print 'uuid = ' + block.blockdevice_id + ' profile = ' + str(profile) \
+                      + ' size = ' + str(block.size)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -163,14 +162,14 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             block = block_device_api.create_volume(uuid4(), block_device_api.allocation_unit())
-            print 'uuid = ' + block.blockdevice_id + ' size = ' + six.text_type(block.size)
+            print 'uuid = ' + block.blockdevice_id + ' size = ' + str(block.size)
             vmax_host = block_device_api.compute_instance_id()
             block = block_device_api.attach_volume(block.blockdevice_id, vmax_host)
-            print 'volume attached to = ' + six.text_type(block.attached_to)
+            print 'volume attached to = ' + str(block.attached_to)
             path = block_device_api.get_device_path(block.blockdevice_id)
-            print 'device path is ' + six.text_type(path)
+            print 'device path is ' + str(path)
             output = block_device_api._execute_inq()
-            print "inq output: \n%s" % six.text_type(output)
+            print "inq output: \n%s" % str(output)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -184,7 +183,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             output = block_device_api._execute_inq()
-            print "inq output: \n%s" % six.text_type(output)
+            print "inq output: \n%s" % str(output)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -200,7 +199,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             block_device_api.get_device_path(u'99999')
             self.fail('No exception thrown')
         except UnknownVolume as ue:
-            print 'UnknownVolume: ' + six.text_type(ue)
+            print 'UnknownVolume: ' + str(ue)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -215,7 +214,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
             blocks = block_device_api.list_volumes()
             for b in blocks:
-                print 'uuid = ' + b.blockdevice_id + ' size = ' + six.text_type(b.size)
+                print 'uuid = ' + b.blockdevice_id + ' size = ' + str(b.size)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
