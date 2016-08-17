@@ -41,13 +41,13 @@ On Ubuntu
 ```bash
 sudo apt-get update
 sudo apt-get -y install open-iscsi scsitools lsscsi
-sudo apt-get -y install libpq-dev
+sudo apt-get -y install libpq-dev libxslt1-dev
 sudo apt-get -y install swig
 ```
 On Centos
 ```bash
 sudo yum -y install iscsi-initiator-utils lsscsi sg3_utils
-sudo yum -y install libpqxx-devel
+sudo yum -y install libpqxx-devel libxslt-devel
 sudo yum -y install swig
 ```
 
@@ -87,7 +87,7 @@ sudo chmod +x /usr/local/bin/inq
     syslog_log_facility=LOG_LOCAL3
     log_dir=/var/lib/flocker
     log_level=INFO
-    enabled_backends=GOLD.SILVER.BRONZE
+    enabled_backends=GOLD,SILVER,BRONZE
 
     #
     # VMAX-3 GOLD type that uses VMAX iSCSI Driver

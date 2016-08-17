@@ -43,6 +43,9 @@ backend_opts = [
     cfg.StrOpt('volume_backend_name',
                default='DEFAULT',
                help='backend name'),
+    cfg.BoolOpt('driver_use_ssl',
+                default=False,
+                help='SMI-S requires SSL'),
     cfg.StrOpt('volume_driver',
                default='cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver',
                help='volume driver path')
