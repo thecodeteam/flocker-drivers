@@ -43,9 +43,12 @@ backend_opts = [
     cfg.StrOpt('volume_backend_name',
                default='DEFAULT',
                help='backend name'),
+    cfg.BoolOpt('driver_ssl_cert_verify',
+                default=False,
+                help='driver_ssl_cert_verify'),
     cfg.BoolOpt('driver_use_ssl',
                 default=False,
-                help='SMI-S requires SSL'),
+                help='driver_use_ssl'),
     cfg.StrOpt('volume_driver',
                default='cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver',
                help='volume driver path')
@@ -690,14 +693,16 @@ def vmax_from_configuration(cluster_id=None, protocol=u'iSCSI', config_file=u'/e
     """
     CONF(default_config_files=[config_file], args=[])
     CONF.register_opts(flocker_opts)
+    for backend in CONF.enabled_backends:
+        CONF.register_group(cfg.OptGroup(name=backend))
+        CONF.register_opts(backend_opts, group=backend)
+
     oslo_logging.setup(CONF, __name__)
-    LOG.info(u'Logging to ' + unicode(CONF.log_file))
+    LOG.info(u'Logging to directory ' + unicode(CONF.log_dir))
 
     vmax_common = {}
     for backend in CONF.enabled_backends:
-        CONF.register_group(cfg.OptGroup(backend))
-        CONF.register_opts(backend_opts, group=backend)
-        local_conf = conf.Configuration(flocker_opts, config_group=backend)
+        local_conf = conf.Configuration(backend_opts, config_group=backend)
         local_conf.config_group = backend
 
         args = [protocol, '2.0.0', local_conf]
@@ -706,7 +711,7 @@ def vmax_from_configuration(cluster_id=None, protocol=u'iSCSI', config_file=u'/e
 
         try:
             for p in (profiles if profiles is not None else []):
-                if unicode(p['backend']) == str(backend):
+                if unicode(p['backend']) == unicode(backend):
                     backend = unicode(p['name'])
                     break
             vmax_common[backend] = EMCVMAXCommon(*args)
