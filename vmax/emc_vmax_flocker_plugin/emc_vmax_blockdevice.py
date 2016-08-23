@@ -2,6 +2,11 @@
 # Copyright 2015 EMC Corporation
 # See LICENSE file for details.
 
+from eventlet import patcher
+if not patcher.is_monkey_patched('socket'):
+    from eventlet import monkey_patch
+    monkey_patch(socket=True)
+
 from flocker.node.agents.blockdevice import (
     VolumeException,
     AlreadyAttachedVolume,
@@ -27,11 +32,8 @@ from oslo_concurrency import lockutils
 from distutils.spawn import find_executable
 
 from cinder.volume.drivers.emc.emc_vmax_common import EMCVMAXCommon
-
-from eventlet import patcher
-if not patcher.is_monkey_patched('socket'):
-    from eventlet import monkey_patch
-    monkey_patch(socket=True)
+from  cinder.volume.drivers.emc import emc_vmax_https
+import pywbem
 
 flocker_opts = [
     cfg.StrOpt('lock_path',
@@ -57,6 +59,20 @@ backend_opts = [
 CONF = cfg.CONF
 LOG = oslo_logging.getLogger(__name__)
 
+def wbem_request(url, data, creds, headers=None, debug=0, x509=None,
+                 verify_callback=None, ca_certs=None,
+                 no_verification=False, timeout=None):
+    """Send request over HTTP.
+
+    Send XML data over HTTP to the specified url. Return the
+    response in XML.  Uses Python's build-in http_client.  x509 may be a
+    dictionary containing the location of the SSL certificate and key
+    files.
+    """
+    return emc_vmax_https.wbem_request(url, data, creds, headers=headers, debug=debug, x509=x509,
+                                       verify_callback=verify_callback, ca_certs=ca_certs,
+                                       no_verification=no_verification)
+
 
 @implementer(IBlockDeviceAPI)
 @implementer(IProfiledBlockDeviceAPI)
@@ -80,7 +96,11 @@ class EMCVmaxBlockDeviceAPI(object):
         for profile in self.vmax_common.keys():
             self.vmax_common[profile]._initial_setup = self._initial_setup
             self._gather_info(profile)
-            self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
+            try:
+                self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
+            except pywbem.ConnectionError:
+                pywbem.cim_operations.wbem_request = wbem_request
+                self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
             self.default_pool[profile] = None \
                 if 'pools' not in self.volume_stats[profile] \
                 else self.volume_stats[profile]['pools'][0]
@@ -160,12 +180,14 @@ class EMCVmaxBlockDeviceAPI(object):
         volume = self.find_volume_by_element_name(blockdevice_id)
         return volume, volume['PROFILE']
 
-    def get_ecom_connection(self):
+    def get_ecom_connection(self, profile=None):
         """
 
         :return:
         """
-        profile = self._get_default_profile()
+        if profile is None:
+            profile = self._get_default_profile()
+
         if self.vmax_common[profile].conn is None:
             self.vmax_common[profile].conn = self.vmax_common[profile]._get_ecom_connection()
         return self.vmax_common[profile].conn
