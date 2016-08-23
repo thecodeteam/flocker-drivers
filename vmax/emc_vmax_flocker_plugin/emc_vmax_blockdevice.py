@@ -96,10 +96,13 @@ class EMCVmaxBlockDeviceAPI(object):
         for profile in self.vmax_common.keys():
             self.vmax_common[profile]._initial_setup = self._initial_setup
             self._gather_info(profile)
-            try:
-                self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
-            except pywbem.ConnectionError:
-                pywbem.cim_operations.wbem_request = wbem_request
+            if hasattr(pywbem, 'ConnectionError'):
+                try:
+                    self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
+                except pywbem.ConnectionError:
+                    pywbem.cim_operations.wbem_request = wbem_request
+                    self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
+            else:
                 self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
             self.default_pool[profile] = None \
                 if 'pools' not in self.volume_stats[profile] \
