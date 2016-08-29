@@ -91,19 +91,16 @@ class EMCVmaxBlockDeviceAPI(object):
         if self.compute_instance is None:
             self.compute_instance = platform.node()
 
+        if hasattr(pywbem.cim_operations, 'wbem_request'):
+            pywbem.cim_http.wbem_request = wbem_request
+            pywbem.cim_operations.wbem_request = wbem_request
+
         self.volume_stats = {}
         self.default_pool = {}
         for profile in self.vmax_common.keys():
             self.vmax_common[profile]._initial_setup = self._initial_setup
             self._gather_info(profile)
-            if hasattr(pywbem, 'ConnectionError'):
-                try:
-                    self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
-                except pywbem.ConnectionError:
-                    pywbem.cim_operations.wbem_request = wbem_request
-                    self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
-            else:
-                self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
+            self.volume_stats[profile] = self.vmax_common[profile].update_volume_stats()
             self.default_pool[profile] = None \
                 if 'pools' not in self.volume_stats[profile] \
                 else self.volume_stats[profile]['pools'][0]
@@ -135,7 +132,7 @@ class EMCVmaxBlockDeviceAPI(object):
         :param volume_id:
         :return:
         """
-        return '%s' % (volume_id[len(self.name_prefix):])
+        return u'%s' % (volume_id[len(self.name_prefix):])
 
     def get_profile_list(self):
         """

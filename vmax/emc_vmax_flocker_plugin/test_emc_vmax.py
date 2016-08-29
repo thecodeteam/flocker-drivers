@@ -89,6 +89,19 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             traceback.print_exc()
             self.fail(e.message)
 
+    def test_unknown_blockdevice_id(self):
+        """
+        Test EMCVmaxBlockDeviceAPI Test bogus device id
+        """
+        print "\ntest_unknown_blockdevice_id"
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
+            blockdevice_id = unicode(uuid4())
+            block_device_api.destroy_volume(blockdevice_id)
+            self.fail('block device found!, %s' % blockdevice_id)
+        except UnknownVolume as e:
+            traceback.print_exc()
+
     def test_ecom_list_volumes(self):
         """
         Test EMCVmaxBlockDeviceAPI ecom
