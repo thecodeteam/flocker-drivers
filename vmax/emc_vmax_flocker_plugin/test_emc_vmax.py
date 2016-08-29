@@ -35,7 +35,7 @@ class EMCVmaxBlockDeviceAPIInterfaceTests(
         blockdevice_api_factory=functools.partial(emcvmaxblockdeviceapi_for_test),
         minimum_allocatable_size=vmax_allocation_unit(1),
         device_allocation_unit=vmax_allocation_unit(1),
-        unknown_blockdevice_id_factory=lambda test: str(uuid4())
+        unknown_blockdevice_id_factory=lambda test: unicode(uuid4())
     )
 ):
     """

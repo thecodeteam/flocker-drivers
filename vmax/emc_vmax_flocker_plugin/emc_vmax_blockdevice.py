@@ -177,6 +177,8 @@ class EMCVmaxBlockDeviceAPI(object):
         :param blockdevice_id:
         :return:
         """
+        if not isinstance(blockdevice_id, unicode):
+            raise TypeError('Unexpected blockdevice_id type. Expected unicode, got %s' % type(blockdevice_id).__name__)
         volume = self.find_volume_by_element_name(blockdevice_id)
         return volume, volume['PROFILE']
 
