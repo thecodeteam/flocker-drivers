@@ -26,14 +26,13 @@ You can optionally verify the correct packages are installed.
 ---
 Metadata-Version: 1.1
 Name: emc-vmax-flocker-plugin
-Version: 0.9.1
+Version: 0.9.2
 Summary: EMC VMAX Backend Plugin for ClusterHQ/Flocker 
 Home-page: https://github.com/emccode/flocker-drivers/vmax
 Author: Kevin Rodgers
-Author-email: kevin.rodgers@emc.com
+Author-email: kevin.rodgers@dell.com
 License: Apache 2.0
 Location: /opt/flocker/lib/python2.7/site-packages
-Requires: bitmath, eliot, oslo.concurrency, oslo.config, oslo.i18n, oslo.serialization, oslo.utils, pywbem, testtools, Twisted, zope.interface
 ```
 
 1) Install OpeniSCSI and other required libraries<br>
@@ -93,6 +92,8 @@ sudo chmod +x /usr/local/bin/inq
     # VMAX-3 GOLD type that uses VMAX iSCSI Driver
     #
     [GOLD]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_GOLD.xml
     volume_backend_name=GOLD_BE
@@ -101,6 +102,8 @@ sudo chmod +x /usr/local/bin/inq
     # VMAX-3 SILVER type that uses VMAX iSCSI Driver
     #
     [SILVER]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_SILVER.xml
     volume_backend_name=SILVER_BE
@@ -109,6 +112,8 @@ sudo chmod +x /usr/local/bin/inq
     # VMAX-3 BRONZE type that uses VMAX iSCSI Driver
     #
     [BRONZE]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_BRONZE.xml
     volume_backend_name=BRONZE_BE
