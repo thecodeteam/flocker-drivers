@@ -6,7 +6,6 @@
   "backend": "emc_vmax_flocker_plugin"
   "protocol": "iSCSI"
   "config_file": "/etc/flocker/vmax3.conf"
-  "database": "<hostname or IP address>"
   "hosts":
     - "host": "example-01"
       "initiator": "iqn.1994-05.com.redhat:583d44b98a1b"

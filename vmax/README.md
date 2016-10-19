@@ -10,7 +10,7 @@ Make sure you have Flocker already installed. If not visit  [Install Flocker](ht
 
 Install OpenStack Cinder
 ```bash
-git clone -b stable/liberty https://github.com/openstack/cinder.git
+git clone -b stable/mitaka https://github.com/openstack/cinder.git
 sudo /opt/flocker/bin/pip install ./cinder/
 ```
 
@@ -26,14 +26,13 @@ You can optionally verify the correct packages are installed.
 ---
 Metadata-Version: 1.1
 Name: emc-vmax-flocker-plugin
-Version: 0.9.1
+Version: 0.9.2
 Summary: EMC VMAX Backend Plugin for ClusterHQ/Flocker 
 Home-page: https://github.com/emccode/flocker-drivers/vmax
 Author: Kevin Rodgers
-Author-email: kevin.rodgers@emc.com
+Author-email: kevin.rodgers@dell.com
 License: Apache 2.0
 Location: /opt/flocker/lib/python2.7/site-packages
-Requires: bitmath, eliot, oslo.concurrency, oslo.config, oslo.i18n, oslo.serialization, oslo.utils, pywbem, redis, testtools, Twisted, zope.interface
 ```
 
 1) Install OpeniSCSI and other required libraries<br>
@@ -41,40 +40,28 @@ On Ubuntu
 ```bash
 sudo apt-get update
 sudo apt-get -y install open-iscsi scsitools lsscsi
-sudo apt-get -y install libpq-dev
+sudo apt-get -y install libpq-dev libxslt1-dev
+sudo apt-get -y install swig
 ```
 On Centos
 ```bash
 sudo yum -y install iscsi-initiator-utils lsscsi sg3_utils
-sudo yum -y install libpqxx-devel
+sudo yum -y install libpqxx-devel libxslt-devel
+sudo yum -y install swig
 ```
 
-2) Install redis<br>
-On Ubuntu
-```bash
-sudo apt-get -y install redis-server
-```
-On Centos
-```bash
-sudo yum -y install redis
-```
-
-3) Install EMC inq utility
+2) Install EMC inq utility
 ```bash
 sudo wget \
     ftp://ftp.emc.com/pub/symm3000/inquiry/v8.1.1.0/inq.LinuxAMD64 \
     -O /usr/local/bin/inq
 sudo chmod +x /usr/local/bin/inq
 ```
-4) Edit redis.conf and set listen (bind) address<br>
-    bind <host-ip-address> 127.0.0.1 or simply bind *
-
-5) Add vmax flocker plugin to agent.yml
+3) Add vmax flocker plugin to agent.yml
 
     "dataset":
       "backend": "emc_vmax_flocker_plugin"
       "config_file": "/etc/flocker/vmax3.conf"
-      "database": "<your redis server IP>"
       "protocol": "iSCSI"
       "hosts":
         - "host": "<short name>"
@@ -89,7 +76,7 @@ sudo chmod +x /usr/local/bin/inq
         - "name": "bronze"
           "backend": "BRONZE"
 
-6) Create VMAX config_file (/etc/flocker/vmax3.conf)
+4) Create VMAX config_file (/etc/flocker/vmax3.conf)
 
     [DEFAULT]
     lock_path=/var/lib/flocker
@@ -99,12 +86,14 @@ sudo chmod +x /usr/local/bin/inq
     syslog_log_facility=LOG_LOCAL3
     log_dir=/var/lib/flocker
     log_level=INFO
-    enabled_backends=GOLD.SILVER.BRONZE
+    enabled_backends=GOLD,SILVER,BRONZE
 
     #
     # VMAX-3 GOLD type that uses VMAX iSCSI Driver
     #
     [GOLD]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_GOLD.xml
     volume_backend_name=GOLD_BE
@@ -113,6 +102,8 @@ sudo chmod +x /usr/local/bin/inq
     # VMAX-3 SILVER type that uses VMAX iSCSI Driver
     #
     [SILVER]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_SILVER.xml
     volume_backend_name=SILVER_BE
@@ -121,11 +112,13 @@ sudo chmod +x /usr/local/bin/inq
     # VMAX-3 BRONZE type that uses VMAX iSCSI Driver
     #
     [BRONZE]
+    driver_use_ssl=False
+    driver_ssl_cert_verify=False
     volume_driver=cinder.volume.drivers.emc.emc_vmax_iscsi.EMCVMAXISCSIDriver
     cinder_emc_config_file=/etc/flocker/cinder_emc_config_ISCSI_BRONZE.xml
     volume_backend_name=BRONZE_BE
 
-7) Create cinder_emc_config_file files specified in VMAX configuration file (cinder_emc_config_ISCSI_BRONZE.xml)
+5) Create cinder_emc_config_file files specified in VMAX configuration file (cinder_emc_config_ISCSI_BRONZE.xml)
 
     <?xml version="1.0" encoding="UTF-8"?>
     <EMC>
@@ -140,7 +133,7 @@ sudo chmod +x /usr/local/bin/inq
       <Pool>Fast-Pool</Pool>
     </EMC>
 
-8) Run trial unit tests
+6) Run trial unit tests
 
 Set agent.yml location for test suite
 ```bash

@@ -14,11 +14,11 @@ with open("requirements.txt") as requirements:
 
 setup(
     name='emc_vmax_flocker_plugin',
-    version='0.9.1',
+    version='0.9.2',
     description='EMC VMAX Backend Plugin for ClusterHQ/Flocker ',
     long_description=long_description,
     author='Kevin Rodgers',
-    author_email='kevin.rodgers@emc.com',
+    author_email='kevin.rodgers@dell.com',
     url='https://github.com/emccode/flocker-drivers/vmax',
     license='Apache 2.0',
 

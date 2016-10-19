@@ -17,7 +17,7 @@ from uuid import uuid4
 from twisted.trial.unittest import SynchronousTestCase
 from flocker.node.agents.blockdevice import UnknownVolume, MandatoryProfiles
 
-from emc_vmax_flocker_plugin.testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
+from testtools_emc_vmax import tidy_vmax_client_for_test, vmax_allocation_unit
 from flocker.node.agents.test.test_blockdevice import make_iblockdeviceapi_tests, make_iprofiledblockdeviceapi_tests
 
 
@@ -89,39 +89,30 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
             traceback.print_exc()
             self.fail(e.message)
 
-    def test_flocker_db(self):
+    def test_unknown_blockdevice_id(self):
         """
-        Test EMCVmaxBlockDeviceAPI redis db
+        Test EMCVmaxBlockDeviceAPI Test bogus device id
         """
-        print "\ntest_flocker_db"
+        print "\ntest_unknown_blockdevice_id"
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            dbconn = block_device_api.dbconn
+            blockdevice_id = unicode(uuid4())
+            block_device_api.destroy_volume(blockdevice_id)
+            self.fail('block device found!, %s' % blockdevice_id)
+        except UnknownVolume:
+            traceback.print_exc()
 
-            volume = eval("{'name': u'FFC08', 'attach_to': None, "
-                          "'provider_location': u\"{'classname': u'Symm_StorageVolume', "
-                          "'keybindings': {'CreationClassName': u'Symm_StorageVolume', "
-                          "'SystemName': u'SYMMETRIX+000198700440', 'DeviceID': u'FFC08', "
-                          "'SystemCreationClassName': u'Symm_StorageSystem'}, 'version': '0.0.1'}\", "
-                          "'host': 'rodgek-localdomain@Backend#SATA_BRONZ1+000198700440', "
-                          "'id': u'cada636d-f287-44b6-8eb8-c914d37f9788', 'size': 960}")
-            uuid = dbconn.add_volume(volume)
-            print uuid + ' added'
+    def test_ecom_list_volumes(self):
+        """
+        Test EMCVmaxBlockDeviceAPI ecom
+        """
+        print "\ntest_ecom_list_volumes"
+        try:
+            block_device_api = emcvmaxblockdeviceapi_for_test(self)
 
-            volumes = dbconn.get_all_volumes()
+            volumes = block_device_api.list_flocker_volumes()
             for v in volumes:
-                if v['uuid'] == volume['uuid']:
-                    print uuid + ' found by get_all_volumes()'
-                    for key in v:
-                        if v[key] != volume[key]:
-                            self.fail("key mismatch " + key)
-                break
-            else:
-                self.fail(uuid + ": entry not found")
-
-            dbconn.delete_volume_by_id(uuid)
-            print uuid + ' removed'
-
+                print str(v)
         except Exception as e:
             traceback.print_exc()
             self.fail(e.message)
@@ -218,7 +209,7 @@ class EMCVmaxBlockDeviceAPIImplementationTests(SynchronousTestCase):
 
         try:
             block_device_api = emcvmaxblockdeviceapi_for_test(self)
-            block_device_api.get_device_path(unicode('99999'))
+            block_device_api.get_device_path(u'99999')
             self.fail('No exception thrown')
         except UnknownVolume as ue:
             print 'UnknownVolume: ' + str(ue)

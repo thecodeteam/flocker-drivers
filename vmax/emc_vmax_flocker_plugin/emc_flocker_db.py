@@ -3,6 +3,7 @@
 # See LICENSE file for details.
 
 import redis
+import six
 from uuid import uuid4
 
 
@@ -31,7 +32,7 @@ class EmcFlockerDb(object):
         Returns string representation of redis database connection
         :return:
         """
-        return unicode(self.redis)
+        return six.text_type(self.redis)
 
     def _open_db(self):
         """
@@ -130,8 +131,8 @@ class EmcFlockerDb(object):
         """
         self._open_db()
 
-        volume['uuid'] = unicode(uuid4())
-        self.redis.hset(self.key, volume['uuid'], unicode(volume))
+        volume['uuid'] = six.text_type(uuid4())
+        self.redis.hset(self.key, volume['uuid'], six.text_type(volume))
         return volume['uuid']
 
     def delete_volume_by_id(self, row_uuid):
@@ -159,7 +160,7 @@ class EmcFlockerDb(object):
         :return:
         """
         self._open_db()
-        self.redis.hset(self.key, row_uuid, unicode(volume))
+        self.redis.hset(self.key, row_uuid, six.text_type(volume))
 
     def update_volume_by_name(self, volume_name, volume):
         """
